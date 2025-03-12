@@ -1,0 +1,11 @@
+<div th:if="${param.error}">
+    Invalid username and password.</div>
+<div th:if="${param.logout}">
+    You have been logged out.</div>
+<form th:action="@{/login}" method="post">
+    <label for="inputEmail" class="sr-only">Email address</label>
+    <input type="text" name="username" id="inputEmail" class="form-control rounded-0 border-0" placeholder="Email address" required="" autofocus="">
+    <hr class="my-0">
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" name="password" id="inputPassword" class="form-control rounded-0 border-0" placeholder="Password" required="">
+</form>

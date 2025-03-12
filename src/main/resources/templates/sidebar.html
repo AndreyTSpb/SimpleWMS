@@ -1,0 +1,90 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content" class="sidebar">
+    <!-- Logo sidebar -->
+    <div th:replace="~{logo :: content}"></div>
+    <!-- Logo sidebar ends -->
+
+    <!-- Navigation menu sidebar-->
+    <h6 class="subtitle fs11">Главное меню</h6>
+    <ul class="nav flex-column">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">dashboard</i><span>Главная</span> <i class="material-icons arrow">expand_more</i></a>
+            <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/receiving_list"><span>Приход товара</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/product_placement"><span>Размещение товара</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/moving_product"><span>Перемещение товара</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/picking_route_list"><span>Комплектация заказа</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/shipping_list"><span>Отгрузка заказа</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/order_list"><span>Заказы</span></a></div>
+            </div>
+        </li>
+    </ul>
+    <h6 class="subtitle fs11">Сервисные функции</h6>
+    <ul class="nav flex-column">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">storage</i><span>Справочники</span> <i class="material-icons arrow">expand_more</i></a>
+            <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/products"><span>Товары</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/suppliers"><span>Поставщики</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/customers"><span>Клиенты</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/locations"><span>Места хранения</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/zones"><span>Зоны хранения</span></a></div>
+            </div>
+        </li>
+    </ul>
+    <ul class="nav flex-column">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">event_note</i><span>Отчеты</span> <i class="material-icons arrow">expand_more</i></a>
+            <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/warehouse_status"><span>Состояние склада</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/shipment_report"><span>Отчет по отгрузкам</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/income_report"><span>Отчет по поставке</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/report_pickers"><span>Отчет по комплектовщикам</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/product_report"><span>Отчет по товарам</span></a></div>
+            </div>
+        </li>
+    </ul>
+    <ul class="nav flex-column">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">library_books</i><span>Инструкции</span> <i class="material-icons arrow">expand_more</i></a>
+            <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/warehouse_status"><span>Состояние склада</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/shipment_report"><span>Отчет по отгрузкам</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/income_report"><span>Отчет по поставке</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/report_pickers"><span>Отчет по комплектовщикам</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/product_report"><span>Отчет по товарам</span></a></div>
+            </div>
+        </li>
+    </ul>
+    <!-- Navigation menu sidebar ends -->
+    <br>
+    <!-- Setting link -->
+    <ul class="nav flex-column">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">settings_applications</i><span>Администрирование</span> <i class="material-icons arrow">expand_more</i></a>
+            <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/employees"><span>Сотрудники</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/users"><span>Пользователи</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/options"><span>Настройка системы</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="email.html"><span>Email</span></a></div>
+            </div>
+        </li>
+    </ul>
+    <!-- Setting link -->
+
+    <!-- Upgrade notification -->
+    <div class="row mx-0 upgrad-box">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="fs15 font-weight-light mb-3">Upgrade <a class="close-btn"><i class="material-icons">close</i></a></h4>
+                    <p class="text-mute">01:45 hrs remaining of your trial period</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Upgrade notification ends -->
+</div>
+</body>
+</html>

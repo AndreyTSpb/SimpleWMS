@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" lang="ru">
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8" />
+    <title>SimpleWMS-PRO | Admin Dashboard</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Worlds Best Admin UX Dashbaoard PRO version for bootstrap template, Select, Calandar, Report, Charts, Tables etc." name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" th:href="@{/img/logoicon.png}">
+
+    <!-- g fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+    <!-- g fonts style ends -->
+
+    <!-- Vendor or 3rd party style -->
+
+    <!-- material icons -->
+    <link th:href="@{/vendor/material-icons/material-icons.css}" rel="stylesheet">
+    <!-- flags icons -->
+    <link th:href="@{/vendor/flags/css/flag-icon.min.css}" rel="stylesheet">
+    <!-- daterange picker -->
+    <link th:href="@{/vendor/daterangepicker-master/daterangepicker.css}" rel="stylesheet">
+
+    <!-- Vendor or 3rd party style ends -->
+
+    <!-- Customized template style mandatory -->
+    <link th:href="@{/css/style-darkblue-dark.css}" rel="stylesheet" id="stylelink">
+    <!-- Customized template style ends -->
+</head>
+
+<!-- Head tag ends -->
+<!-- Body -->
+
+<body class="h-100 no-sidemenu">
+<!-- Logo sidebar -->
+<div th:replace="~{loader :: content}"></div>
+<!-- Logo sidebar ends -->
+
+
+<div class="wrapper">
+    <div class="content shadow-sm position-relative">
+        <header class="header">
+            <!-- Fixed navbar -->
+            <nav class="container-fluid">
+                <div class="row">
+                    <div class="col align-self-center">
+                        <a href="" class="logo text-white">
+                            <img th:src="@{img/logoicon.svg}" alt="" class="logo-icon">
+                            <div class="logo-text">
+                                <h5 class="fs22 mb-0">SimpleWMS <sup class="badge badge-danger">PRO</sup></h5>
+                                <p class="text-uppercase fs11">Admin Dashboard</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="background opac blur">
+            <img th:src="@{/img/sklad.jpg}" alt="">
+        </div>
+
+        <!-- Main container starts -->
+        <div class="container main-container" id="main-container">
+            <div class="row login-row-height">
+                <div class="col-12 col-md-6 col-lg-7 d-none d-md-flex"></div>
+                <div class="col-12 col-md-6 col-lg-5 col-xl-4  align-self-center">
+                    <div class="card border-0 shadow-lg blur">
+                        <div class="card-body py-5">
+                            <h5 class="font-weight-light mb-1 text-mute-high">Вход,</h5>
+                            <h3 class="font-weight-normal mb-4">пожалуйста авторизуйтесь</h3>
+                            <div class="card  mb-2 overflow-hidden">
+                                <div class="card-body p-0">
+                                    <div th:if="${param.error}">
+                                        Неправильныфй логин или пароль.</div>
+                                    <div th:if="${param.logout}">
+                                        Вы были отключены.</div>
+                                    <form id="formLogin" th:action="@{/login}" method="post">
+                                        <label for="inputEmail" class="sr-only">Логин</label>
+                                        <input type="email" name="username" id="inputEmail" class="form-control rounded-0 border-0" placeholder="Email" required="" autofocus="">
+                                        <hr class="my-0">
+                                        <label for="inputPassword" class="sr-only">Пароль</label>
+                                        <input type="password" name="password" id="inputPassword" class="form-control rounded-0 border-0" placeholder="Пароль" required="">
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="my-3 row">
+                                <div class="col-12 col-md py-1">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
+                                        <label class="custom-control-label" for="customCheck1">Запомнить меня</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md py-1 text-left text-md-right">
+                                    <a href="resetpassword.html" class="template-primary">Забыли пароль?</a>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <button form="formLogin" type="submit" class=" btn btn-primary btn-block" >Вход <i class="material-icons md-18">arrow_forward</i></button>
+                            </div>
+                            <div class="">
+                                <p class="text-mute">
+                                    Нет акаунта?<br>
+                                    Пожалуйста обратитесь к  <a href="mailto:tynyanyi@mail.ru" class="text-template-primary-light"> администратору</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main container ends -->
+    </div>
+    <!-- Footer starts -->
+    <div th:replace="~{footer :: content}"></div>
+    <!-- Footer ends -->
+
+</div>
+<!-- wrapper ends -->
+
+
+<!-- Global js mandatory -->
+<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/js/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
+<!-- Global js ends -->
+
+
+<!-- Vendor or 3rd party js -->
+
+<!-- date range picker -->
+<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
+<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
+<!-- Vendor or 3rd party js ends -->
+
+<!-- Customized template js mandatory -->
+<script th:src="@{/js/main.js}"></script>
+<!-- Customized template js ends -->
+
+<!-- theme picker -->
+<script th:src="@{/js/style-picker.js}"></script>
+<!-- theme picker ends -->
+
+<!-- Customized page level js -->
+<script>
+    'use strict'
+    $(document).ready(function() {
+
+    });
+
+</script>
+<!-- Customized page level js ends -->
+
+<!-- Customized page level js ends -->
+</body>
+
+<!-- Body ends -->
+
+</html>

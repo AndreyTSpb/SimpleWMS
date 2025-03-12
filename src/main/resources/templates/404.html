@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Head tag -->
+<div th:replace="~{header :: content}"></div>
+<!-- Head tag ends -->
+
+<!-- Body -->
+
+<body class="h-100 no-sidemenu">
+    <!-- loader -->
+    <div th:replace="~{loader :: content}"></div>
+
+    <div class="wrapper">
+        <div class="content shadow-sm position-relative">
+            <div th:placeholder="~{header-blanc :: content}"></div>
+            <div class="background opac">
+                <img th:src="@{/img/sklad.jpg}" alt="">
+            </div>
+
+            <!-- Main container starts -->
+            <div class="container main-container" id="main-container">
+                <div class="row login-row-height">
+                    <div class="col-8 col-md-6 col-lg-5 col-xl-4 mx-auto align-self-center text-center">
+                        <h1 class="display-0 mb-0">404</h1>
+                        <h1 class="font-weight-light mt-0">Страница не найдена!</h1>
+                        <p>Могут возникнуть проблемы с набором текста или URL.</p>
+                        <br>
+                        <a href="/" class="btn btn-outline-light">Вернутся на главную</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Main container ends -->
+        </div>
+        <div th:placeholder="~{footer :: content}"></div>
+
+    </div>
+    <!-- wrapper ends -->
+
+
+    <!-- Global js mandatory -->
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
+    <!-- Global js ends -->
+
+    <!-- Vendor or 3rd party js -->
+
+    <!-- date range picker -->
+    <script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
+    <script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
+
+
+    <!-- Vendor or 3rd party js ends -->
+
+    <!-- Customized template js mandatory -->
+    <script th:src="@{/js/main.js}"></script>
+    <!-- Customized template js ends -->
+
+    <!-- theme picker -->
+    <script th:src="@{/js/style-picker.js}"></script>
+    <!-- theme picker ends -->
+
+
+    <!-- Customized page level js -->
+    <script>
+        'use strict'
+        $(document).ready(function() {
+
+        });
+
+    </script>
+    <!-- Customized page level js ends -->
+</body>
+
+<!-- Body ends -->
+
+</html>

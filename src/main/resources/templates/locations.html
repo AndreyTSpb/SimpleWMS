@@ -1,0 +1,721 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Head tag -->
+<div th:replace="~{header :: content}"></div>
+<!-- Head tag ends -->
+
+<!-- Body -->
+
+<body class="sidemenu-open">
+<!-- loader -->
+<div th:replace="~{loader :: content}"></div>
+
+<!-- Sidebar starts -->
+<div th:replace="~{sidebar :: content}"></div>
+<!-- Sidebar ends -->
+<!-- wrapper starts -->
+<div class="wrapper">
+
+    <div class="content shadow-sm ">
+        <!-- Header-container Starts -->
+        <div th:replace="~{header-container :: content}"></div>
+        <!-- Header-container Ends -->
+
+
+        <!-- Main container starts -->
+        <div class="container main-containe" id="main-container">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header border-0 bg-none">
+                    <div class="row">
+                        <div class="col-12 col-md">
+                            <p class="fs15" th:text="${title}">Список сотрудников</p>
+                        </div>
+                        <div class="col-auto align-self-center">
+                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
+                                <i class="material-icons md-18">add</i> Добаить
+                            </button>
+                            <button class="btn btn-sm btn-outline-template ml-2">
+                                <i class="material-icons md-18">cloud_download</i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table w-100 mb-0">
+                        <thead>
+                        <tr>
+                            <th class="all">ID</th>
+                            <th class="min-tablet">Код места хранения</th>
+                            <th class="min-tablet">Зона</th>
+                            <th class="min-tablet">Ряд</th>
+                            <th class="min-tablet">X</th>
+                            <th class="min-tablet">Y</th>
+                            <th class="min-tablet">Z</th>
+                            <th class="min-tablet">Свободно</th>
+                            <th class="min-desktop">Тип места</th>
+                            <th class="">Статус</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody th:each="location, iterStat : ${locationList}">
+                        <tr>
+                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
+                            <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
+                            <td th:text="${location.locationID}">0001</td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${location.locationCode}">Код места</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${zoneList[location.zoneID].zoneName}">Зона</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${location.row}">Ряд</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${location.x}">Х</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${location.y}">У</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${location.z}">З</p>
+                            </td>
+                            <td>
+                                <span th:if="${location.available == false}"><div class="btn-danger btn btn-sm">Занято</div></span>
+                                <span th:if="${location.available == true}"><div class="btn-success btn btn-sm">Свободно</div></span>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${locationTypeList[location.locationTypeID].locationTypeName}">Тип места</p>
+                            </td>
+                            <td>
+                                <span th:if="${location.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
+                                <span th:if="${location.del == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
+
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons">more_horiz</i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${location.locationID}">Просмотр</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${location.locationID}">Редактировать</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${location.locationID}">Штрих-код</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${location.locationID}">Удалить</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Main container ends -->
+
+    </div>
+
+    <!-- Footer starts -->
+    <div th:replace="~{footer :: content}"></div>
+    <!-- Footer ends -->
+
+</div>
+<!-- wrapper ends -->
+
+<!-- Chat  window and buttons starts -->
+<div class="wrap-fixed-float wrap-fixed-bottom-left">
+    <button class="btn btn-primary  btn-rounded-circle shadow chat-btn"><i class="material-icons vm">comment</i></button>
+    <div class="chat-window card shadow">
+        <div class="card-header">
+            <h5 class="d-inline-block fs15 mb-0">Quick Chat</h5>
+            <button class="btn btn-sm p-0 float-right chat-close text-white">
+                    <span class="rounded avatar avatar-20">
+                        <i class="material-icons fs15 vm text-mute">close</i>
+                    </span>
+            </button>
+        </div>
+        <div class="card-body chat-list scroll-y p-0 ">
+            <div class="p-3">
+                <div class="row left-chat">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-20">
+                            <img th:src="@{/img/user1.png}" alt="">
+                        </figure>
+                    </div>
+                    <div class="col pl-0">
+                        <div class="chat-block">
+                            <div class="row">
+                                <div class="col">
+                                    How are you? AdminuxPRO we were waitedsince long to be here.
+                                    <p class="text-mute small mt-2">8:00 pm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row right-chat">
+                    <div class="col pr-0">
+                        <div class="chat-block">
+                            <div class="row">
+                                <div class="col">
+                                    How are you? AdminuxPRO we were waited since long to be here.
+                                    <p class="text-mute small mt-2">8:00 pm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <figure class="avatar avatar-20">
+                            <img th:src="@{/img/user3.png}" alt="">
+                        </figure>
+                    </div>
+                </div>
+                <div class="row left-chat">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-20">
+                            <img th:src="@{/img/user1.png}" alt="">
+                        </figure>
+                    </div>
+                    <div class="col pl-0">
+                        <div class="chat-block">
+                            <div class="row">
+                                <div class="col">
+                                    How are you? AdminuxPRO we were waited since long to be here.
+                                    <p class="text-mute small mt-2">8:00 pm</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row right-chat">
+                    <div class="col pr-0">
+                        <div class="chat-block">
+                            <div class="row">
+                                <div class="col">
+                                    <p>AdminuxPRO is HTML template can be used in various business domains like Manufacturing, inventory, IT, administration etc. for admin dashbaords </p>
+                                    <p class="text-mute small mt-2">8:00 pm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <figure class="avatar avatar-20">
+                            <img th:src="@{/img/user3.png}" alt="">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer px-0">
+            <div class="input-group">
+                <div class="input-group-prepend ">
+                    <button class="btn btn-link fs15 py-0 " type="button" id="button-addon4"><i class="material-icons vm">attachment</i></button>
+                </div>
+                <input type="text" class="form-control form-control-sm rounded" placeholder="Type Message..." aria-label="Message">
+                <div class="input-group-append ">
+                    <button class="btn btn-link py-0 " type="button" id="button-addon5">
+                        <i class="material-icons fs15 vm">send</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Chat  window and buttons ends -->
+
+<!-- Theme style picker modal window and options -->
+<div class="wrap-fixed-float wrap-fixed-bottom-right">
+    <button class="btn btn-primary btn-rounded-circle shadow" data-target="#themepicker" data-toggle="modal"><i class="material-icons vm">style</i><span class="counter-small bg-danger"></span></button>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content shadow-lg-dark overflow-hidden">
+            <button type="button" class="closePersonalize" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="modal-body">
+                <div class="background h-320">
+                    <img th:src="@{/img/background-part.png}" alt="">
+                </div>
+                <div class="text-center pb-5">
+                    <h1 class="mt-3 mb-0 text-white">Personalize</h1>
+                    <h4 class="mb-5 text-white font-weight-light">Make it more like yours</h4>
+                </div>
+
+                <div class="row top-60">
+                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+                        <div class="card border-0 shadow bg-white h-100">
+                            <div class="card-body text-center">
+                                <i class="avatar avatar-60 md-36 material-icons text-template-primary my-3">format_shapes</i>
+                                <h6 class="mb-3">Font Size</h6>
+                                <div class="row">
+                                    <div class="col-12 px-0">
+                                        <ul class="list-group list-group-flush mb-0 text-left">
+                                            <li class="list-group-item">
+                                                XS
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="fontsize" class="custom-control-input" id="xsmallfs">
+                                                    <label class="custom-control-label" for="xsmallfs"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                S
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="fontsize" class="custom-control-input" id="smallfs" checked>
+                                                    <label class="custom-control-label" for="smallfs"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                M
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="fontsize" class="custom-control-input" id="mediumfs">
+                                                    <label class="custom-control-label" for="mediumfs"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                L
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="fontsize" class="custom-control-input" id="largefs">
+                                                    <label class="custom-control-label" for="largefs"></label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+                        <div class="card border-0 shadow bg-white h-100">
+                            <div class="card-body text-center">
+                                <i class="avatar avatar-60 md-36 material-icons bg-light-warning text-warning my-3">style</i>
+                                <h6 class="mb-3">Sidebar</h6>
+                                <div class="row">
+                                    <div class="col-12 px-0">
+                                        <ul class="list-group list-group-flush mb-0 text-left">
+                                            <li class="list-group-item">
+                                                Normal
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarfull" checked>
+                                                    <label class="custom-control-label" for="sidebarfull"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Compact
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarCompact">
+                                                    <label class="custom-control-label" for="sidebarCompact"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Iconic
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarIconic">
+                                                    <label class="custom-control-label" for="sidebarIconic"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Fill Color
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" class="custom-control-input" id="sidebarFill">
+                                                    <label class="custom-control-label" for="sidebarFill"></label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+                        <div class="card border-0 shadow bg-white h-100">
+                            <div class="card-body text-center">
+                                <i class="avatar avatar-60 md-36 material-icons bg-light-danger text-danger my-3">menu</i>
+                                <h6 class="mb-3">Header</h6>
+                                <div class="row">
+                                    <div class="col-12 px-0">
+                                        <ul class="list-group list-group-flush mb-0 text-left">
+                                            <li class="list-group-item">
+                                                Fixed Top
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" class="custom-control-input" id="headerfixed">
+                                                    <label class="custom-control-label" for="headerfixed"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Fixed Width
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" class="custom-control-input" id="headercontainer">
+                                                    <label class="custom-control-label" for="headercontainer"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Fill Color
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" class="custom-control-input" id="headerfillcolor">
+                                                    <label class="custom-control-label" for="headerfillcolor"></label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+                        <div class="card border-0 shadow bg-white h-100">
+                            <div class="card-body text-center">
+                                <i class="avatar avatar-60 md-36 material-icons bg-light-success text-success my-3">subtitles</i>
+                                <h6 class="mb-3">Content</h6>
+                                <div class="row">
+                                    <div class="col-12 px-0">
+                                        <ul class="list-group list-group-flush mb-0 text-left">
+                                            <li class="list-group-item">
+                                                Square
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="wrapperCorner">
+                                                    <label class="custom-control-label" for="wrapperCorner"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Full Width
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="contentWidth">
+                                                    <label class="custom-control-label" for="contentWidth"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Spacious
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="moderntouch">
+                                                    <label class="custom-control-label" for="moderntouch"></label>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                Fullscreen
+                                                <div class="custom-control custom-switch float-right">
+                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="fullscreen">
+                                                    <label class="custom-control-label" for="fullscreen"></label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <div class="row w-100 mx-0">
+                    <div class="col-12 col-md-6 text-center">
+                        <h6><i class="material-icons vm mr-1">brightness_2</i> Dark</h6>
+                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-dark'></div>
+                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-dark'></div>
+                    </div>
+                    <div class="col-12 col-md-6 text-center">
+                        <h6><i class="material-icons vm mr-1">brightness_7</i> Light</h6>
+                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-light'></div>
+                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-light'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалки для редактирования строк -->
+<span th:each="location, iterStat : ${locationList}">
+    <!-- Modal -->
+    <div class="modal fade" th:id="'viewModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${location.locationID}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'viewModalLabel'+${location.locationID}" th:text="'Зона хранения:' + ${location.locationCode}">Зона хранения: Название роли</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Зона хранения</label>
+                        <input type="text" class="form-control form-control-lg" name="zone" th:value="${zoneList[location.zoneID].zoneName}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Номер ряда</label>
+                        <input type="text" class="form-control form-control-lg" name="row" th:value="${location.row}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Координаты по горизонтали</label>
+                        <input type="text" class="form-control form-control-lg" name="x" th:value="${location.x}" readonly>
+                        <label>Координаты по вертикали</label>
+                        <input type="text" class="form-control form-control-lg" name="y" th:value="${location.y}" readonly>
+                        <label>Номер полки если место разделено на несколько</label>
+                        <input type="text" class="form-control form-control-lg" name="z" th:value="${location.z}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck2" th:checked="${location.available ? true: false}" readonly>
+                                <label class="custom-control-label" for="customCheck2">Место доступно</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Тип места</label>
+                        <input type="text" class="form-control form-control-lg" name="row" th:value="${locationTypeList[location.locationTypeID].locationTypeName}" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" th:id="'editModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'editModal_id_'+${location.locationID}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-darkblue text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'editModalLabel'+${location.locationID}" th:text="'Редактируем место хранения: ' + ${location.locationCode}">Редактируем сотрудника: Название пользователя</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form th:id="'editForm_id_'+${location.locationID}" th:action="@{${baseUrl}+'/update'}">
+                        <input type="hidden" name="zoneId" th:value="${location.locationID}">
+                        <div class="form-group">
+                            <label>Зона хранения</label>
+                            <select class="form-control form-control-lg" name="zone">
+                                <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.zoneName}" th:selected="${zone.zoneID==location.zoneID}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Номер ряда</label>
+                            <input type="text" class="form-control form-control-lg" name="row" th:value="${location.row}">
+                        </div>
+                        <div class="form-group">
+                            <label>Координаты по горизонтали</label>
+                            <input type="text" class="form-control form-control-lg" name="x" th:value="${location.x}">
+                            <label>Координаты по вертикали</label>
+                            <input type="text" class="form-control form-control-lg" name="y" th:value="${location.y}">
+                            <label>Номер полки если место разделено на несколько</label>
+                            <input type="text" class="form-control form-control-lg" name="z" th:value="${location.z}">
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"  th:checked="${location.available ? true: false}" >
+                                    <label class="custom-control-label" >Место доступно</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Тип места</label>
+                            <select class="form-control form-control-lg" name="locationType">
+                                <option th:each="locType : ${locationTypeList}" th:value="${locType.locationTypeID}" th:text="${locType.locationTypeName}" th:selected="${locType.locationTypeID==location.locationTypeID}"></option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${location.locationID}">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" th:id="'delModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${location.locationID}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-darkblue text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'delModalLabel'+${location.locationID}" th:text="'Удалить место хранения:' + ${location.locationCode}">Удалить Зону хранения: Название роли</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form th:id="'editForm_id_'+${location.locationID}" th:action="@{${baseUrl}+'/del'}">
+                        <input type="hidden" name="zoneId" th:value="${location.locationID}">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${location.locationID}">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" th:id="'barCodeModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'barCodeModal_id_'+${location.locationID}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'barCodeModalLabel'+${location.locationID}" th:text="'Штрих-код места:' + ${location.locationCode}">Удалить Зону хранения: Название роли</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="m-auto" style="width: 380px;">
+                          <!-- вставляем сгенерированный код в виде векторного рисунка -->
+                          <svg class="d-block m-auto" th:id="'barcode_'+${location.locationID}"></svg>
+                          <script th:inline="javascript">
+                              document.addEventListener('DOMContentLoaded', function(){
+                                  JsBarcode([['#barcode_' + ${location.locationID}]], [[${location.locationCode}]], {
+                                      format: "CODE128",
+                                      displayValue: true,
+                                      fontSize: 20,
+                                      width: 2,
+                                      height: 100
+                                  });
+                              });
+                          </script>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${location.locationID}">Печать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</span>
+
+<!-- Modal ADD -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" th:action="@{${baseUrl}+'/add'}">
+                    <div class="form-group">
+                        <label>Табельный номер</label>
+                        <input type="text" class="form-control form-control-lg" name="tabNum" value="">
+                    </div>
+                    <div class="form-group" >
+                        <label>Фамилия</label>
+                        <input type="text" class="form-control form-control-lg" name="LastName" value="">
+                        <label>Имя</label>
+                        <input type="text" class="form-control form-control-lg" name="Name" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Роль</label>
+                        <select class="form-control form-control-lg" name="roleName">
+                            <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.name}"></option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="addForm">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme style picker modal window and options ends -->
+
+<!-- Global js mandatory -->
+<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/js/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
+<!-- Global js ends -->
+
+<!-- Vendor or 3rd party js -->
+
+<!-- date range picker -->
+<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
+<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
+
+
+<!-- Vendor or 3rd party js ends -->
+
+<!-- Customized template js mandatory -->
+<script th:src="@{/js/main.js}"></script>
+<!-- Customized template js ends -->
+
+<!-- theme picker -->
+<script th:src="@{/js/style-picker.js}"></script>
+<!-- theme picker ends -->
+
+<!-- Generator BAR-code -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+
+<!-- Customized page level js -->
+<script>
+    'use strict'
+    $(document).ready(function() {
+        /* task dropdown action */
+        $('#tasks a').on('click', function(e) {
+            e.preventDefault()
+            $(this).tab('show')
+        });
+
+        /* calander picker */
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+            $('#daterangeadminux span').html(start.format('MMM D, YY') + ' - ' + end.format('MMM D, YY'));
+        }
+
+        $('#daterangeadminux').daterangepicker({
+            startDate: start,
+            endDate: end,
+            opens: 'left',
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+        $('#daterangeadminux').on('show.daterangepicker', function(ev, picker) {
+            var thisdp = $('.daterangepicker');
+            setTimeout(function() {
+                thisdp.addClass('active');
+            }, 100);
+        });
+        $('#daterangeadminux').on('hide.daterangepicker', function(ev, picker) {
+            var thisdpc = $('.daterangepicker');
+            thisdpc.removeClass('active');
+
+        });
+        var path = '../assets/img/background-part.png';
+        $('.daterangepicker').append('<div class="background" style="background-image: url(' + path + '); z-index:-1; height:80px;"><img th:src="@{/img/background-part.png}" alt="" style="display:none"></div>')
+        /* calander picker ends */
+
+    });
+
+</script>
+<!-- Customized page level js ends -->
+</body>
+
+<!-- Body ends -->
+
+</html>

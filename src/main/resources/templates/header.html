@@ -1,0 +1,32 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <head th:fragment="content">
+            <meta charset="utf-8" />
+            <title><th:block th:text="${title}">[title]</th:block></title>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta content="width=device-width, initial-scale=1" name="viewport" />
+            <meta content="Worlds Best Admin UX Dashbaoard PRO version for bootstrap template, Select, Calandar, Report, Charts, Tables etc." name="description" />
+            <meta content="" name="author" />
+            <link rel="shortcut icon" th:href="@{/img/logoicon.png}">
+
+            <!-- g fonts style -->
+            <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+            <!-- g fonts style ends -->
+
+            <!-- Vendor or 3rd party style -->
+
+            <!-- material icons -->
+            <link th:href="@{/vendor/material-icons/material-icons.css}" rel="stylesheet">
+            <!-- flags icons -->
+            <link th:href="@{/vendor/flags/css/flag-icon.min.css}" rel="stylesheet">
+            <!-- daterange picker -->
+            <link th:href="@{/vendor/daterangepicker-master/daterangepicker.css}" rel="stylesheet">
+
+            <!-- Vendor or 3rd party style ends -->
+
+            <!-- Customized template style mandatory -->
+            <link th:href="@{/css/style-darkblue-dark.css}" rel="stylesheet" id="stylelink">
+            <!-- Customized template style ends -->
+        </head>
+    </body>
+</html>

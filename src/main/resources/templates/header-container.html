@@ -1,0 +1,264 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content" class="container-fluid header-container">
+    <div class="row header">
+        <div class="container-fluid " id="header-container">
+            <div class="row">
+                <!-- Header starts -->
+                <nav class="navbar col-12 navbar-expand ">
+                    <button class="menu-btn btn btn-link btn-sm" type="button">
+                        <i class="material-icons">menu</i>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!-- search starts -->
+                        <form class="form-inline search mr-auto">
+                            <input class="form-control form-control-sm" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-link btn-sm" type="submit"><i class="material-icons">search</i></button>
+                        </form>
+                        <!-- search ends -->
+
+                        <!-- icons dropwdowns starts -->
+                        <ul class="navbar-nav ml-auto">
+
+                            <!-- message dropdown-->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">email</i>
+                                    <span class="counter bg-danger">1</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-sm-left dropdown-menu-center no-defaults pt-0 overflow-hidden" aria-labelledby="navbarDropdown5">
+                                    <div class="position-relative text-center rounded">
+                                        <div class="background">
+                                            <img th:src="@{/img/background-part.png}" alt="">
+                                        </div>
+                                        <div class="py-3 text-white">
+                                            <h5 class="font-weight-normal">Messages</h5>
+                                            <p>Updates and Status</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="scroll-y h-320 d-block">
+                                        <a class="dropdown-item border-top new" href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">local_mall</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">New Order received</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">Order from Anand Mhatva recieved for Electronics with 6 quanity.</p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top " href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">account_balance_wallet</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Balance has benn added</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">Order from Anand Mhatva recieved for Electronics with 6 quanity.</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top " href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">account_circle</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Friend request received</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">New friend request received from Mickey John from Australia</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top" href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">check_circle</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Email Updated</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">Your email change request has been successfully updated</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top " href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">account_balance_wallet</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Balance has benn added</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">Order from Anand Mhatva recieved for Electronics with 6 quanity.</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top " href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">account_circle</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Friend request received</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">New friend request received from Mickey John from Australia</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a class="dropdown-item border-top" href="#">
+                                            <div class="row">
+                                                <div class="col-auto align-self-center">
+                                                    <i class="material-icons text-template-primary">check_circle</i>
+                                                </div>
+                                                <div class="col pl-0">
+                                                    <div class="row mb-1">
+                                                        <div class="col">
+                                                            <p class="mb-0">Email Updated</p>
+                                                        </div>
+                                                        <div class="col-auto pl-0">
+                                                            <p class="small text-mute text-trucated mt-1">2/12/2019</p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-mute">Your email change request has been successfully updated</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!-- profile dropdown-->
+                            <li class="nav-item dropdown ml-0 ml-sm-4">
+                                <a class="nav-link dropdown-toggle profile-link" href="#" id="navbarDropdown6" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <figure class="rounded avatar avatar-30">
+                                        <img th:src="@{/img/user1.png}" alt="">
+                                    </figure>
+                                    <div class="username-text ml-2 mr-2 d-none d-lg-inline-block">
+                                        <h6 class="username"><span>Welcome,</span>Maxartkiller</h6>
+                                    </div>
+                                    <figure class="rounded avatar avatar-30 d-none d-md-inline-block">
+                                        <i class="material-icons">expand_more</i>
+                                    </figure>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right w-300 pt-0 overflow-hidden" aria-labelledby="navbarDropdown6">
+                                    <div class="position-relative text-center rounded py-5">
+                                        <div class="background">
+                                            <img th:src="@{/img/background-part.png}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="text-center mb-3 top-60 z-2">
+                                        <figure class="avatar avatar-120 mx-auto shadow"><img th:src="@{/img/user1.png}" alt=""></figure>
+                                    </div>
+                                    <h5 class="text-center mb-0">Maxartkiller</h5>
+                                    <p class="text-center">UX Designer</p>
+                                    <p class="text-center text-secondary fs13">Delhi, India</p>
+                                    <a class="dropdown-item border-top" href="#">
+                                        <div class="row">
+                                            <div class="col-auto align-self-center">
+                                                <i class="material-icons text-success">account_box</i>
+                                            </div>
+                                            <div class="col pl-0">
+                                                <p class="mb-0">My Profile</p>
+                                                <p class="small text-mute text-trucated">Update details and information</p>
+                                            </div>
+                                            <div class="col-auto align-self-center text-right pl-0">
+                                                <i class="material-icons text-mute small">chevron_right</i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item border-top" href="#">
+                                        <div class="row">
+                                            <div class="col-auto align-self-center">
+                                                <i class="material-icons text-info">account_balance_wallet</i>
+                                            </div>
+                                            <div class="col pl-0">
+                                                <p class="mb-0">My Wallet</p>
+                                                <p class="small text-mute text-trucated">Add Money or withdrow</p>
+                                            </div>
+                                            <div class="col-auto align-self-center text-right pl-0">
+                                                <i class="material-icons text-mute small">chevron_right</i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item border-top" href="#">
+                                        <div class="row">
+                                            <div class="col-auto align-self-center">
+                                                <i class="material-icons text-warning">date_range</i>
+                                            </div>
+                                            <div class="col pl-0">
+                                                <p class="mb-0">My Schedule</p>
+                                                <p class="small text-mute text-trucated">Appointments and schedules</p>
+                                            </div>
+                                            <div class="col-auto align-self-center text-right pl-0">
+                                                <i class="material-icons text-mute small">chevron_right</i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item border-top" href="#">
+                                        <div class="row">
+                                            <div class="col-auto align-self-center">
+                                                <i class="material-icons text-danger">exit_to_app</i>
+                                            </div>
+                                            <div class="col pl-0">
+                                                <p class="mb-0 text-danger">Logout</p>
+                                            </div>
+                                            <div class="col-auto align-self-center text-right pl-0">
+                                                <i class="material-icons text-mute small text-danger">chevron_right</i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- icons dropwdowns starts -->
+                    </div>
+                </nav>
+                <!-- Header ends -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
