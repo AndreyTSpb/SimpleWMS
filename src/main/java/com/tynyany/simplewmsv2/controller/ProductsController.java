@@ -55,13 +55,15 @@ public class ProductsController {
     }
 
     public static Category[] categoriesList(){
-        Category[] categoriesList = new Category[6];
+        Category[] categoriesList = new Category[8];
         categoriesList[0] = new Category(0, "Нет категории", "", true);
         categoriesList[1] = new Category(1, "Карандаши чернографитные без ластика", "", false);
         categoriesList[2] = new Category(2, "Ватман", "", false);
         categoriesList[3] = new Category(3, "Ручки шариковые", "", false);
         categoriesList[4] = new Category(4, "Тетради формата А4", "", false);
         categoriesList[5] = new Category(5, "Планшеты", "", false);
+        categoriesList[6] = new Category(6, "Маркеры перманентные", "", false);
+        categoriesList[7] = new Category(7, "Бумага класса С", "", false);
 
         return  categoriesList;
     }

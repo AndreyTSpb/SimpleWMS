@@ -6,6 +6,8 @@ import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.Role;
 import com.tynyany.simplewmsv2.entity.User;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
+import com.tynyany.simplewmsv2.service.EmployeeService;
+import com.tynyany.simplewmsv2.service.RoleService;
 import com.tynyany.simplewmsv2.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,9 @@ public class UsersController {
     final private String baseUrl = "users";
     private final UserService userService;
     private final UserRepository userRepository;
+    private final RoleService roleService;
+
+    private final EmployeeService employeeService;
 
     @GetMapping
     public String index(Model model) {
@@ -29,10 +34,10 @@ public class UsersController {
 
         List<User> user_list = userService.getAllUser();
 
-        Employee[] employees = EmployeesController.employeesList();
+        List<Employee> employees = employeeService.getAllEmployee();
 
 
-        Role[] roles = RolesController.RoleList();
+        List<Role> roles = roleService.getAllRole();
 
 
         model.addAttribute("title", "Список пользователей");

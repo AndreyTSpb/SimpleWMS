@@ -28,14 +28,14 @@
                 <div class="card-header border-0 bg-none">
                     <div class="row">
                         <div class="col-12 col-md">
-                            <p class="fs15">Список автаризованных пользователей</p>
+                            <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
                             <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
-                                <i class="material-icons md-18">add</i> Добаить
+                                <i class="material-icons md-18">update</i> Обновить данные
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">
-                                <i class="material-icons md-18">cloud_download</i> Export
+                                <i class="material-icons md-18">cloud_download</i> Выгрузить
                             </button>
                         </div>
                     </div>
@@ -43,35 +43,47 @@
                 <div class="card-body">
                     <table class="table w-100 mb-0">
                         <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th class="all">ID</th>
-                            <th class="min-tablet">Пользователь</th>
-                            <th class="min-tablet">Логин</th>
+                            <th class="min-tablet">Номер<br>заказа</th>
+                            <th class="min-tablet">Дата<br>прихода</th>
+                            <th class="min-tablet">Факт.<br>дата</th>
+                            <th class="min-tablet">Сотрудник</th>
+                            <th class="min-tablet">Кол-во<br>cтрок</th>
+                            <th class="min-tablet">Вес<br>(кг)</th>
+                            <th class="min-tablet">Обьем<br>(м^2)</th>
                             <th class="">Статус</th>
-                            <th class="">Роль</th>
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody th:each="user, iterStat : ${userList}">
-
+                        <tbody th:each="receiving, iterStat : ${receivingList}">
                         <tr>
                             <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td th:text="${user.userID}">0001</td>
+                            <!-- 0={dtReal=2030-01-01 12:12, numOrder=Z3454354545, qntRow=5, sumWeight=1500, dtWaiting=2020-01-01 12:12, sumVolume=5, employee=Vasa Pupkin, status=Ожидает} -->
+                            <td th:text="${iterStat.count}">0001</td>
                             <td>
-                                <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                                <p class="mb-0 template-inverse" th:text="${employeeList[user.employeeID].employeeName}">this name</p>
+                                <p class="mb-0 template-inverse" th:text="${receiving.numOrder}">Наименование</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${user.login}">this login</p>
+                                <p class="mb-0 template-inverse" th:text="${receiving.dtWaiting}"></p>
                             </td>
                             <td>
-                                <span th:if="${user.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
-                                <span th:if="${user.del == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
-
+                                <p class="mb-0 template-inverse" th:text="${receiving.dtReal}"></p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${roleList[employeeList[user.employeeID].roleID].name}">this login</p>
+                                <p class="mb-0 template-inverse" th:text="${receiving.employee}"></p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${receiving.qntRow}"></p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${receiving.sumWeight}">Вес(кг)</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Обьем(м^2)</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 template-inverse" th:text="${receiving.status}">Обьем(м^2)</p>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -79,15 +91,12 @@
                                         <i class="material-icons">more_horiz</i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${user.userID}">Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${user.userID}">Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#resetModal_id_'+${user.userID}">Сброс пароля</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${user.userID}">Удалить</a>
+                                        <a class="dropdown-item" th:href="@{~/{baseUrl}/veiw/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Просмотр</a>
+                                        <a class="dropdown-item" th:href="@{~/{baseUrl}/edit/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Редактировать</a>
                                     </div>
                                 </div>
                             </td>
                         </tr>
-
                         </tbody>
                     </table>
                 </div>
@@ -421,29 +430,44 @@
 </div>
 
 <!-- Модалки для редактирования строк -->
-<span th:each="user, iterStat : ${userList}">
+<span th:each="product, iterStat : ${productsList}">
     <!-- Modal -->
-    <div class="modal fade" th:id="'viewModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
+    <div class="modal fade" th:id="'viewModal_id_'+${product.productID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${product.productID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Сотрудник:' + ${employeeList[user.employeeID].employeeName}">Сотрудник: Название роли</h5>
+                    <h5 class="modal-title" th:id="'viewModalLabel'+${product.productID}" th:text="'Зона хранения:' + ${product.productName}">Зона хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Логин</label>
-                        <input type="text" class="form-control form-control-lg" name="login" th:value="${user.login}" readonly>
+                        <label>Зона хранения</label>
+                        <input type="text" class="form-control form-control-lg" name="zone" th:value="${product.productID}" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Сотрудник</label>
-                        <input type="text" class="form-control form-control-lg" name="EmployeeName" th:value="${employeeList[user.employeeID].employeeName}" readonly>
+                        <label>Номер ряда</label>
+                        <input type="text" class="form-control form-control-lg" name="row" th:value="${product.productID}" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Роль</label>
-                        <input type="text" class="form-control form-control-lg" name="RoleName" th:value="${roleList[employeeList[user.employeeID].roleID].name}" readonly>
+                        <label>Координаты по горизонтали</label>
+                        <input type="text" class="form-control form-control-lg" name="x" th:value="${product.productID}" readonly>
+                        <label>Координаты по вертикали</label>
+                        <input type="text" class="form-control form-control-lg" name="y" th:value="${product.productID}" readonly>
+                        <label>Номер полки если место разделено на несколько</label>
+                        <input type="text" class="form-control form-control-lg" name="z" th:value="${product.productID}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck2" th:checked="${product.del ? true: false}" readonly>
+                                <label class="custom-control-label" for="customCheck2">Место доступно</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Тип места</label>
+                        <input type="text" class="form-control form-control-lg" name="row" th:value="${product.productID}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -453,89 +477,131 @@
         </div>
     </div>
 
-    <div class="modal fade" th:id="'delModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
+    <div class="modal fade" th:id="'editModal_id_'+${product.productID}" tabindex="-1" role="dialog" th:aria-labelledby="'editModal_id_'+${product.productID}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'delModalLabel'+${user.userID}" th:text="'Удалить роль:' + ${user.login}">Удалить роль: Название роли</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${product.productID}" th:text="'Редактируем товар: ' + ${product.productName}">Редактируем товар: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'delForm_id_'+${user.userID}" th:action="@{${baseUrl}+'/del'}">
-                        <input type="hidden" name="userid" th:value="${user.userID}">
+                    <form th:id="'editForm_id_'+${product.productID}" th:action="@{${baseUrl}+'/update'}">
+                        <input type="hidden" name="productId" th:value="${product.productID}">
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Категория ABC</label>
+                                    <select class="form-control form-control-lg" name="abcID">
+                                        <option th:each="abc : ${abcList}" th:value="${abc.abcID}" th:text="${abc.code}" th:selected="${abc.abcID==product.abcID}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Категория</label>
+                                    <select class="form-control form-control-lg" name="categoryID">
+                                        <option th:each="category : ${categoriesList}" th:value="${category.categoryID}" th:text="${category.categoryName}" th:selected="${category.categoryID==product.categoryID}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Название</label>
+                            <textarea class="form-control"  name="name" rows="3" th:text="${product.productName}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <textarea class="form-control"  name="description" rows="3" th:text="${product.description}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Поставщик</label>
+                            <select class="form-control form-control-lg" name="supplierID">
+                                <option th:each="supplier : ${supplierList}" th:value="${supplier.supplierID}" th:text="${supplier.supplierName}" th:selected="${supplier.supplierID==product.supplierID}"></option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Код товара</label>
+                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${product.productCode}">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Еденици измерения</label>
+                                    <select class="form-control form-control-lg" name="unitOfMeasureID">
+                                        <option th:each="unit : ${unitList}" th:value="${unit.unitOfMeasureID}" th:text="${unit.unitName}" th:selected="${unit.unitOfMeasureID==product.unitOfMeasureID}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Вес товара(кг)</label>
+                                    <input type="text" class="form-control form-control-lg" name="weight" th:value="${product.weight}">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Объем товара(м^2)</label>
+                                    <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Минимальный уровень запасов (для уведомлений)</label>
+                            <input type="text" class="form-control form-control-lg" name="minimumStockLevel" th:value="${product.minimumStockLevel}">
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" th:id="'chek_expirationDateRequired_'+${product.productID}" class="custom-control-input"  th:checked="${product.expirationDateRequired ? true: false}" >
+                                            <label class="custom-control-label" th:for="'chek_expirationDateRequired_'+${product.productID}">Требуется ли отслеживание срока годности?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" th:id="'chek_del_'+${product.productID}"  th:checked="${product.del ? true: false}" >
+                                            <label class="custom-control-label" th:for="'chek_del_'+${product.productID}" >Не использоваить</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${user.userID}">Удалить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${product.productID}">Сохранить</button>
                 </div>
             </div>
         </div>
     </div>
-</span>
 
-<span th:each="user1, iterStat : ${userList}">
-    <div class="modal fade" th:id="'editModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
+    <div class="modal fade" th:id="'delModal_id_'+${product.productID}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${product.productID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Редактируем пользователя:' + ${employeeList[user1.employeeID].employeeName}">Редактируем пользователя: Название пользователя</h5>
+                    <h5 class="modal-title" th:id="'delModalLabel'+${product.productID}" th:text="'Удалить место хранения:' + ${product.productID}">Удалить Зону хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${user1.userID}" th:action="@{${baseUrl}+'/update'}" th:object="${user1}" method="post">
-                        <input type="hidden" name="userID" th:value="${user1.userID}">
-                        <input type="hidden" name="del" th:value="${user1.del}">
-                        <input type="hidden" name="pass" th:value="${user1.pass}">
-                        <div class="form-group">
-                                <label>Логин</label>
-                                <input type="text" class="form-control" name="login" th:value="${user1.login}">
-                        </div>
-                        <div class="form-group">
-                                <label>Сотрудник</label>
-                                <select class="form-control" name = "employeeID" >
-                                    <option th:each="employee : ${employeeList}" th:value="${employee.employeeID}" th:text="${employee.employeeName}" th:selected="${employee.employeeID == user1.employeeID}"></option>
-                                </select>
-                        </div>
+                    <form th:id="'editForm_id_'+${product.productID}" th:action="@{${baseUrl}+'/del'}">
+                        <input type="hidden" name="zoneId" th:value="${product.productID}">
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${user1.userID}">Сохранить</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" th:id="'resetModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Сбросить пароль для:' + ${employeeList[user1.employeeID].employeeName}">Сбросить пароль для: Название роли</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form th:id="'resetForm_id_'+${user1.userID}" th:object="${user1}" th:action="@{${baseUrl}+'/new_pass'}">
-                        <input type="hidden" name="userID" th:value="${user1.userID}">
-                        <div class="form-group">
-                                <label>Новый пароль</label>
-                                <input type="password" class="form-control form-control-lg" name="pass1" value="">
-                        </div>
-                        <div class="form-group">
-                                <label>Повторить пароль</label>
-                                <input type="password" class="form-control form-control-lg" name="pass2" value="">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'resetForm_id_'+${user1.userID}">Сохранить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${product.productID}">Удалить</button>
                 </div>
             </div>
         </div>
@@ -546,7 +612,7 @@
 <!-- Modal ADD -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content bg-darkblue text-white">
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -554,32 +620,22 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addForm" th:action="@{${baseUrl}+'/add'}" th:object="${user}" method="post">
-                    <div class="col-md-10 mx-auto">
-                        <div class="row ">
-                            <div class="col-lg-6 col-md-6">
-                                <div class="form-group ">
-                                    <label>Лооогин пользователя:</label>
-                                    <input  type="email" th:field="*{login}" class="form-control" placeholder="test@test.ru">
-                                    <input  type="hidden" th:field="*{userID}" class="form-control" value="0">
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6">
-                                <div class="form-group ">
-                                    <label>Пароль:</label>
-                                    <input type="password" th:field="*{pass}" class="form-control" placeholder="password">
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <input type="hidden" th:field="*{del}" class="form-control" value="0">
-                                <div class="form-group">
-                                    <label>Cвязь с сотрудником</label>
-                                    <select class="form-control" th:field="*{employeeID}">
-                                        <option th:each="employee : ${employeeList}" th:value="${employee.employeeID}" th:text="${employee.employeeName}"></option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                <form id="addForm" th:action="@{${baseUrl}+'/add'}">
+                    <div class="form-group">
+                        <label>Табельный номер</label>
+                        <input type="text" class="form-control form-control-lg" name="tabNum" value="">
+                    </div>
+                    <div class="form-group" >
+                        <label>Фамилия</label>
+                        <input type="text" class="form-control form-control-lg" name="LastName" value="">
+                        <label>Имя</label>
+                        <input type="text" class="form-control form-control-lg" name="Name" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Роль</label>
+                        <select class="form-control form-control-lg" name="roleName">
+                            <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.name}"></option>
+                        </select>
                     </div>
                 </form>
             </div>
@@ -590,8 +646,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Theme style picker modal window and options ends -->
 
@@ -617,6 +671,9 @@
 <!-- theme picker -->
 <script th:src="@{/js/style-picker.js}"></script>
 <!-- theme picker ends -->
+
+<!-- Generator BAR-code -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
 
 <!-- Customized page level js -->
 <script>

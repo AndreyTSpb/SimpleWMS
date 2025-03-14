@@ -1,8 +1,13 @@
 package com.tynyany.simplewmsv2.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Value
+import java.util.List;
+
+@Data
+@NoArgsConstructor
 public class Product {
     int productID;
     String productName;
@@ -38,4 +43,5 @@ public class Product {
         this.extBarcode = extBarcode;
         this.intBarcode = intBarcode;
     }
+
 }

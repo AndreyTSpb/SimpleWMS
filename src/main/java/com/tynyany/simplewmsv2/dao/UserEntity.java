@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name="users")
 public class UserEntity {
     @Id //первичный ключ
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
 
     private String login;

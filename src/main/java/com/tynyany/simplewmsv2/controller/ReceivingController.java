@@ -1,6 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.entity.*;
+import com.tynyany.simplewmsv2.service.EmployeeService;
+import com.tynyany.simplewmsv2.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,9 @@ import java.util.List;
 @RequestMapping("/receiving")
 @RequiredArgsConstructor
 public class ReceivingController {
+
+    private final RoleService roleService;
+    private final EmployeeService employeeService;
 
     final String baseUrl = "receiving";
 
@@ -39,6 +44,11 @@ public class ReceivingController {
         model.addAttribute("orderLines", orderLine(id));
         model.addAttribute("orderItog", orderItog());
         return "edit_receiving";
+    }
+
+    @GetMapping("/torg_12/{id}")
+    public String torg12(){
+        return "torg-12";
     }
 
     @GetMapping("/view/{id}")
@@ -76,12 +86,15 @@ public class ReceivingController {
         return arr;
     }
 
-    private static HashMap<String, String> orderHead(int orderID){
+    private  HashMap<String, String> orderHead(int orderID){
+        List<Role> roles = roleService.getAllRole();
+        List<Employee> employees = employeeService.getAllEmployee();
+
         Receiving receiving = receivingList()[orderID]; //Одну выбрали приходную накладную
         ReceivingStatus receivingStatus = receivingStatuses()[receiving.getReceivingStatusID()];
         Supplier supplier = SuppliersController.supplierList()[receiving.getReceivingStatusID()];
 
-        Employee employee = EmployeesController.employeesList()[receiving.getEmployeeID()];
+        Employee employee = employees.get(receiving.getEmployeeID());
 
         HashMap<String, String> orderHead = new HashMap<>();
         orderHead.put("orderId", Integer.toString(orderID));
@@ -91,7 +104,7 @@ public class ReceivingController {
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("employeeTabNum", employee.getTabNum());
         orderHead.put("employeeName", employee.getEmployeeName());
-        orderHead.put("employeeRole", RolesController.RoleList()[employee.getRoleID()].getName());
+        orderHead.put("employeeRole", roles.get(employee.getRoleID()).getName());
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
         orderHead.put("factOrderDate", String.valueOf(receiving.getGetReceivingDate()));
         return orderHead;

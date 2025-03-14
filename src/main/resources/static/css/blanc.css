@@ -1,0 +1,319 @@
+body
+{
+    font-family: arial;
+    font-size: 8pt;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+
+}
+
+table
+{
+    border:#000000;
+}
+
+table td
+{
+    border: 0px;
+}
+
+.invoice_bank_rekv
+{
+    background-color: black;
+}
+
+.invoice_bank_rekv td
+{
+    background-color: white;
+    padding-left: 2px;
+    vertical-align: top;
+}
+
+.invoice_items
+{
+    border: 1px solid;
+    background-color: black;
+}
+
+.invoice_items thead th
+{
+    font-weight: bold;
+    text-align: center;
+    font-size: 10pt;
+}
+
+.invoice_items th
+{
+    /*background-color: white;*/
+    font-size: 8pt;
+}
+
+.invoice_items td
+{
+    background-color: white;
+    font-size: 8pt;
+}
+
+.invoice_com_items
+{
+    /*border: 1px solid;*/
+    /*background-color: black;*/
+
+    border-collapse: collapse;
+}
+
+.invoice_com_items td,th
+{
+    background-color: white;
+    font-size: 8pt;
+
+    border: 1px solid #000000;
+    border-bottom: 1px solid;
+    padding:0;
+    margin:0;
+}
+
+.invoice_com_items thead th
+{
+    font-weight:normal;
+    text-align: center;
+    font-size: 8pt;
+}
+
+.invoice_com_items thead td
+{
+    font-weight:normal;
+    text-align: center;
+    font-size: 8pt;
+}
+
+
+
+.invoice_com_items input
+{
+
+    margin:0;
+    padding:0;
+    font-size:8pt;
+    width: 100%;
+}
+
+.blank_name
+{
+    padding: 0px;
+    margin: 0px;
+    padding-top: 6px;
+}
+
+
+.blank_name h1
+{
+    margin-left:10px;
+    background-color:#ececec;
+    color:#454545;
+    text-align:left;
+    font-size:19pt;
+}
+
+.new_blank, .print_blank
+{
+    height: 45px;
+    vertical-align: middle;
+    line-height: 45px;
+}
+
+.new_blank span
+{
+    margin: 0px;
+    padding: 0px;
+    margin-left: 10px;
+    background-color: #ececec;
+    color: #454545;
+    font-size: 19pt;
+    border-top: 1px #ececec solid;
+    border-bottom : 1px #ececec solid;
+}
+
+.new_blank span.img
+{
+    background-image: url(/images/printer_icon.jpg);
+    background-repeat: no-repeat;
+}
+
+
+.new_blank img
+{
+    width: 36px;
+    height: 30px;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid;
+    text-align: justify;
+    display: none;
+
+}
+
+.new_blank a
+{
+    margin-left: 0px;
+    background-color: #ececec;
+    color: #454545;
+    text-align: left;
+    font-size: 19pt;
+    text-decoration: none;
+    border-bottom: 1px solid;
+    border-top: 1px #ececec solid;
+}
+
+.print_blank a, .print_blank a:visited
+{
+    margin-left: 0px;
+    background-color: #ececec;
+    color: #454545;
+    text-align: left;
+    font-size: 19pt;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px #ececec solid;
+    border-top: 1px #ececec solid;
+}
+
+.print_blank a.printer
+{
+    background-image: url('/images/printer_icon.jpg');
+    background-repeat: no-repeat;
+}
+
+.ad_text span
+{
+    margin-left: 0px;
+    background-color: #ececec;
+    color: #454545;
+    text-align: left;
+    font-size: 9pt;
+}
+
+.other_bl
+{
+    color: #454545;
+    text-align: center;
+    font-size: 9pt;
+}
+
+.other_bl a
+{
+    color: #454545;
+    background-color: #ececec;
+}
+
+.inventory_table span
+{
+    color: #454545;
+    text-align: left;
+    font-size: 11pt;
+    text-align: left;
+}
+
+.inventory_table input
+{
+    border: 1px solid #454545;
+    width: 500px;
+    font-size: 11pt;
+}
+
+.inventory_table_items thead td
+{
+    color: #454545;
+    text-align: left;
+    font-size: 9pt;
+    font-weight: bold;
+}
+
+.check_items
+{
+    border: 1px solid;
+
+
+}
+
+.check_items input,textarea
+{
+    border: 1px solid #454545;
+}
+
+.invoice_items input,textarea
+{
+    border: 1px solid #454545;
+}
+
+.inventory_table_items input,textarea
+{
+    border: 1px solid #454545;
+}
+
+.blank_table_items input,textarea
+{
+    border: 1px solid #454545;
+}
+
+.dover table
+{
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.dover .top_block
+{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 8pt;
+    vertical-align: top;
+}
+
+.dover .top_block td
+{
+    border: 1px solid;
+}
+
+.dover .wo_top_border td
+{
+    border-top: 0px none;
+}
+
+.dover .items_block
+{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 8pt;
+    vertical-align: top;
+}
+
+.dover .items_block td
+{
+    border: 1px solid;
+}
+
+.brB
+{
+    border-bottom: 1px solid;
+}
+
+.brL
+{
+    border-left: 1px solid;
+}
+
+.brA
+{
+    border: 1px solid;
+}
+
+.tb2px td
+{
+    padding-left: 2px;
+    padding-right: 2px;
+}
+

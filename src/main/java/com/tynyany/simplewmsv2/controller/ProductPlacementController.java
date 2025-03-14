@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ProductPlacementController {
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("title", "Система управления складом");
-        return "home";
+        model.addAttribute("title", "Размещенеи товара на складе");
+        return "product_placement_list";
     }
 }

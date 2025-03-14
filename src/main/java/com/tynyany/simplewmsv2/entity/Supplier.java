@@ -1,10 +1,13 @@
 package com.tynyany.simplewmsv2.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Value
+@Data
+@NoArgsConstructor
 public class Supplier {
-    int supplierID;
+   public int supplierID;
     String supplierName;
     String supplierCode;
     String contactPerson;

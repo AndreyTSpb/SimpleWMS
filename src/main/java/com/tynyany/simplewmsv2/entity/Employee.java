@@ -7,10 +7,10 @@ public class Employee {
     int employeeID;
     String employeeName;
     String tabNum;
-    Boolean del;
+    int del;
     int roleID;
 
-    public Employee(int employeeID, String employeeName, String tabNum, int roleID, Boolean del){
+    public Employee(int employeeID, String employeeName, String tabNum, int roleID, int del){
 
         this.employeeID = employeeID;
         this.employeeName = employeeName;

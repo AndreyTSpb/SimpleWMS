@@ -9,12 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="roles")
-public class RoleEntity {
+@Table(name="suppliers")
+public class SupplierEntity {
     @Id //первичный ключ
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int roleID;
-    private String roleName;
-    private String note;
-    private int del;
+    @Column(name="supplierid")
+    private int supplierID;
+    private String supplierName;
+    private String supplierCode;
+    private String contactPerson;
+    private String phone;
+    private String email;
+    private Boolean del = false;
 }
