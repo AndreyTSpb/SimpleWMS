@@ -95,9 +95,6 @@ $(window).on('load', function () {
             legend: {
                 display: false,
             },
-            tooltips: {
-                enabled: false,
-            },
             scales: {
                 xAxes: [{
                     display: false,

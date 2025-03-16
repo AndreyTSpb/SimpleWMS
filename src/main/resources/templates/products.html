@@ -31,8 +31,8 @@
                             <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
-                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
-                                <i class="material-icons md-18">add</i> Добаить
+                            <button class="btn btn-sm btn-outline-template ml-2" id="addProduct">
+                                <i class="material-icons md-18">update</i> Обновить
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">
                                 <i class="material-icons md-18">cloud_download</i> Export
@@ -96,6 +96,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mx-0 upgrad-box position-absolute" id="upgrad-box" style="display: none; bottom: 40px; z-index: 9999;" >
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="fs15 font-weight-light mb-3">Обновление даных <a class="close-btn"><i class="material-icons">close</i></a></h4>
+                        <p class="text-mute" id="upgrad-box-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Main container ends -->
 
     </div>
@@ -107,112 +118,7 @@
 </div>
 <!-- wrapper ends -->
 
-<!-- Chat  window and buttons starts -->
-<div class="wrap-fixed-float wrap-fixed-bottom-left">
-    <button class="btn btn-primary  btn-rounded-circle shadow chat-btn"><i class="material-icons vm">comment</i></button>
-    <div class="chat-window card shadow">
-        <div class="card-header">
-            <h5 class="d-inline-block fs15 mb-0">Quick Chat</h5>
-            <button class="btn btn-sm p-0 float-right chat-close text-white">
-                    <span class="rounded avatar avatar-20">
-                        <i class="material-icons fs15 vm text-mute">close</i>
-                    </span>
-            </button>
-        </div>
-        <div class="card-body chat-list scroll-y p-0 ">
-            <div class="p-3">
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waitedsince long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    <p>AdminuxPRO is HTML template can be used in various business domains like Manufacturing, inventory, IT, administration etc. for admin dashbaords </p>
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer px-0">
-            <div class="input-group">
-                <div class="input-group-prepend ">
-                    <button class="btn btn-link fs15 py-0 " type="button" id="button-addon4"><i class="material-icons vm">attachment</i></button>
-                </div>
-                <input type="text" class="form-control form-control-sm rounded" placeholder="Type Message..." aria-label="Message">
-                <div class="input-group-append ">
-                    <button class="btn btn-link py-0 " type="button" id="button-addon5">
-                        <i class="material-icons fs15 vm">send</i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Chat  window and buttons ends -->
-
-<!-- Theme style picker modal window and options -->
-<div class="wrap-fixed-float wrap-fixed-bottom-right">
-    <button class="btn btn-primary btn-rounded-circle shadow" data-target="#themepicker" data-toggle="modal"><i class="material-icons vm">style</i><span class="counter-small bg-danger"></span></button>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -606,54 +512,24 @@
 <!-- Modal ADD -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content bg-darkblue text-white">
             <div class="modal-header">
-                <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
+                <h5 class="modal-title" id="addModalLabel" >Обновление спистка товаров</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="addForm" th:action="@{${baseUrl}+'/add'}">
-                    <div class="form-group">
-                        <label>Табельный номер</label>
-                        <input type="text" class="form-control form-control-lg" name="tabNum" value="">
-                    </div>
-                    <div class="form-group" >
-                        <label>Фамилия</label>
-                        <input type="text" class="form-control form-control-lg" name="LastName" value="">
-                        <label>Имя</label>
-                        <input type="text" class="form-control form-control-lg" name="Name" value="">
-                    </div>
-                    <div class="form-group">
-                        <label>Роль</label>
-                        <select class="form-control form-control-lg" name="roleName">
-                            <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.name}"></option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button type="submit" class="btn btn-primary" form="addForm">Сохранить</button>
+            <div class="modal-body text-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Загрузка...</span>
+                </div>
+                <div> Подождите идет обновление ...</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-        <img src="..." class="rounded mr-2" alt="...">
-        <strong class="mr-auto">Bootstrap</strong>
-        <small>11 минут назад</small>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Закрыть">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="toast-body">
-        Привет, мир! Это всплывающее сообщение.
-    </div>
-</div>
+
 
 
 <!-- Theme style picker modal window and options ends -->
@@ -661,7 +537,8 @@
 <!-- Global js mandatory -->
 <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
 <script th:src="@{/js/popper.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
 <!-- Global js ends -->
 
 <!-- Vendor or 3rd party js -->
@@ -683,6 +560,9 @@
 
 <!-- Generator BAR-code -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+
+<!-- My scriots -->
+<script th:src="@{/js/scripts.js}"></script>
 
 <!-- Customized page level js -->
 <script>

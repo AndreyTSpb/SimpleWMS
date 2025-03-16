@@ -7,6 +7,7 @@ import com.tynyany.simplewmsv2.dao.*;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -149,7 +150,8 @@ public class RestApiController {
         return orderHead;
     }
 
-    @RequestMapping(value="/update_products", method= RequestMethod.GET)
+    @RequestMapping(value="/update_products", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    //@RequestMapping(value = "/loadCityByCountry", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseJson addProducts(@RequestBody String json) throws JsonProcessingException {
         int kol = 0;

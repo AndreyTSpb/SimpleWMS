@@ -443,7 +443,7 @@
     <!-- Modal -->
     <div class="modal fade" th:id="'viewModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${location.locationID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'viewModalLabel'+${location.locationID}" th:text="'Зона хранения:' + ${location.locationCode}">Зона хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -563,7 +563,7 @@
 
     <div class="modal fade" th:id="'barCodeModal_id_'+${location.locationID}" tabindex="-1" role="dialog" th:aria-labelledby="'barCodeModal_id_'+${location.locationID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'barCodeModalLabel'+${location.locationID}" th:text="'Штрих-код места:' + ${location.locationCode}">Удалить Зону хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -599,7 +599,7 @@
 <!-- Modal ADD -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content bg-darkblue text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

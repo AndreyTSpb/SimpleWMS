@@ -412,7 +412,7 @@
     <!-- Modal -->
     <div class="modal fade" th:id="'viewModal_id_'+${role.roleID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${role.roleID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'viewModalLabel'+${role.roleID}" th:text="'Роль:' + ${role.name}">Роль: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -431,7 +431,7 @@
 
     <div class="modal fade" th:id="'editModal_id_'+${role.roleID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${role.roleID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'editModalLabel'+${role.roleID}" th:text="'Редактируем роль:' + ${role.name}">Редактируем роль: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -459,9 +459,9 @@
         </div>
     </div>
 
-        <div class="modal fade" th:id="'delModal_id_'+${role.roleID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${role.roleID}" aria-hidden="true">
+    <div class="modal fade" th:id="'delModal_id_'+${role.roleID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${role.roleID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'delModalLabel'+${role.roleID}" th:text="'Удалить роль:' + ${role.name}">Удалить роль: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

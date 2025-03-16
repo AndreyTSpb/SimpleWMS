@@ -427,7 +427,7 @@
     <!-- Modal -->
     <div class="modal fade" th:id="'viewModal_id_'+${employee.employeeID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${employee.employeeID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'viewModalLabel'+${employee.employeeID}" th:text="'Сотрудник:' + ${employee.employeeName}">Сотрудник: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -457,7 +457,7 @@
 
     <div class="modal fade" th:id="'editModal_id_'+${employee.employeeID}" tabindex="-1" role="dialog" th:aria-labelledby="'editModal_id_'+${employee.employeeID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'editModalLabel'+${employee.employeeID}" th:text="'Редактируем сотрудника:' + ${employee.employeeName}">Редактируем сотрудника: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -495,7 +495,7 @@
 
     <div class="modal fade" th:id="'delModal_id_'+${employee.employeeID}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${employee.employeeID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'delModalLabel'+${employee.employeeID}" th:text="'Удалить сотрудника:' + ${employee.employeeName}">Удалить сотрудника: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -519,7 +519,7 @@
 <!-- Modal ADD -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content bg-darkblue text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

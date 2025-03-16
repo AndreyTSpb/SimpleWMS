@@ -425,7 +425,7 @@
     <!-- Modal -->
     <div class="modal fade" th:id="'viewModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Сотрудник:' + ${employeeList[user.employeeID].employeeName}">Сотрудник: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -455,7 +455,7 @@
 
     <div class="modal fade" th:id="'delModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'delModalLabel'+${user.userID}" th:text="'Удалить роль:' + ${user.login}">Удалить роль: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -513,7 +513,7 @@
 
     <div class="modal fade" th:id="'resetModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Сбросить пароль для:' + ${employeeList[user1.employeeID].employeeName}">Сбросить пароль для: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

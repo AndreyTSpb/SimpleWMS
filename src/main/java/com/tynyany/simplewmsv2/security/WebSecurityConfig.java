@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,13 +44,20 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
+//                        .permitAll())
+//                .csrf(AbstractHttpConfigurer::disable);
+//        return http.build();
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 
-        return http.authorizeHttpRequests((auth) -> auth.anyRequest().permitAll()).build();
+        return http.authorizeHttpRequests((auth) -> auth.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable).build();
 
         //http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
 //        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());

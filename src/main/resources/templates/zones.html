@@ -415,13 +415,13 @@
         </div>
     </div>
 </div>
-<!-- Модалки для редактирования строк -->
+
 <!-- Модалки для редактирования строк -->
 <span th:each="zone, iterStat : ${zonesList}">
     <!-- Modal -->
     <div class="modal fade" th:id="'viewModal_id_'+${zone.zoneID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${zone.zoneID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'viewModalLabel'+${zone.zoneID}" th:text="'Зона хранения:' + ${zone.zoneName}">Зона хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -451,7 +451,7 @@
 
     <div class="modal fade" th:id="'editModal_id_'+${zone.zoneID}" tabindex="-1" role="dialog" th:aria-labelledby="'editModal_id_'+${zone.zoneID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'editModalLabel'+${zone.zoneID}" th:text="'Редактируем сотрудника:' + ${zone.zoneName}">Редактируем сотрудника: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -486,7 +486,7 @@
 
     <div class="modal fade" th:id="'delModal_id_'+${zone.zoneID}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${zone.zoneID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
                     <h5 class="modal-title" th:id="'delModalLabel'+${zone.zoneID}" th:text="'Удалить зону хранения:' + ${zone.zoneName}">Удалить Зону хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -510,7 +510,7 @@
 <!-- Modal ADD -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content bg-darkblue text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
