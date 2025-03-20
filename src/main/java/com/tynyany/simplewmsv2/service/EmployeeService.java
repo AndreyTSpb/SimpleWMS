@@ -6,7 +6,8 @@ import com.tynyany.simplewmsv2.entity.Role;
 import java.util.List;
 
 public interface EmployeeService {
-    Role getEmployeeByID(int employeeID);
+    Employee getEmployeeByID(int employeeID);
+
     List<Employee> getAllEmployee();
     void addEmployee(Employee employee);
 

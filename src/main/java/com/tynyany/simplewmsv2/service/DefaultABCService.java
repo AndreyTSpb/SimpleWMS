@@ -2,10 +2,13 @@ package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ABCEntity;
 import com.tynyany.simplewmsv2.dao.ABCRepository;
+import com.tynyany.simplewmsv2.dao.CategoryEntity;
 import com.tynyany.simplewmsv2.entity.ABC;
+import com.tynyany.simplewmsv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +24,17 @@ public class DefaultABCService implements ABCService{
 
     @Override
     public List<ABC> getAll() {
-        return null;
+        Iterable<ABCEntity> iterable = abcRepository.findAll();
+        ArrayList<ABC> abcs = new ArrayList<>();
+        for (ABCEntity abcEntity : iterable){
+            abcs.add(new ABC(
+                    abcEntity.getAbcID(),
+                    abcEntity.getCode(),
+                    abcEntity.getDescription(),
+                    abcEntity.getDel()
+            ));
+        }
+        return abcs;
     }
 
     @Override

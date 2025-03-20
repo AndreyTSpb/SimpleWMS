@@ -8,6 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SupplierRepository extends CrudRepository<SupplierEntity, Integer> {
-    //Supplier findTopBySupplierCode(String supplierCode);
     Optional<SupplierEntity> findTopBySupplierCode(String supplierCode);
 }

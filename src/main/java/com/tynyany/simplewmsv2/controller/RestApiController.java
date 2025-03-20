@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,14 @@ public class RestApiController {
     private final SupplierService supplierService;
     private final ProductRepository productRepository;
 
-    @RequestMapping(value="/new_receiving", method= RequestMethod.GET)
+    private final ReceivingRepository receivingRepository;
+    private final ReceivingService receivingService;
+    private final ReceivingLineRepository receivingLineRepository;
+    private final ReceivingLineService receivingLineService;
+
+    @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody
-    public ResponseJson addUser(@RequestBody String json) {
+    public ResponseJson addReceiving(@RequestBody String json) throws JsonProcessingException {
 
         /*
          * {
@@ -95,9 +101,74 @@ public class RestApiController {
          * }
          */
 
-        System.out.println(json);
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Deserialize the JSON string into an array of User objects
+        ReceivingJSON receivingJSONS = objectMapper.readValue(json, ReceivingJSON.class);
+
+
+        System.out.println(receivingJSONS.header.orderERP);
+        /*
+         * "header": {
+         *         "orderERP": "З30016546",
+         *         "supplierCode": "П000019",
+         *         "orderDate": "2025-02-27 08:30:00.0"
+         *     }
+         */
+
+
+        receivingService.add(new Receiving(
+                0,
+                Timestamp.valueOf(receivingJSONS.header.orderDate),
+                null,
+                receivingJSONS.header.orderERP,
+                0,
+                0,
+                false
+        ));
+
+        //идентификатор новой записи - НЕПРАВИЛЬНО ТАК НЕЛЬЗЯ
+        int receivingID = receivingRepository.findFirstByOrderByReceivingIDDesc().getReceivingID();
+
+        for (ReceivingLineERP line : receivingJSONS.body){
+            /*{
+            *             "volume": "1.0",
+            *             "code": "074519",
+            *             "ext_barcode": "46002525245",
+            *             "qnt": "160",
+            *             "weight": "3.0",
+            *             "int_barcode": "20002525245"
+            *         }
+            * */
+            System.out.println(line.code);
+            System.out.println(line.ext_barcode);
+            System.out.println(line.int_barcode);
+            System.out.println(line.qnt);
+            System.out.println(line.volume);
+            System.out.println(line.weight);
+            System.out.println(productRepository.findOneByProductCode(line.code));
+            Optional<ProductEntity> productT = productRepository.findOneByProductCode(line.code);
+            if(productT.isEmpty()) {
+                //TO DO: СДЕЛАТЬ ЗАПРОС НА ПОЛУЧЕНИЯ ДАННЫХ ПО ТОВАРУ
+            }
+            if(productT.isPresent()){
+                int productID = productT.get().getProductID();
+                receivingLineService.add(new ReceivingLine(
+                    0,
+                    Integer.parseInt(line.qnt),
+                    0,
+                    null,
+                    receivingID,
+                    0,
+                        productID,
+                    false,
+                    ""
+                ));
+            }
+        }
+
         return new ResponseJson(1, "Good");
     }
+
 
     @RequestMapping(value="/get_json", method= RequestMethod.GET)
     @ResponseBody
@@ -274,5 +345,6 @@ public class RestApiController {
 
         return new ResponseJson(1, "Good1");
     }
+
 
 }

@@ -104,6 +104,26 @@
         </div>
         <!-- Main container ends -->
 
+        <div class="row mx-0 upgrad-box position-absolute" id="upgrad-box" style="display: block; bottom: 40px; z-index: 9999;" >
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="fs15 font-weight-light mb-3">Обновление даных <a class="close-btn"><i class="material-icons">close</i></a></h4>
+                        <p class="text-mute" id="upgrad-box-text">Новый приход: З30016546</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="fs15 font-weight-light mb-3">Обновление даных <a class="close-btn"><i class="material-icons">close</i></a></h4>
+                        <p class="text-mute" id="upgrad-box-text">Нет новых данных</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
     <!-- Footer starts -->
@@ -113,112 +133,6 @@
 </div>
 <!-- wrapper ends -->
 
-<!-- Chat  window and buttons starts -->
-<div class="wrap-fixed-float wrap-fixed-bottom-left">
-    <button class="btn btn-primary  btn-rounded-circle shadow chat-btn"><i class="material-icons vm">comment</i></button>
-    <div class="chat-window card shadow">
-        <div class="card-header">
-            <h5 class="d-inline-block fs15 mb-0">Quick Chat</h5>
-            <button class="btn btn-sm p-0 float-right chat-close text-white">
-                    <span class="rounded avatar avatar-20">
-                        <i class="material-icons fs15 vm text-mute">close</i>
-                    </span>
-            </button>
-        </div>
-        <div class="card-body chat-list scroll-y p-0 ">
-            <div class="p-3">
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waitedsince long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    <p>AdminuxPRO is HTML template can be used in various business domains like Manufacturing, inventory, IT, administration etc. for admin dashbaords </p>
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer px-0">
-            <div class="input-group">
-                <div class="input-group-prepend ">
-                    <button class="btn btn-link fs15 py-0 " type="button" id="button-addon4"><i class="material-icons vm">attachment</i></button>
-                </div>
-                <input type="text" class="form-control form-control-sm rounded" placeholder="Type Message..." aria-label="Message">
-                <div class="input-group-append ">
-                    <button class="btn btn-link py-0 " type="button" id="button-addon5">
-                        <i class="material-icons fs15 vm">send</i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Chat  window and buttons ends -->
-
-<!-- Theme style picker modal window and options -->
-<div class="wrap-fixed-float wrap-fixed-bottom-right">
-    <button class="btn btn-primary btn-rounded-circle shadow" data-target="#themepicker" data-toggle="modal"><i class="material-icons vm">style</i><span class="counter-small bg-danger"></span></button>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">

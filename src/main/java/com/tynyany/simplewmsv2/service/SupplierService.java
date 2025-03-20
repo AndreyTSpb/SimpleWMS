@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface SupplierService {
     Supplier getByID(int supplierID);
-    List<Supplier> getAllRole();
+    List<Supplier> getAll();
     void add(Supplier supplier);
 
     void update(Supplier supplier);

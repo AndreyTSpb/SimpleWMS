@@ -6,7 +6,7 @@ $(document).ready(function () {
         weight: 2.34,
         extBarcode: "4603976100024",
         intBarcode: "2100000645480",
-        productCode: "024548",
+        productCode: "024748",
         productName: "Бумага Снегурочка 500 л. 80 г\/м2 А4 марка С",
         categoryName: "Бумага класса С",
         unitOfMeasure: "упак",
@@ -19,12 +19,12 @@ $(document).ready(function () {
         weight: 0.00992,
         extBarcode: "8595013612309",
         intBarcode: "2100000238941",
-        productCode: "033894",
+        productCode: "034894",
         productName: "Маркер перманент. Centropen PERMANENT 1 мм черный круглый 1 шт",
         categoryName: "Маркеры перманентные",
         unitOfMeasure: "шт",
         upacovka: "1\/10\/200",
-        abcCode: "A"
+        abcCode: "B"
     };
 
     let product_list = new Array();
@@ -37,29 +37,36 @@ $(document).ready(function () {
 
     if(btnUpdateProducts != null){
         btnUpdateProducts.addEventListener("click", ()=>{
+
             $('#addModal').modal('show');
-            $.ajax({
-                type: "POST",
-                contentType : 'application/json; charset=utf-8',
-                url: "/api/update_products",
-                data: JSON.stringify(product_list),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    console.log("SUCCESS : ", data);
-                    $('#addModal').modal('hide');
-                    $('#upgrad-box').show();
-                    $('#upgrad-box-text').text(data.message);
-                },
-                error: function (e) {
 
-                    console.log("ERROR : ", e);
+            setTimeout(ajaxUpdateProduct(product_list), 30000);
 
-                }
-            });
         });
 
+    }
+
+    function ajaxUpdateProduct(product_list){
+        $.ajax({
+            type: "POST",
+            contentType : 'application/json; charset=utf-8',
+            url: "/api/update_products",
+            data: JSON.stringify(product_list),
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                console.log("SUCCESS : ", data);
+                $('#addModal').modal('hide');
+                $('#upgrad-box').show();
+                $('#upgrad-box-text').text(data.message);
+            },
+            error: function (e) {
+
+                console.log("ERROR : ", e);
+
+            }
+        });
     }
 
     //tabl_del_groups

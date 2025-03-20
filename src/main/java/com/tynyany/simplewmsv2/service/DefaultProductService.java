@@ -1,18 +1,20 @@
 package com.tynyany.simplewmsv2.service;
 
+import com.tynyany.simplewmsv2.dao.EmployeeEntity;
 import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.ProductRepository;
 import com.tynyany.simplewmsv2.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class DefaultProductService implements ProductService{
 
-    final ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public Product getProductByID(int productID) {
@@ -21,7 +23,31 @@ public class DefaultProductService implements ProductService{
 
     @Override
     public List<Product> getAllProduct() {
-        return null;
+
+        Iterable<ProductEntity> iterable = productRepository.findAll();
+
+        ArrayList<Product> products = new ArrayList<>();
+
+        for(ProductEntity productEntity : iterable){
+            products.add(new Product(
+                    productEntity.getProductID(),
+                    productEntity.getProductName(),
+                    productEntity.getProductCode(),
+                    productEntity.getDescription(),
+                    productEntity.getWeight(),
+                    productEntity.getVolume(),
+                    productEntity.getCategoryID(),
+                    productEntity.getAbcID(),
+                    productEntity.getMinimumStockLevel(),
+                    productEntity.getExpirationDateRequired(),
+                    productEntity.getDel(),
+                    productEntity.getSupplierID(),
+                    productEntity.getUnitOfMeasureID(),
+                    productEntity.getExtBarcode(),
+                    productEntity.getIntBarcode()
+            ));
+        }
+        return products;
     }
 
     @Override

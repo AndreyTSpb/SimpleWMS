@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name="users")
 public class UserEntity {
     @Id //первичный ключ
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userID;
 
     private String login;

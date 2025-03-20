@@ -70,13 +70,13 @@
                                 <p class="mb-0 template-inverse" th:text="${product.weight}">Вес(кг)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${product.volume}">Обьем(м^2)</p>
+                                <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Обьем(м^2)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${categoriesList[product.categoryID].categoryName}">Категория товара</p>
+                                <p class="mb-0 template-inverse" th:text="${categoriesList.get(product.categoryID).getCategoryName}">Категория товара</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${abcList[product.abcID].code}">ABC</p>
+                                <p class="mb-0 template-inverse" th:text="${abcList.get(product.abcID).getCode}">ABC</p>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -394,7 +394,7 @@
                                 <div class="form-group">
                                     <label>Категория ABC</label>
                                     <select class="form-control form-control-lg" name="abcID">
-                                        <option th:each="abc : ${abcList}" th:value="${abc.abcID}" th:text="${abc.code}" th:selected="${abc.abcID==product.abcID}"></option>
+                                        <option th:each="abcId : ${abcList.keySet()}" th:value="${abcID}" th:text="${abcList.get(abcId).getCode}" th:selected="${abcId==product.abcID}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -402,7 +402,7 @@
                                 <div class="form-group">
                                     <label>Категория</label>
                                     <select class="form-control form-control-lg" name="categoryID">
-                                        <option th:each="category : ${categoriesList}" th:value="${category.categoryID}" th:text="${category.categoryName}" th:selected="${category.categoryID==product.categoryID}"></option>
+                                        <option th:each="categoryId : ${categoriesList.keySet()}" th:value="${categoryID}" th:text="${categoriesList.get(categoryId).getCategoryName}" th:selected="${categoryId==product.categoryID}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -419,7 +419,7 @@
                         <div class="form-group">
                             <label>Поставщик</label>
                             <select class="form-control form-control-lg" name="supplierID">
-                                <option th:each="supplier : ${supplierList}" th:value="${supplier.supplierID}" th:text="${supplier.supplierName}" th:selected="${supplier.supplierID==product.supplierID}"></option>
+                                <option th:each="supplierID : ${supplierList.keySet()}" th:value="${supplierID}" th:text="${supplierList.get(supplierID).supplierName}" th:selected="${supplierID == product.supplierID}"></option>
                             </select>
                         </div>
                         <div class="row">

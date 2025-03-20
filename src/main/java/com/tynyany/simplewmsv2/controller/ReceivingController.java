@@ -1,5 +1,9 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.ProductRepository;
+import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
+import com.tynyany.simplewmsv2.dao.ReceivingLineRepository;
+import com.tynyany.simplewmsv2.dao.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.EmployeeService;
 import com.tynyany.simplewmsv2.service.RoleService;
@@ -21,6 +25,10 @@ public class ReceivingController {
 
     private final RoleService roleService;
     private final EmployeeService employeeService;
+
+    private final ProductRepository productRepository;
+    private final ReceivingLineRepository receivingLineRepository;
+    private final ReceivingRepository receivingRepository;
 
     final String baseUrl = "receiving";
 
@@ -69,20 +77,22 @@ public class ReceivingController {
     }
 
     private static List<HashMap<String, String>> arrayReceivingList(){
+
+
+        HashMap<String, String> row = new HashMap<>();
+        row.put("ID", Integer.toString(1));
+        row.put("dtWaiting", "2025-02-27 08:30");
+        row.put("dtReal", "");
+        row.put("numOrder", "З30016546");
+        row.put("employee", "");
+        row.put("sumWeight", "1500");
+        row.put("sumVolume", "5");
+        row.put("qntRow", "3");
+        row.put("status", "Ожидает");
+
         List<HashMap<String, String>> arr = new ArrayList<>();
-        for(Receiving receiving : receivingList()){
-            HashMap<String, String> row = new HashMap<>();
-            row.put("ID", Integer.toString(receiving.getReceivingID()));
-            row.put("dtWaiting", "2020-01-01 12:12");
-            row.put("dtReal", "2030-01-01 12:12");
-            row.put("numOrder", "Z3454354545");
-            row.put("employee", "Vasa Pupkin");
-            row.put("sumWeight", "1500");
-            row.put("sumVolume", "5");
-            row.put("qntRow", "5");
-            row.put("status", "Ожидает");
-            arr.add(receiving.getReceivingID(), row);
-        }
+        arr.add(0,row);
+
         return arr;
     }
 
@@ -151,13 +161,9 @@ public class ReceivingController {
     }
 
     public static Receiving[] receivingList(){
-        Receiving[] receivings = new Receiving[5];
+        Receiving[] receivings = new Receiving[1];
 
-        receivings[0] = new Receiving(0, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, false);
-        receivings[1] = new Receiving(1, java.sql.Timestamp.valueOf( "2025-02-26 10:00:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015265", 3, 9, false);
-        receivings[2] = new Receiving(2, java.sql.Timestamp.valueOf( "2025-02-26 15:00:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015456", 2, 0, false);
-        receivings[3] = new Receiving(3, java.sql.Timestamp.valueOf( "2025-02-27 08:30:00" ), java.sql.Timestamp.valueOf( "2025-02-27 12:10:00" ), "З30016546", 1, 0, false);
-        receivings[4] = new Receiving(4, java.sql.Timestamp.valueOf( "2025-02-27 13:00:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30023456", 1, 0, false);
+        receivings[0] = new Receiving(1, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, false);
 
         return receivings;
     }

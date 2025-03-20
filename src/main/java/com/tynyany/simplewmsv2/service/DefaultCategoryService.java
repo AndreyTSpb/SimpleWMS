@@ -6,6 +6,7 @@ import com.tynyany.simplewmsv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,7 +20,17 @@ public class DefaultCategoryService implements CategoryService{
 
     @Override
     public List<Category> getAll() {
-        return null;
+        Iterable<CategoryEntity> iterable = categoryRepository.findAll();
+        ArrayList<Category> categories = new ArrayList<>();
+        for (CategoryEntity categoryEntity : iterable){
+            categories.add(new Category(
+                    categoryEntity.getCategoryID(),
+                    categoryEntity.getCategoryName(),
+                    categoryEntity.getDescription(),
+                    categoryEntity.getDel()
+                    ));
+        }
+        return categories;
     }
 
     @Override

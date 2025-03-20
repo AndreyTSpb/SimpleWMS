@@ -60,7 +60,7 @@
                             <td th:text="${user.userID}">0001</td>
                             <td>
                                 <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                                <p class="mb-0 template-inverse" th:text="${employeeList[user.employeeID].employeeName}">this name</p>
+                                <p class="mb-0 template-inverse" th:text="${employeeList.get(user.getEmployeeID()).getEmployeeName()}">this name</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${user.login}">this login</p>
@@ -71,7 +71,7 @@
 
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${roleList[employeeList[user.employeeID].roleID].name}">this login</p>
+                                <p class="mb-0 template-inverse" th:text="${roleList[employeeList.get(user.getEmployeeID()).roleID].name}">this role</p>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -104,112 +104,6 @@
 </div>
 <!-- wrapper ends -->
 
-<!-- Chat  window and buttons starts -->
-<div class="wrap-fixed-float wrap-fixed-bottom-left">
-    <button class="btn btn-primary  btn-rounded-circle shadow chat-btn"><i class="material-icons vm">comment</i></button>
-    <div class="chat-window card shadow">
-        <div class="card-header">
-            <h5 class="d-inline-block fs15 mb-0">Quick Chat</h5>
-            <button class="btn btn-sm p-0 float-right chat-close text-white">
-                    <span class="rounded avatar avatar-20">
-                        <i class="material-icons fs15 vm text-mute">close</i>
-                    </span>
-            </button>
-        </div>
-        <div class="card-body chat-list scroll-y p-0 ">
-            <div class="p-3">
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waitedsince long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-                <div class="row left-chat">
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user1.png}" alt="">
-                        </figure>
-                    </div>
-                    <div class="col pl-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    How are you? AdminuxPRO we were waited since long to be here.
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row right-chat">
-                    <div class="col pr-0">
-                        <div class="chat-block">
-                            <div class="row">
-                                <div class="col">
-                                    <p>AdminuxPRO is HTML template can be used in various business domains like Manufacturing, inventory, IT, administration etc. for admin dashbaords </p>
-                                    <p class="text-mute small mt-2">8:00 pm</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <figure class="avatar avatar-20">
-                            <img th:src="@{/img/user3.png}" alt="">
-                        </figure>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer px-0">
-            <div class="input-group">
-                <div class="input-group-prepend ">
-                    <button class="btn btn-link fs15 py-0 " type="button" id="button-addon4"><i class="material-icons vm">attachment</i></button>
-                </div>
-                <input type="text" class="form-control form-control-sm rounded" placeholder="Type Message..." aria-label="Message">
-                <div class="input-group-append ">
-                    <button class="btn btn-link py-0 " type="button" id="button-addon5">
-                        <i class="material-icons fs15 vm">send</i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Chat  window and buttons ends -->
-
-<!-- Theme style picker modal window and options -->
-<div class="wrap-fixed-float wrap-fixed-bottom-right">
-    <button class="btn btn-primary btn-rounded-circle shadow" data-target="#themepicker" data-toggle="modal"><i class="material-icons vm">style</i><span class="counter-small bg-danger"></span></button>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -427,7 +321,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Сотрудник:' + ${employeeList[user.employeeID].employeeName}">Сотрудник: Название роли</h5>
+                    <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Сотрудник:' + ${employeeList.get(user.employeeID).getEmployeeName()}">Сотрудник: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -439,11 +333,11 @@
                     </div>
                     <div class="form-group">
                         <label>Сотрудник</label>
-                        <input type="text" class="form-control form-control-lg" name="EmployeeName" th:value="${employeeList[user.employeeID].employeeName}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="EmployeeName" th:value="${employeeList.get(user.employeeID).getEmployeeName()}" readonly>
                     </div>
                     <div class="form-group">
                         <label>Роль</label>
-                        <input type="text" class="form-control form-control-lg" name="RoleName" th:value="${roleList[employeeList[user.employeeID].roleID].name}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="RoleName" th:value="${roleList[employeeList.get(user.employeeID).roleID].name}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -479,9 +373,9 @@
 <span th:each="user1, iterStat : ${userList}">
     <div class="modal fade" th:id="'editModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Редактируем пользователя:' + ${employeeList[user1.employeeID].employeeName}">Редактируем пользователя: Название пользователя</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Редактируем пользователя:' + ${employeeList.get(user1.employeeID).employeeName}">Редактируем пользователя: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -498,7 +392,7 @@
                         <div class="form-group">
                                 <label>Сотрудник</label>
                                 <select class="form-control" name = "employeeID" >
-                                    <option th:each="employee : ${employeeList}" th:value="${employee.employeeID}" th:text="${employee.employeeName}" th:selected="${employee.employeeID == user1.employeeID}"></option>
+                                    <option th:each="key_employee : ${employeeList.keySet()}" th:value="${key_employee}" th:text="${employeeList.get(key_employee).getEmployeeName()}" th:selected="${key_employee == user1.employeeID}"></option>
                                 </select>
                         </div>
                     </form>
@@ -559,7 +453,7 @@
                         <div class="row ">
                             <div class="col-lg-6 col-md-6">
                                 <div class="form-group ">
-                                    <label>Лооогин пользователя:</label>
+                                    <label>Логин пользователя:</label>
                                     <input  type="email" th:field="*{login}" class="form-control" placeholder="test@test.ru">
                                     <input  type="hidden" th:field="*{userID}" class="form-control" value="0">
                                 </div>
@@ -575,7 +469,7 @@
                                 <div class="form-group">
                                     <label>Cвязь с сотрудником</label>
                                     <select class="form-control" th:field="*{employeeID}">
-                                        <option th:each="employee : ${employeeList}" th:value="${employee.employeeID}" th:text="${employee.employeeName}"></option>
+                                        <option th:each="employee : ${employeeList1}" th:value="${employee.employeeID}" th:text="${employee.employeeName}"></option>
                                     </select>
                                 </div>
                             </div>

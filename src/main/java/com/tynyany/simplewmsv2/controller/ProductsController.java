@@ -1,24 +1,40 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.ProductRepository;
 import com.tynyany.simplewmsv2.entity.*;
+import com.tynyany.simplewmsv2.service.ABCService;
+import com.tynyany.simplewmsv2.service.CategoryService;
+import com.tynyany.simplewmsv2.service.ProductService;
+import com.tynyany.simplewmsv2.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
+import java.util.List;
+
 @Controller
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductsController {
+    private final ProductRepository productRepository;
+    private final ProductService productService;
+    private final CategoryService categoryService;
+    private final ABCService abcService;
+    private final SupplierService supplierService;
+
     @GetMapping
     public String index(Model model) {
+        List<Product> productList = productService.getAllProduct();
+
         model.addAttribute("title", "Список товаров");
-        model.addAttribute("productsList", producstList());
-        model.addAttribute("abcList", abcList());
-        model.addAttribute("categoriesList", categoriesList());
+        model.addAttribute("productsList", productList);
+        model.addAttribute("abcList", abcHashMap());
+        model.addAttribute("categoriesList", categoriesHashMap());
         model.addAttribute("unitList", unitList());
-        model.addAttribute("supplierList", SuppliersController.supplierList());
+        model.addAttribute("supplierList", supplierHashMap());
         return "products";
     }
 
@@ -38,8 +54,18 @@ public class ProductsController {
         abcList[4] = new ABC(4, "D", "Товары из данной категории имеют очень низкую стоимость или полностью перестали продаваться, а иногда даже вышли из строя либо устарели.", false);
         return abcList;
     }
+    public HashMap<Integer, ABC> abcHashMap(){
+        List<ABC> abcList = abcService.getAll();
+
+        HashMap<Integer, ABC> arr = new HashMap<>();
+        for(ABC abc : abcList){
+            arr.put(abc.getAbcID(), abc);
+        }
+        return arr;
+    }
 
     public static Product[] producstList(){
+
         Product[] productsList = new Product[10];
         productsList[0] = new Product(0, "Ручка шарик. Linc CORONA PLUS синий 0,7 мм оранж. шестигран. корп.", "109216", "", 0.01F, 0.01F, 3, 1,1, false, false, 2, 1, "", "20002525245");
         productsList[1] = new Product(1, "Ватман А2 594х420 мм Гознак С-Пб 200 г/м2 100 л.", "011053", "", 0.03F, 0.02F, 2, 2,1, false, false, 2, 1, "", "20002525245");
@@ -53,6 +79,10 @@ public class ProductsController {
         productsList[9] = new Product(9, "Тетрадь 96 л. А5+ кл. скреп. офс. Schoolformat ЦВЕТЫ МИНИМАЛ мел. карт., спл. УФ-лак", "249243", "", 0.02F, 0.01F, 4, 1,1, false, false, 2, 1, "", "20002525245");
         return  productsList;
     }
+
+
+
+
 
     public static Category[] categoriesList(){
         Category[] categoriesList = new Category[8];
@@ -68,11 +98,37 @@ public class ProductsController {
         return  categoriesList;
     }
 
+    public  HashMap<Integer, Category> categoriesHashMap(){
+        List<Category> categoryList = categoryService.getAll();
+        HashMap<Integer, Category> arr = new HashMap<>();
+        for(Category category : categoryList){
+            arr.put(category.getCategoryID(), category);
+        }
+        return arr;
+    }
+
     public static UnitOfMeasure[] unitList(){
         UnitOfMeasure[] unitOfMeasures = new UnitOfMeasure[3];
         unitOfMeasures[0] = new UnitOfMeasure(0, "Не указана еденица", "Нет", false);
         unitOfMeasures[1] = new UnitOfMeasure(1, "Штука", "Шт.", false);
         unitOfMeasures[2] = new UnitOfMeasure(2, "Упаковка", "Уп.", false);
         return unitOfMeasures;
+    }
+    public static UnitOfMeasure[] unitHashMap(){
+        UnitOfMeasure[] unitOfMeasures = new UnitOfMeasure[3];
+        unitOfMeasures[0] = new UnitOfMeasure(0, "Не указана еденица", "Нет", false);
+        unitOfMeasures[1] = new UnitOfMeasure(1, "Штука", "Шт.", false);
+        unitOfMeasures[2] = new UnitOfMeasure(2, "Упаковка", "Уп.", false);
+        return unitOfMeasures;
+    }
+
+    public  HashMap<Integer, Supplier> supplierHashMap(){
+        List<Supplier> supplierList = supplierService.getAll();
+        HashMap<Integer, Supplier> arr = new HashMap<>();
+
+        for(Supplier supplier : supplierList){
+            arr.put(supplier.getSupplierID(), supplier);
+        }
+        return arr;
     }
 }

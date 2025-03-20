@@ -17,14 +17,17 @@ public class DefaultEmployeeService implements EmployeeService{
     final EmployeeRepository employeeRepository;
 
     @Override
-    public Role getEmployeeByID(int employeeID) {
+    public Employee getEmployeeByID(int employeeID) {
         return null;
     }
 
     @Override
     public List<Employee> getAllEmployee() {
+
         Iterable<EmployeeEntity> iterable = employeeRepository.findAll();
+
         ArrayList<Employee> employees = new ArrayList<>();
+
         for (EmployeeEntity employeeEntity : iterable){
             employees.add( new Employee(
                     employeeEntity.getEmployeeID(),
