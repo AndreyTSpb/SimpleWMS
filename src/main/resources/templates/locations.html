@@ -52,7 +52,6 @@
                             <th class="min-tablet">Y</th>
                             <th class="min-tablet">Z</th>
                             <th class="min-tablet">Свободно</th>
-                            <th class="min-desktop">Тип места</th>
                             <th class="">Статус</th>
                             <th></th>
                         </tr>
@@ -83,9 +82,6 @@
                             <td>
                                 <span th:if="${location.available == false}"><div class="btn-danger btn btn-sm">Занято</div></span>
                                 <span th:if="${location.available == true}"><div class="btn-success btn btn-sm">Свободно</div></span>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${locationTypeList[location.locationTypeID].locationTypeName}">Тип места</p>
                             </td>
                             <td>
                                 <span th:if="${location.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
@@ -473,11 +469,6 @@
                                 <label class="custom-control-label" for="customCheck2">Место доступно</label>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Тип места</label>
-                        <input type="text" class="form-control form-control-lg" name="row" th:value="${locationTypeList[location.locationTypeID].locationTypeName}" readonly>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -523,12 +514,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Тип места</label>
-                            <select class="form-control form-control-lg" name="locationType">
-                                <option th:each="locType : ${locationTypeList}" th:value="${locType.locationTypeID}" th:text="${locType.locationTypeName}" th:selected="${locType.locationTypeID==location.locationTypeID}"></option>
-                            </select>
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">

@@ -38,13 +38,11 @@ public class DefaultProductService implements ProductService{
                     productEntity.getVolume(),
                     productEntity.getCategoryID(),
                     productEntity.getAbcID(),
-                    productEntity.getMinimumStockLevel(),
                     productEntity.getExpirationDateRequired(),
                     productEntity.getDel(),
                     productEntity.getSupplierID(),
-                    productEntity.getUnitOfMeasureID(),
-                    productEntity.getExtBarcode(),
-                    productEntity.getIntBarcode()
+                    productEntity.getExtBarCode(),
+                    productEntity.getIntBarCode()
             ));
         }
         return products;
@@ -59,15 +57,13 @@ public class DefaultProductService implements ProductService{
                 product.getDescription(),
                 product.getWeight(),
                 product.getVolume(),
-                product.getCategoryID(),
-                product.getAbcID(),
-                product.getMinimumStockLevel(),
                 product.getExpirationDateRequired(),
                 false,
                 product.getSupplierID(),
-                product.getUnitOfMeasureID(),
+                product.getCategoryID(),
                 product.getExtBarcode(),
-                product.getIntBarcode()
+                product.getIntBarcode(),
+                product.getAbcID()
         );
         productRepository.save(productEntity);
     }

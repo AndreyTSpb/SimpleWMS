@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="products")
+@Table(name="product")
 public class ProductEntity {
 
     @Id //первичный ключ
@@ -21,14 +21,12 @@ public class ProductEntity {
     private String description;
     private Float weight; //вес
     private Float volume; //обьем
-    private int categoryID; //категория товара
-    private int abcID; //коды А-B-C-D
-    private int minimumStockLevel; //Минимальный уровень запасов (для уведомлений)
     private Boolean expirationDateRequired = false; //Требуется ли отслеживание срока годности
     //Timestamp expirationDate; //срок годности (годен до)
     private Boolean del = false;
     private int supplierID;
-    private int unitOfMeasureID;
-    private String extBarcode; //внешний бар код товара
-    private String intBarcode; //внутренний бар код товара
+    private int categoryID; //категория товара
+    private String extBarCode; //внешний бар код товара
+    private String intBarCode; //внутренний бар код товара
+    private int abcID; //коды А-B-C-D
 }

@@ -7,12 +7,11 @@ public class Role {
     int roleID;
     String name;
     String note;
-    int del;
 
-    public Role(int i, String name, String note, int del) {
+
+    public Role(int i, String name, String note) {
         this.roleID = i;
         this.name = name;
         this.note = note;
-        this.del = del;
     }
 }

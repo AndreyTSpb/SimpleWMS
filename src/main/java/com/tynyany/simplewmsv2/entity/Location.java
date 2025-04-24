@@ -13,10 +13,9 @@ public class Location {
     float capacity;
     Boolean available;
     Boolean del;
-    int locationTypeID;
     int zoneID;
 
-    public Location(int locationID, String locationCode, String row, int x, int y, int z, float capacity, Boolean available, Boolean del, int locationTypeID, int zoneID){
+    public Location(int locationID, String locationCode, String row, int x, int y, int z, float capacity, Boolean available, Boolean del, int zoneID){
         this.locationID = locationID;
         this.locationCode = locationCode;
         this.row = row;
@@ -27,7 +26,6 @@ public class Location {
         this.capacity = capacity; //размер места
         this.available = available; //свободно или нет
         this.del = del;
-        this.locationTypeID = locationTypeID;
 
         this.zoneID = zoneID;
     }

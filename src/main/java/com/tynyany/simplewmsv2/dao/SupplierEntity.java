@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="suppliers")
+@Table(name="supplier")
 public class SupplierEntity {
     @Id //первичный ключ
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,7 @@ public class SupplierEntity {
     private String supplierName;
     private String supplierCode;
     private String contactPerson;
-    private String phone;
+    private String phoneNumber;
     private String email;
     private Boolean del = false;
 }

@@ -33,7 +33,7 @@ public class DefaultSupplierService implements SupplierService{
                     supplierEntity.getSupplierName(),
                     supplierEntity.getSupplierCode(),
                     supplierEntity.getContactPerson(),
-                    supplierEntity.getPhone(),
+                    supplierEntity.getPhoneNumber(),
                     supplierEntity.getEmail(),
                     supplierEntity.getDel()
             ));

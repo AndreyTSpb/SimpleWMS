@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="receivings")
+@Table(name="receiving")
 public class ReceivingEntity {
     @Id //первичный ключ
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +19,9 @@ public class ReceivingEntity {
     Timestamp receivingDate;
     Timestamp getReceivingDate;
     String documentNumber;
-    int receivingStatusID; //"В ожидании", "В процессе", "Завершена", "Отменена"
+    int statusID; //"В ожидании", "В процессе", "Завершена", "Отменена"
     int employeeID;
+    int supplierID;
     Boolean del;
 
 }

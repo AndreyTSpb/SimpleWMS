@@ -10,18 +10,20 @@ public class Receiving {
     Timestamp receivingDate;
     Timestamp getReceivingDate;
     String documentNumber;
-    int receivingStatusID; //"В ожидании", "В процессе", "Завершена", "Отменена"
+    int statusID; //"В ожидании", "В процессе", "Завершена", "Отменена"
     int employeeID;
+    int supplierID;
     Boolean del;
 
-    public Receiving(int receivingID, Timestamp receivingDate, Timestamp getReceivingDate, String documentNumber, int receivingStatusID, int employeeID, Boolean del){
+    public Receiving(int receivingID, Timestamp receivingDate, Timestamp getReceivingDate, String documentNumber, int statusID, int employeeID, int supplierID, Boolean del){
         this.receivingID = receivingID;
         this.receivingDate = receivingDate;
         this.getReceivingDate = getReceivingDate;
         this.documentNumber = documentNumber;
 
-        this.receivingStatusID = receivingStatusID;
+        this.statusID = statusID;
         this.employeeID = employeeID;
+        this.supplierID = supplierID;
         this.del = del;
     }
 

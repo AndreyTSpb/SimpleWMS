@@ -9,19 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="locations")
+@Table(name="location")
 public class LocationEntity {
     @Id //первичный ключ
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int locationID;
     private String locationCode;
-    private String row;
+    private String row; //ряд
     private int x; // координаты в горизонтальной плоскости
     private int y; // координаты в вертикальной плоскости
     private int z; // порядковый номер полки при разделении места
     private float capacity = 1.0F;
     private int available = 1;
     private int del = 0;
-    private int locationTypeID;
     private int zoneID;
 }

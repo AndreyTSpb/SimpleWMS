@@ -33,8 +33,9 @@ public class DefaultReceivingService implements ReceivingService{
                 receiving.getReceivingDate(),
                 receiving.getGetReceivingDate(),
                 receiving.getDocumentNumber(),
-                receiving.getReceivingStatusID(),
+                receiving.getStatusID(),
                 receiving.getEmployeeID(),
+                receiving.getSupplierID(),
                 receiving.getDel()
         );
         receivingRepository.save(receivingEntity);

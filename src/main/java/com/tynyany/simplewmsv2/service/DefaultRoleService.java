@@ -29,8 +29,7 @@ public class DefaultRoleService implements RoleService{
             roles.add(new Role(
                     roleEntity.getRoleID(),
                     roleEntity.getRoleName(),
-                    roleEntity.getNote(),
-                    roleEntity.getDel()
+                    roleEntity.getNote()
             ));
         }
         return roles;
@@ -41,8 +40,7 @@ public class DefaultRoleService implements RoleService{
         RoleEntity roleEntity  = new RoleEntity(
                 0,
                 role.getName(),
-                role.getNote(),
-                role.getDel()
+                role.getNote()
         );
         roleRepository.save(roleEntity);
     }

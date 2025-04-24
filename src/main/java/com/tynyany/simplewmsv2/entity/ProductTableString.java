@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductTableString extends Product{
     String supplierName;
-    String unitOfMeasure;
     String categoryName; //категория товара
     String abcCode;
 }

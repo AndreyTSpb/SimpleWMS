@@ -1,7 +1,6 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ProductRepository;
-import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.dao.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
@@ -42,6 +41,8 @@ public class ReceivingController {
         model.addAttribute("title", "Страница со списком всех приходов товаров");
         model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("receivingList", arrayReceivingList());
+        model.addAttribute("headerList", PickingRouteController.listHeader());
+        model.addAttribute("stringList", PickingRouteController.stringsListPicking());
         return "receiving_list";
     }
 
@@ -101,20 +102,31 @@ public class ReceivingController {
         List<Employee> employees = employeeService.getAllEmployee();
 
         Receiving receiving = receivingList()[orderID]; //Одну выбрали приходную накладную
-        ReceivingStatus receivingStatus = receivingStatuses()[receiving.getReceivingStatusID()];
-        Supplier supplier = SuppliersController.supplierList()[receiving.getReceivingStatusID()];
+        Supplier supplier = SuppliersController.supplierList()[receiving.getStatusID()];
 
-        Employee employee = employees.get(receiving.getEmployeeID());
+        //Новый приход без сотрудника
+        Employee employee;
+        if(receiving.getEmployeeID() > 0) {
+            employee = employees.get(receiving.getEmployeeID());
+        }else{
+            employee = new Employee(
+                    0,
+                    "",
+                    "",
+                    0,
+                    0
+            );
+        }
 
         HashMap<String, String> orderHead = new HashMap<>();
         orderHead.put("orderId", Integer.toString(orderID));
         orderHead.put("orderERP", receiving.getDocumentNumber());
-        orderHead.put("status", receivingStatus.getReceivingStatus());
+        orderHead.put("status", "Создан");
         orderHead.put("supplierName", supplier.getSupplierName());
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("employeeTabNum", employee.getTabNum());
         orderHead.put("employeeName", employee.getEmployeeName());
-        orderHead.put("employeeRole", roles.get(employee.getRoleID()).getName());
+        orderHead.put("employeeRole", (employee.getRoleID() > 0) ? roles.get(employee.getRoleID()).getName() : "");
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
         orderHead.put("factOrderDate", String.valueOf(receiving.getGetReceivingDate()));
         return orderHead;
@@ -161,9 +173,10 @@ public class ReceivingController {
     }
 
     public static Receiving[] receivingList(){
-        Receiving[] receivings = new Receiving[1];
+        Receiving[] receivings = new Receiving[2];
 
-        receivings[0] = new Receiving(1, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, false);
+        receivings[0] = new Receiving(0, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, 1, false);
+        receivings[1] = new Receiving(1, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, 1, false);
 
         return receivings;
     }
@@ -178,12 +191,12 @@ public class ReceivingController {
         return  receivingLines;
     }
 
-    public static ReceivingStatus[] receivingStatuses(){
-        ReceivingStatus[] receivingStatuses = new ReceivingStatus[5];
-        receivingStatuses[0] = new ReceivingStatus(0, "В ожидании");
-        receivingStatuses[1] = new ReceivingStatus(1, "В процессе");
-        receivingStatuses[2] = new ReceivingStatus(2, "Завершена");
-        receivingStatuses[3] = new ReceivingStatus(3, "Отменена");
+    public static Status[] receivingStatuses(){
+        Status[] receivingStatuses = new Status[5];
+        receivingStatuses[0] = new Status(0, "В ожидании");
+        receivingStatuses[1] = new Status(1, "В процессе");
+        receivingStatuses[2] = new Status(2, "Завершена");
+        receivingStatuses[3] = new Status(3, "Отменена");
         return receivingStatuses;
     }
 

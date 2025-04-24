@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
@@ -123,7 +121,7 @@ public class RestApiController {
                 receivingJSONS.header.orderERP,
                 0,
                 0,
-                false
+                1, false
         ));
 
         //идентификатор новой записи - НЕПРАВИЛЬНО ТАК НЕЛЬЗЯ
@@ -174,42 +172,44 @@ public class RestApiController {
     @ResponseBody
     public HashMap<String, Object> getJson(){
         HashMap<String, Object> arr = new HashMap<>();
-        arr.put("header", orderHead(3));
-        arr.put("body", orderLine(3));
+//        arr.put("header", orderHead(3));
+//        arr.put("body", orderLine(3));
+        arr.put("header", "header");
+        arr.put("body", "body");
         return arr;
     }
 
-    private List<HashMap<String, String>> orderLine(int orderId){
-        List<HashMap<String, String>> arr = new ArrayList<>();
-        for(ReceivingLine item : receivingLinesList()){
-            HashMap<String, String> strArr = new HashMap<>();
-
-            Product product = ProductsController.producstList()[item.getProductID()]; //Данные по продукту
-
-            int qntOrder = item.getQuantityProduct();
-            int qntFact = item.getQuantityReceived();
-            float weightOrder = product.getWeight()*qntOrder;
-            float volumeOrder = product.getVolume()*qntOrder;
-
-
-
-            strArr.put("name", ProductsController.producstList()[item.getProductID()].getProductName());
-            strArr.put("code", ProductsController.producstList()[item.getProductID()].getProductCode());
-            strArr.put("ext_barcode", ProductsController.producstList()[item.getProductID()].getExtBarcode());
-            strArr.put("int_barcode", ProductsController.producstList()[item.getProductID()].getIntBarcode());
-            strArr.put("qnt", String.valueOf(qntOrder));
-            strArr.put("weight", String.valueOf(Math.floor(weightOrder)));
-            strArr.put("volume", String.valueOf(Math.floor(volumeOrder)));
-
-            arr.add(strArr);
-        }
-        return  arr;
-    }
+//    private List<HashMap<String, String>> orderLine(int orderId){
+//        List<HashMap<String, String>> arr = new ArrayList<>();
+//        for(ReceivingLine item : receivingLinesList()){
+//            HashMap<String, String> strArr = new HashMap<>();
+//
+//            Product product = ProductsController.producstList()[item.getProductID()]; //Данные по продукту
+//
+//            int qntOrder = item.getQuantityProduct();
+//            int qntFact = item.getQuantityReceived();
+//            float weightOrder = product.getWeight()*qntOrder;
+//            float volumeOrder = product.getVolume()*qntOrder;
+//
+//
+//
+//            strArr.put("name", ProductsController.producstList()[item.getProductID()].getProductName());
+//            strArr.put("code", ProductsController.producstList()[item.getProductID()].getProductCode());
+//            strArr.put("ext_barcode", ProductsController.producstList()[item.getProductID()].getExtBarcode());
+//            strArr.put("int_barcode", ProductsController.producstList()[item.getProductID()].getIntBarcode());
+//            strArr.put("qnt", String.valueOf(qntOrder));
+//            strArr.put("weight", String.valueOf(Math.floor(weightOrder)));
+//            strArr.put("volume", String.valueOf(Math.floor(volumeOrder)));
+//
+//            arr.add(strArr);
+//        }
+//        return  arr;
+//    }
 
     private  HashMap<String, String> orderHead(int orderID){
         Receiving receiving = receivingList()[orderID]; //Одну выбрали приходную накладную
-        ReceivingStatus receivingStatus = receivingStatuses()[receiving.getReceivingStatusID()];
-        Supplier supplier = SuppliersController.supplierList()[receiving.getReceivingStatusID()];
+        Status receivingStatus = receivingStatuses()[receiving.getStatusID()];
+        Supplier supplier = SuppliersController.supplierList()[receiving.getStatusID()];
 
         Employee employee = employeeService.getAllEmployee().get(receiving.getEmployeeID());
 
@@ -278,11 +278,9 @@ public class RestApiController {
                         productERP.getVolume(),
                         category.getCategoryID(),
                         abc.getAbcID(),
-                        0,
                         false,
                         false,
                         supplierId,
-                        0,
                         productERP.getExtBarcode(),
                         productERP.getIntBarcode()
 

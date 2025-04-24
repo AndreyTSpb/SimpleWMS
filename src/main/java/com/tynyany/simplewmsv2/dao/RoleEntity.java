@@ -16,5 +16,4 @@ public class RoleEntity {
     private int roleID;
     private String roleName;
     private String note;
-    private int del;
 }
