@@ -347,6 +347,10 @@ public class RestApiController {
         return new ResponseJson(1, "Good1");
     }
 
+    /**
+     * Справочник ролей заполняем ( по факту может лучще отдельный список и все)
+     * @return
+     */
     @RequestMapping(value="/add_roles", method= RequestMethod.GET)
     @ResponseBody
     public ResponseJson addRoles(){
