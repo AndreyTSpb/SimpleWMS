@@ -85,7 +85,7 @@ public class ReceivingController {
 
 
         List<Receiving> receivings = receivingService.getAll();
-        System.out.println(receivings);
+        System.out.println(receivingService.getByID(1));
 
         List<HashMap<String, String>> arr = new ArrayList<>();
 

@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="content">
+
+    <!-- Global js mandatory -->
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
+    <!-- Global js ends -->
+
+    <!-- Vendor or 3rd party js -->
+
+    <!-- date range picker -->
+    <script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
+    <script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
+
+
+    <!-- Vendor or 3rd party js ends -->
+
+    <!-- Customized template js mandatory -->
+    <script th:src="@{/js/main.js}"></script>
+    <!-- Customized template js ends -->
+
+    <!-- theme picker -->
+    <script th:src="@{/js/style-picker.js}"></script>
+    <!-- theme picker ends -->
+
+    <!-- Generator BAR-code -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+
+</body>
+</html>
