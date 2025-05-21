@@ -158,7 +158,7 @@ public class ReceivingController {
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("employeeTabNum", employee.getTabNum());
         orderHead.put("employeeName", employee.getEmployeeName());
-        orderHead.put("employeeRole", (employee.getRoleID() > 0) ? roles.get(employee.getRoleID()).getName() : "");
+        orderHead.put("employeeRole", (employee.getRoleID() > 0) ? roles.get(employee.getRoleID()).getRoleName() : "");
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
         orderHead.put("factOrderDate", String.valueOf(receiving.getGetReceivingDate()));
         return orderHead;

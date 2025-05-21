@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
+import static com.tynyany.simplewmsv2.controller.RolesController.RoleList;
 
 @Controller
 @RequestMapping(path = "/api", produces="application/json")
@@ -42,6 +43,8 @@ public class RestApiController {
     private final ReceivingService receivingService;
     private final ReceivingLineRepository receivingLineRepository;
     private final ReceivingLineService receivingLineService;
+
+    private final RoleService roleService;
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody
@@ -342,6 +345,19 @@ public class RestApiController {
         }
 
         return new ResponseJson(1, "Good1");
+    }
+
+    @RequestMapping(value="/add_roles", method= RequestMethod.GET)
+    @ResponseBody
+    public ResponseJson addRoles(){
+
+        for(Role role : RoleList()){
+            if(role != null){
+                System.out.println(role);
+                roleService.addRole(role);
+            }
+        }
+        return new ResponseJson(1, "Обновлен справочник ролей");
     }
 
 

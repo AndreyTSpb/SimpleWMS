@@ -5,13 +5,13 @@ import lombok.Value;
 @Value
 public class Role {
     int roleID;
-    String name;
+    String roleName;
     String note;
 
 
     public Role(int i, String name, String note) {
         this.roleID = i;
-        this.name = name;
+        this.roleName = name;
         this.note = note;
     }
 }
