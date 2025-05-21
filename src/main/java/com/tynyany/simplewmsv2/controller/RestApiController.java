@@ -104,7 +104,7 @@ public class RestApiController {
         ReceivingJSON receivingJSONS = objectMapper.readValue(json, ReceivingJSON.class);
 
 
-        System.out.println(receivingJSONS.header.orderERP);
+        System.out.println(receivingJSONS);
         /*
          * "header": {
          *         "orderERP": "З30016546",

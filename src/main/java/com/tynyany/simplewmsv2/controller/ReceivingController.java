@@ -5,6 +5,7 @@ import com.tynyany.simplewmsv2.dao.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.dao.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.EmployeeService;
+import com.tynyany.simplewmsv2.service.ReceivingService;
 import com.tynyany.simplewmsv2.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +26,12 @@ public class ReceivingController {
 
     private final RoleService roleService;
     private final EmployeeService employeeService;
+    private final ReceivingService receivingService;
 
     private final ProductRepository productRepository;
     private final ReceivingLineRepository receivingLineRepository;
     private final ReceivingRepository receivingRepository;
+
 
     final String baseUrl = "receiving";
 
@@ -77,26 +81,54 @@ public class ReceivingController {
         return itog;
     }
 
-    private static List<HashMap<String, String>> arrayReceivingList(){
+    private  List<HashMap<String, String>> arrayReceivingList(){
 
 
-        HashMap<String, String> row = new HashMap<>();
-        row.put("ID", Integer.toString(1));
-        row.put("dtWaiting", "2025-02-27 08:30");
-        row.put("dtReal", "");
-        row.put("numOrder", "З30016546");
-        row.put("employee", "");
-        row.put("sumWeight", "1500");
-        row.put("sumVolume", "5");
-        row.put("qntRow", "3");
-        row.put("status", "Ожидает");
+        List<Receiving> receivings = receivingService.getAll();
+        System.out.println(receivings);
 
         List<HashMap<String, String>> arr = new ArrayList<>();
-        arr.add(0,row);
+
+        Status[] statuses = receivingStatuses();
+
+        int kol = 1;
+        if (receivings != null ){
+            for(Receiving item : receivings){
+                HashMap<String, String> row = new HashMap<>();
+                row.put("ID", Integer.toString(item.getReceivingID()));
+                row.put("dtWaiting", new SimpleDateFormat("yyyyMMdd").format(item.getReceivingDate()));
+                row.put("dtReal", new SimpleDateFormat("yyyyMMdd").format(item.getGetReceivingDate()));
+                row.put("numOrder", item.getDocumentNumber());
+                row.put("employee", Integer.toString(item.getEmployeeID()));
+                row.put("sumWeight", "0");
+                row.put("sumVolume", "0");
+                row.put("qntRow", "0");
+                row.put("status", statuses[item.getStatusID()].getName());
+
+                arr.add(kol++, row);
+            }
+        }else{
+            //Нет записей
+            HashMap<String, String> row = new HashMap<>();
+            row.put("ID", Integer.toString(0));
+            row.put("dtWaiting", "ничего нет");
+            row.put("dtReal", "ничего нет");
+            row.put("numOrder", "ничего нет");
+            row.put("employee", "ничего нет");
+            row.put("sumWeight", "ничего нет");
+            row.put("sumVolume", "ничего нет");
+            row.put("qntRow", "ничего нет");
+            row.put("status", "ничего нет");
+
+            arr.add(0,row);
+        }
+
 
         return arr;
     }
 
+
+    //пример
     private  HashMap<String, String> orderHead(int orderID){
         List<Role> roles = roleService.getAllRole();
         List<Employee> employees = employeeService.getAllEmployee();
