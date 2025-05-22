@@ -55,26 +55,26 @@
                         <tr>
                             <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
                             <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                            <td th:text="${employee.employeeID}">0001</td>
+                            <td th:text="${employee.getEmployeeID()}">0001</td>
                             <td>
                                 <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                                <p class="mb-0 template-inverse" th:text="${employee.employeeName}">this name</p>
+                                <p class="mb-0 template-inverse" th:text="${employee.getEployeeName()}">this name</p>
                                 <div class="media">
                                     <figure class="mb-0 avatar avatar-40 mr-2">
                                         <img th:src="@{img/user3.png}" alt="">
                                     </figure>
                                     <div class="media-body">
-                                        <p class="mb-0 template-inverse" th:text="${employee.employeeName}">this name</p>
-                                        <p class="text-template-primary-light" th:text="${rolesList[employee.roleID].roleName}">IT-Отдел</p>
+                                        <p class="mb-0 template-inverse" th:text="${employee.getEployeeName()}">this name</p>
+                                        <p class="text-template-primary-light" th:text="${employee.getRoleName()}">IT-Отдел</p>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${rolesList[employee.roleID].roleName}">this login</p>
+                                <p class="mb-0 template-inverse" th:text="${employee.getRoleName()}">this login</p>
                             </td>
                             <td>
-                                <span th:if="${employee.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
-                                <span th:if="${employee.del == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
+                                <span th:if="${employee.getDel() == false}"><div class="btn-success btn btn-sm">Активен</div></span>
+                                <span th:if="${employee.getDel() == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
 
                             </td>
                             <td>
@@ -108,12 +108,12 @@
 
 <!-- Модалки для редактирования строк -->
 <span th:each="employee, iterStat : ${employeesList}">
-    <!-- Modal -->
+    <!-- Modal View-->
     <div class="modal fade" th:id="'viewModal_id_'+${employee.employeeID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${employee.employeeID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'viewModalLabel'+${employee.employeeID}" th:text="'Сотрудник:' + ${employee.employeeName}">Сотрудник: Название роли</h5>
+                    <h5 class="modal-title" th:id="'viewModalLabel'+${employee.employeeID}" th:text="'Сотрудник:' + ${employee.getEployeeName()}">Сотрудник: Название</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -121,15 +121,15 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Табельный номер</label>
-                        <input type="text" class="form-control form-control-lg" name="tabNum" th:value="${employee.tabNum}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="tabNum" th:value="${employee.getTabNum()}" readonly>
                     </div>
                     <div class="form-group">
                         <label>Сотрудник</label>
-                        <input type="text" class="form-control form-control-lg" name="employeeName" th:value="${employee.employeeName}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="employeeName" th:value="${employee.getEployeeName()}" readonly>
                     </div>
                     <div class="form-group">
                         <label>Роль</label>
-                        <input type="text" class="form-control form-control-lg" name="roleName" th:value="${rolesList[employee.roleID].roleName}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="roleName" th:value="${employee.getRoleName()}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -143,7 +143,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${employee.employeeID}" th:text="'Редактируем сотрудника:' + ${employee.employeeName}">Редактируем сотрудника: Название пользователя</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${employee.employeeID}" th:text="'Редактируем сотрудника:' + ${employee.getEployeeName()}">Редактируем сотрудника: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -153,18 +153,18 @@
                         <input type="hidden" name="employeeId" th:value="${employee.employeeID}">
                         <div class="form-group">
                         <label>Табельный номер</label>
-                            <input type="text" class="form-control form-control-lg" name="tabNum" th:value="${employee.tabNum}" readonly>
+                            <input type="text" class="form-control form-control-lg" name="tabNum" th:value="${employee.getTabNum()}" readonly>
                         </div>
                         <div class="form-group" >
                                 <label>Фамилия</label>
-                                <input type="text" class="form-control form-control-lg" name="LastName" th:value="${#strings.arraySplit(employee.employeeName, ' ')[0]}">
+                                <input type="text" class="form-control form-control-lg" name="LastName" th:value="${employee.getLastName()}">
                                 <label>Имя</label>
-                                <input type="text" class="form-control form-control-lg" name="Name" th:value="${#strings.arraySplit(employee.employeeName, ' ')[1]}">
+                                <input type="text" class="form-control form-control-lg" name="Name" th:value="${employee.getFirstName()}">
                         </div>
                         <div class="form-group">
                                 <label>Роль</label>
                                 <select class="form-control form-control-lg" name="roleName">
-                                    <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.roleName}" th:selected="${role.roleID==employee.roleID}"></option>
+                                    <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.roleName}" th:selected="${role.roleID==employee.getRoleID()}"></option>
                                 </select>
                         </div>
                     </form>
@@ -181,7 +181,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'delModalLabel'+${employee.employeeID}" th:text="'Удалить сотрудника:' + ${employee.employeeName}">Удалить сотрудника: Название роли</h5>
+                    <h5 class="modal-title" th:id="'delModalLabel'+${employee.employeeID}" th:text="'Удалить сотрудника:' + ${employee.getEployeeName()}">Удалить сотрудника: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -215,6 +215,8 @@
                     <div class="form-group">
                         <label>Табельный номер</label>
                         <input type="text" class="form-control form-control-lg" name="tabNum" value="">
+                        <input type="text" class="form-control form-control-lg" name="employeeID" value="0">
+                        <input type="text" class="form-control form-control-lg" name="del" value="0">
                     </div>
                     <div class="form-group" >
                         <label>Фамилия</label>
@@ -224,7 +226,7 @@
                     </div>
                     <div class="form-group">
                         <label>Роль</label>
-                        <select class="form-control form-control-lg" name="roleName">
+                        <select class="form-control form-control-lg" name="roleID">
                             <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.roleName}"></option>
                         </select>
                     </div>
