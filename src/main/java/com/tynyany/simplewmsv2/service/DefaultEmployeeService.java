@@ -2,8 +2,11 @@ package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.EmployeeEntity;
 import com.tynyany.simplewmsv2.dao.EmployeeRepository;
+import com.tynyany.simplewmsv2.dao.UserEntity;
+import com.tynyany.simplewmsv2.dao.UserRepository;
 import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.Role;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +21,15 @@ public class DefaultEmployeeService implements EmployeeService{
 
     @Override
     public Employee getEmployeeByID(int employeeID) {
-        return null;
+        EmployeeEntity employeeEntity = employeeRepository.findById(employeeID)
+                .orElseThrow(() -> new UserNotFoundException("Employee not found:id =" +employeeID));
+        return new Employee(
+                employeeEntity.getEmployeeID(),
+                employeeEntity.getEmployeeName(),
+                employeeEntity.getTabNum(),
+                employeeEntity.getRoleID(),
+                employeeEntity.getDel()
+        );
     }
 
     @Override
@@ -55,11 +66,25 @@ public class DefaultEmployeeService implements EmployeeService{
 
     @Override
     public void updateEmployee(Employee employee) {
-
+        EmployeeEntity employeeEntity = new EmployeeEntity(
+                employee.getEmployeeID(),
+                employee.getEmployeeName(),
+                employee.getTabNum(),
+                employee.getDel(),
+                employee.getRoleID()
+        );
+        employeeRepository.save(employeeEntity);
     }
 
     @Override
     public void delEmployee(Employee employee) {
-
+        EmployeeEntity employeeEntity = new EmployeeEntity(
+                employee.getEmployeeID(),
+                employee.getEmployeeName(),
+                employee.getTabNum(),
+                1,
+                employee.getRoleID()
+        );
+        employeeRepository.save(employeeEntity);
     }
 }

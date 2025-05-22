@@ -40,8 +40,7 @@ public class EmployeesController {
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addEmployee(@ModelAttribute FormData formData) {
-        formData.print();
-        employeeService.addEmployee(new Employee(
+       employeeService.addEmployee(new Employee(
                 formData.employeeID,
                 formData.name + " " + formData.lastName,
                 formData.tabNum,
@@ -52,15 +51,23 @@ public class EmployeesController {
     }
 
     @RequestMapping("/update")
-    public String updateEmployee(@ModelAttribute Employee employee) {
-        if(!employeeRepository.existsById(employee.getEmployeeID()))
-            throw new UserNotFoundException("Employee not found: id = " + employee.getEmployeeID());
-        employeeService.addEmployee(employee);
+    public String updateEmployee(@ModelAttribute FormData formData) {
+        if(!employeeRepository.existsById(formData.employeeID))
+            throw new UserNotFoundException("Employee not found: id = " + formData.employeeID);
+
+        employeeService.updateEmployee(new Employee(
+                formData.employeeID,
+                formData.name + " " + formData.lastName,
+                formData.tabNum,
+                formData.roleID,
+                formData.del
+        ));
         return "redirect:/" + baseUrl;
     }
 
     @RequestMapping("/del")
-    public String delEmployee(@RequestParam(value = "employeeId", required = true) int employeeId) {
+    public String delEmployee(@RequestParam(value = "employeeID", required = true) int employeeId) {
+        System.out.println(employeeId);
         if(!employeeRepository.existsById(employeeId))
             throw new UserNotFoundException("Employee not found: id = " + employeeId);
 
@@ -103,7 +110,7 @@ public class EmployeesController {
         private int employeeID;
         private String eployeeName;
         private String roleName;
-        private Boolean del;
+        private int del;
         private String firstName;
         private String lastName;
         private String tabNum;
@@ -114,7 +121,7 @@ public class EmployeesController {
             this.employeeID = employeeID;
             this.eployeeName = eployeeName;
             this.roleName = roleName;
-            this.del = (del == 1) ? false : true;
+            this.del = del;
 
             //если делать выборку аяксом это не нужно
             //разбиваем на имя и фамилию через пробел
