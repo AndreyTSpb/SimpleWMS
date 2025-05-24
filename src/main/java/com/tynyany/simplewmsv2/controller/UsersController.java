@@ -5,6 +5,7 @@ import com.tynyany.simplewmsv2.dao.UserRepository;
 import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.Role;
 import com.tynyany.simplewmsv2.entity.User;
+import com.tynyany.simplewmsv2.entity.UserString;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.service.EmployeeService;
 import com.tynyany.simplewmsv2.service.RoleService;
@@ -33,38 +34,25 @@ public class UsersController {
     public String index(Model model) {
 
 
-        List<User> user_list = userService.getAllUser();
+        List<UserString> user_list = userService.getAllUserString();
 
         List<Employee> employees = employeeService.getAllEmployee();
-        /*
-         * [
-         * Employee(employeeID=1, employeeName=Тыняный Андрей, tabNum=00001, del=1, roleID=7),
-         * Employee(employeeID=2, employeeName=Тыняный Андрей, tabNum=00001, del=0, roleID=7),
-         * Employee(employeeID=3, employeeName=Шароватов Станислав, tabNum=00002, del=0, roleID=6),
-         * Employee(employeeID=4, employeeName=Рыкалина Елена, tabNum=00003, del=0, roleID=3),
-         * Employee(employeeID=5, employeeName=Петрова Надежда, tabNum=00004, del=0, roleID=4),
-         * Employee(employeeID=6, employeeName=Телепнев Николай, tabNum=00005, del=0, roleID=2),
-         * Employee(employeeID=7, employeeName=Мулянов Андрей, tabNum=00006, del=0, roleID=2),
-         * Employee(employeeID=8, employeeName=Путинцев Михаил, tabNum=00007, del=0, roleID=1),
-         * Employee(employeeID=9, employeeName=Волошинв Галина, tabNum=00008, del=0, roleID=5),
-         * Employee(employeeID=10, employeeName=Осипова Светлана, tabNum=00009, del=0, roleID=1),
-         * Employee(employeeID=11, employeeName=Бондоренко Сергей, tabNum=05103, del=0, roleID=2)
-         * ]
-         */
 
         List<Role> roles = roleService.getAllRole();
 
-         HashMap<Integer, Employee> aas = arrayEmployee(employees);
+        HashMap<Integer, Employee> aas = arrayEmployee(employees);
         System.out.println(aas);
-         for (User user : user_list) {
-             System.out.println(user.getUserID());
-             System.out.println(aas.get(user.getEmployeeID()).getEmployeeID());
-         }
+
+        for (UserString user : user_list) {
+         System.out.println(user.getUserID());
+         System.out.println(aas.get(user.getEmployeeID()).getEmployeeID());
+        }
 
         model.addAttribute("title", "Список пользователей");
         model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("userList", user_list);
         model.addAttribute("employeeList", aas);
+        model.addAttribute("employeeList1", employees);
         model.addAttribute("roleList", roles);
         model.addAttribute("user", new UserEntity());
 
@@ -90,7 +78,7 @@ public class UsersController {
     @PostMapping("/add")
     public String addUser(@ModelAttribute User user) {
         userService.addUser(user);
-        return "redirect:/"+baseUrl;
+        return "redirect:/" + baseUrl;
     }
 
     @PostMapping("/update")

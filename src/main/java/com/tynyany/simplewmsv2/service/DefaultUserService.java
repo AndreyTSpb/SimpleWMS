@@ -1,8 +1,9 @@
 package com.tynyany.simplewmsv2.service;
 
-import com.tynyany.simplewmsv2.dao.UserEntity;
-import com.tynyany.simplewmsv2.dao.UserRepository;
+import com.tynyany.simplewmsv2.dao.*;
+import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.User;
+import com.tynyany.simplewmsv2.entity.UserString;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultUserService implements UserService{
     final UserRepository userRepository;
+    final EmployeeRepository employeeRepository;
+    private final RoleRepository roleRepository;
 
 
     @Override
     public User getUserByID(int userId) {
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found:id =" +userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found:id =" + userId));
         return new User(
                 userEntity.getUserID(),
                 userEntity.getLogin(),
@@ -32,7 +35,6 @@ public class DefaultUserService implements UserService{
     @Override
     public List<User> getAllUser() {
         Iterable<UserEntity> iterable = userRepository.findAll();
-
         ArrayList<User> users = new ArrayList<>();
         for(UserEntity userEntity : iterable){
             users.add(new User(
@@ -43,6 +45,42 @@ public class DefaultUserService implements UserService{
                     userEntity.getEmployeeID()
                     )
             );
+        }
+        return users;
+    }
+
+    //
+    public List<UserString> getAllUserString() {
+        Iterable<UserEntity> iterable = userRepository.findAll();
+        ArrayList<UserString> users = new ArrayList<>();
+        for(UserEntity userEntity : iterable){
+
+            //через айди получаем фио сотрудника привязанного
+           int employeeID = userEntity.getEmployeeID();
+           int roleId = 0;
+           String employeeName = "";
+           String roleName = "";
+           if(employeeID != 0){
+               EmployeeEntity employee = employeeRepository.findById(employeeID)
+                       .orElseThrow(() -> new UserNotFoundException("Employee not found:id = " + employeeID));
+               employeeName = employee.getEmployeeName();
+               if(employee.getRoleID() != 0){
+                   roleId = employee.getRoleID();
+                   RoleEntity roleEntity = roleRepository.findById(roleId)
+                           .orElseThrow(() -> new UserNotFoundException("Role not found:id = " + employee.getRoleID()));
+                   roleName = roleEntity.getRoleName();
+               }
+           }
+
+            users.add(new UserString(
+                    userEntity.getUserID(),
+                    userEntity.getLogin(),
+                    userEntity.getDel(),
+                    employeeID,
+                    employeeName,
+                    roleId,
+                    roleName
+            ));
         }
         return users;
     }

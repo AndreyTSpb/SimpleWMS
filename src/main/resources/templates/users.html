@@ -28,7 +28,7 @@
                 <div class="card-header border-0 bg-none">
                     <div class="row">
                         <div class="col-12 col-md">
-                            <p class="fs15">Список автаризованных пользователей</p>
+                            <p class="fs15">Список пользователей</p>
                         </div>
                         <div class="col-auto align-self-center">
                             <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
@@ -59,8 +59,8 @@
                             <!-- Role(id=0, name=Доступ запрещен, del=0) -->
                             <td th:text="${user.userID}">0001</td>
                             <td>
-                                <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                                <p class="mb-0 template-inverse" th:text="${employeeList.get(user.getEmployeeID()).getEmployeeName()}">this name</p>
+                                <!-- UserString(userID=1, login=tynyanyi@mail.ru, del=false, employeeID=1, employeeName=Андрей Тыняный, roleID=2, roleName=Комплектовщик) -->
+                                <p class="mb-0 template-inverse" th:text="${user.employeeName}">this name</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${user.login}">this login</p>
@@ -71,7 +71,7 @@
 
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${roleList[employeeList.get(user.getEmployeeID()).roleID].name}">this role</p>
+                                <p class="mb-0 template-inverse" th:text="${user.roleName}">this role</p>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -104,216 +104,6 @@
 </div>
 <!-- wrapper ends -->
 
-<!-- Modal -->
-<div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content shadow-lg-dark overflow-hidden">
-            <button type="button" class="closePersonalize" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-            <div class="modal-body">
-                <div class="background h-320">
-                    <img th:src="@{/img/background-part.png}" alt="">
-                </div>
-                <div class="text-center pb-5">
-                    <h1 class="mt-3 mb-0 text-white">Personalize</h1>
-                    <h4 class="mb-5 text-white font-weight-light">Make it more like yours</h4>
-                </div>
-
-                <div class="row top-60">
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons text-template-primary my-3">format_shapes</i>
-                                <h6 class="mb-3">Font Size</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                XS
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="xsmallfs">
-                                                    <label class="custom-control-label" for="xsmallfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                S
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="smallfs" checked>
-                                                    <label class="custom-control-label" for="smallfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                M
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="mediumfs">
-                                                    <label class="custom-control-label" for="mediumfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                L
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="largefs">
-                                                    <label class="custom-control-label" for="largefs"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-warning text-warning my-3">style</i>
-                                <h6 class="mb-3">Sidebar</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Normal
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarfull" checked>
-                                                    <label class="custom-control-label" for="sidebarfull"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Compact
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarCompact">
-                                                    <label class="custom-control-label" for="sidebarCompact"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Iconic
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarIconic">
-                                                    <label class="custom-control-label" for="sidebarIconic"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fill Color
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="sidebarFill">
-                                                    <label class="custom-control-label" for="sidebarFill"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-danger text-danger my-3">menu</i>
-                                <h6 class="mb-3">Header</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Fixed Top
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headerfixed">
-                                                    <label class="custom-control-label" for="headerfixed"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fixed Width
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headercontainer">
-                                                    <label class="custom-control-label" for="headercontainer"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fill Color
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headerfillcolor">
-                                                    <label class="custom-control-label" for="headerfillcolor"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-success text-success my-3">subtitles</i>
-                                <h6 class="mb-3">Content</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Square
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="wrapperCorner">
-                                                    <label class="custom-control-label" for="wrapperCorner"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Full Width
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="contentWidth">
-                                                    <label class="custom-control-label" for="contentWidth"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Spacious
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="moderntouch">
-                                                    <label class="custom-control-label" for="moderntouch"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fullscreen
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="fullscreen">
-                                                    <label class="custom-control-label" for="fullscreen"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <div class="row w-100 mx-0">
-                    <div class="col-12 col-md-6 text-center">
-                        <h6><i class="material-icons vm mr-1">brightness_2</i> Dark</h6>
-                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-dark'></div>
-                    </div>
-                    <div class="col-12 col-md-6 text-center">
-                        <h6><i class="material-icons vm mr-1">brightness_7</i> Light</h6>
-                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-light'></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Модалки для редактирования строк -->
 <span th:each="user, iterStat : ${userList}">
     <!-- Modal -->
@@ -321,7 +111,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Сотрудник:' + ${employeeList.get(user.employeeID).getEmployeeName()}">Сотрудник: Название роли</h5>
+                    <h5 class="modal-title" th:id="'viewModalLabel'+${user.userID}" th:text="'Пользователь:' + ${user.employeeName}">Пользователь: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -333,11 +123,11 @@
                     </div>
                     <div class="form-group">
                         <label>Сотрудник</label>
-                        <input type="text" class="form-control form-control-lg" name="EmployeeName" th:value="${employeeList.get(user.employeeID).getEmployeeName()}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="EmployeeName" th:value="${user.employeeName}" readonly>
                     </div>
                     <div class="form-group">
                         <label>Роль</label>
-                        <input type="text" class="form-control form-control-lg" name="RoleName" th:value="${roleList[employeeList.get(user.employeeID).roleID].name}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="RoleName" th:value="${user.roleName}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -351,7 +141,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'delModalLabel'+${user.userID}" th:text="'Удалить роль:' + ${user.login}">Удалить роль: Название роли</h5>
+                    <h5 class="modal-title" th:id="'delModalLabel'+${user.userID}" th:text="'Удалить пользователя:' + ${user.login}">Удалить пользовтеля: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -370,53 +160,52 @@
     </div>
 </span>
 
-<span th:each="user1, iterStat : ${userList}">
-    <div class="modal fade" th:id="'editModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
+<span th:each="user, iterStat : ${userList}">
+    <div class="modal fade" th:id="'editModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Редактируем пользователя:' + ${employeeList.get(user1.employeeID).employeeName}">Редактируем пользователя: Название пользователя</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${user.userID}" th:text="'Редактируем пользователя:' + ${user.employeeName}">Редактируем пользователя: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${user1.userID}" th:action="@{${baseUrl}+'/update'}" th:object="${user1}" method="post">
-                        <input type="hidden" name="userID" th:value="${user1.userID}">
-                        <input type="hidden" name="del" th:value="${user1.del}">
-                        <input type="hidden" name="pass" th:value="${user1.pass}">
+                    <form th:id="'editForm_id_'+${user.userID}" th:action="@{${baseUrl}+'/update'}" th:object="${user}" method="post">
+                        <input type="hidden" name="userID" th:value="${user.userID}">
+                        <input type="hidden" name="del" th:value="${user.del}">
                         <div class="form-group">
                                 <label>Логин</label>
-                                <input type="text" class="form-control" name="login" th:value="${user1.login}">
+                                <input type="text" class="form-control" name="login" th:value="${user.login}">
                         </div>
                         <div class="form-group">
                                 <label>Сотрудник</label>
                                 <select class="form-control" name = "employeeID" >
-                                    <option th:each="key_employee : ${employeeList.keySet()}" th:value="${key_employee}" th:text="${employeeList.get(key_employee).getEmployeeName()}" th:selected="${key_employee == user1.employeeID}"></option>
+                                    <option th:each="employee : ${employeeList1}" th:value="${employee.employeeID}" th:text="${employee.employeeName}" th:selected="${employee.employeeID == user.employeeID}"></option>
                                 </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${user1.userID}">Сохранить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${user.userID}">Сохранить</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" th:id="'resetModal_id_'+${user1.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user1.userID}" aria-hidden="true">
+    <div class="modal fade" th:id="'resetModal_id_'+${user.userID}" tabindex="-1" role="dialog" th:aria-labelledby="'viewModal_id_'+${user.userID}" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${user1.userID}" th:text="'Сбросить пароль для:' + ${employeeList[user1.employeeID].employeeName}">Сбросить пароль для: Название роли</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${user.userID}" th:text="'Сбросить пароль для:' + ${user.employeeName}">Сбросить пароль для: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'resetForm_id_'+${user1.userID}" th:object="${user1}" th:action="@{${baseUrl}+'/new_pass'}">
-                        <input type="hidden" name="userID" th:value="${user1.userID}">
+                    <form th:id="'resetForm_id_'+${user.userID}" th:object="${user}" th:action="@{${baseUrl}+'/new_pass'}">
+                        <input type="hidden" name="userID" th:value="${user.userID}">
                         <div class="form-group">
                                 <label>Новый пароль</label>
                                 <input type="password" class="form-control form-control-lg" name="pass1" value="">
@@ -429,7 +218,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'resetForm_id_'+${user1.userID}">Сохранить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'resetForm_id_'+${user.userID}">Сохранить</button>
                 </div>
             </div>
         </div>
@@ -468,8 +257,8 @@
                                 <input type="hidden" th:field="*{del}" class="form-control" value="0">
                                 <div class="form-group">
                                     <label>Cвязь с сотрудником</label>
-                                    <select class="form-control" th:field="*{employeeID}">
-                                        <option th:each="employee : ${employeeList1}" th:value="${employee.employeeID}" th:text="${employee.employeeName}"></option>
+                                    <select class="form-control" name="employeeID">
+                                        <option th:each="employee : ${employeeList1}" th:value="${employee.getEmployeeID()}" th:text="${employee.getEmployeeName()}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -487,30 +276,7 @@
 
 
 
-<!-- Theme style picker modal window and options ends -->
-
-<!-- Global js mandatory -->
-<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
-<script th:src="@{/js/popper.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
-<!-- Global js ends -->
-
-<!-- Vendor or 3rd party js -->
-
-<!-- date range picker -->
-<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
-<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
-
-
-<!-- Vendor or 3rd party js ends -->
-
-<!-- Customized template js mandatory -->
-<script th:src="@{/js/main.js}"></script>
-<!-- Customized template js ends -->
-
-<!-- theme picker -->
-<script th:src="@{/js/style-picker.js}"></script>
-<!-- theme picker ends -->
+<div th:replace="~{scripts_connect :: content}"></div>
 
 <!-- Customized page level js -->
 <script>
