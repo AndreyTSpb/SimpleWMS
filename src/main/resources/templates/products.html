@@ -73,10 +73,10 @@
                                 <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Обьем(м^2)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${categoriesList.get(product.categoryID).getCategoryName}">Категория товара</p>
+                                <p class="mb-0 template-inverse" th:text="${product.categoryName}">Категория товара</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${abcList.get(product.abcID).getCode}">ABC</p>
+                                <p class="mb-0 template-inverse" th:text="${product.abcName}">ABC</p>
                             </td>
                             <td>
                                 <div class="dropdown">
@@ -86,6 +86,7 @@
                                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${product.productID}">Просмотр</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${product.productID}">Редактировать</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${product.productID}">Штрих-код</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${product.productID}">Удалить</a>
                                     </div>
                                 </div>
@@ -118,217 +119,6 @@
 </div>
 <!-- wrapper ends -->
 
-
-<!-- Modal -->
-<div class="modal fade" id="themepicker" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content shadow-lg-dark overflow-hidden">
-            <button type="button" class="closePersonalize" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-            <div class="modal-body">
-                <div class="background h-320">
-                    <img th:src="@{/img/background-part.png}" alt="">
-                </div>
-                <div class="text-center pb-5">
-                    <h1 class="mt-3 mb-0 text-white">Personalize</h1>
-                    <h4 class="mb-5 text-white font-weight-light">Make it more like yours</h4>
-                </div>
-
-                <div class="row top-60">
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons text-template-primary my-3">format_shapes</i>
-                                <h6 class="mb-3">Font Size</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                XS
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="xsmallfs">
-                                                    <label class="custom-control-label" for="xsmallfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                S
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="smallfs" checked>
-                                                    <label class="custom-control-label" for="smallfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                M
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="mediumfs">
-                                                    <label class="custom-control-label" for="mediumfs"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                L
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="fontsize" class="custom-control-input" id="largefs">
-                                                    <label class="custom-control-label" for="largefs"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-warning text-warning my-3">style</i>
-                                <h6 class="mb-3">Sidebar</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Normal
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarfull" checked>
-                                                    <label class="custom-control-label" for="sidebarfull"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Compact
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarCompact">
-                                                    <label class="custom-control-label" for="sidebarCompact"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Iconic
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="radio" name="sidebar" class="custom-control-input" id="sidebarIconic">
-                                                    <label class="custom-control-label" for="sidebarIconic"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fill Color
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="sidebarFill">
-                                                    <label class="custom-control-label" for="sidebarFill"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-danger text-danger my-3">menu</i>
-                                <h6 class="mb-3">Header</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Fixed Top
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headerfixed">
-                                                    <label class="custom-control-label" for="headerfixed"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fixed Width
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headercontainer">
-                                                    <label class="custom-control-label" for="headercontainer"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fill Color
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" class="custom-control-input" id="headerfillcolor">
-                                                    <label class="custom-control-label" for="headerfillcolor"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-4">
-                        <div class="card border-0 shadow bg-white h-100">
-                            <div class="card-body text-center">
-                                <i class="avatar avatar-60 md-36 material-icons bg-light-success text-success my-3">subtitles</i>
-                                <h6 class="mb-3">Content</h6>
-                                <div class="row">
-                                    <div class="col-12 px-0">
-                                        <ul class="list-group list-group-flush mb-0 text-left">
-                                            <li class="list-group-item">
-                                                Square
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="wrapperCorner">
-                                                    <label class="custom-control-label" for="wrapperCorner"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Full Width
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="contentWidth">
-                                                    <label class="custom-control-label" for="contentWidth"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Spacious
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="moderntouch">
-                                                    <label class="custom-control-label" for="moderntouch"></label>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                Fullscreen
-                                                <div class="custom-control custom-switch float-right">
-                                                    <input type="checkbox" name="sidebar" class="custom-control-input" id="fullscreen">
-                                                    <label class="custom-control-label" for="fullscreen"></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <div class="row w-100 mx-0">
-                    <div class="col-12 col-md-6 text-center">
-                        <h6><i class="material-icons vm mr-1">brightness_2</i> Dark</h6>
-                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-dark'></div>
-                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-dark'></div>
-                    </div>
-                    <div class="col-12 col-md-6 text-center">
-                        <h6><i class="material-icons vm mr-1">brightness_7</i> Light</h6>
-                        <div class="avatar mb-1 avatar-30 bg-dark style-picker" data-target='style-black-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-darkblue style-picker" data-target='style-darkblue-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-purple style-picker" data-target='style-purple-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-blue style-picker" data-target='style-blue-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-green style-picker" data-target='style-green-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-pista style-picker" data-target='style-pista-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-orange style-picker" data-target='style-orange-light'></div>
-                        <div class="avatar mb-1 avatar-30 bg-tomato style-picker" data-target='style-tomato-light'></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Модалки для редактирования строк -->
 <span th:each="product, iterStat : ${productsList}">
     <!-- Modal -->
@@ -354,20 +144,20 @@
                         <label>Координаты по горизонтали</label>
                         <input type="text" class="form-control form-control-lg" name="x" th:value="${product.productID}" readonly>
                         <label>Координаты по вертикали</label>
-                        <input type="text" class="form-control form-control-lg" name="y" th:value="${product.productID}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="y" th:value="${product.getProductID()}" readonly>
                         <label>Номер полки если место разделено на несколько</label>
-                        <input type="text" class="form-control form-control-lg" name="z" th:value="${product.productID}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="z" th:value="${product.getProductID()}" readonly>
                     </div>
                     <div class="form-group">
                         <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck2" th:checked="${product.del ? true: false}" readonly>
+                                <input type="checkbox" class="custom-control-input" id="customCheck2" th:checked="${product.getDel() ? true: false}" readonly>
                                 <label class="custom-control-label" for="customCheck2">Место доступно</label>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Тип места</label>
-                        <input type="text" class="form-control form-control-lg" name="row" th:value="${product.productID}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="row" th:value="${product.getProductID()}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -381,20 +171,20 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'editModalLabel'+${product.productID}" th:text="'Редактируем товар: ' + ${product.productName}">Редактируем товар: Название пользователя</h5>
+                    <h5 class="modal-title" th:id="'editModalLabel'+${product.getProductID()}" th:text="'Редактируем товар: ' + ${product.getProductName()}">Редактируем товар: Название пользователя</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${product.productID}" th:action="@{${baseUrl}+'/update'}">
-                        <input type="hidden" name="productId" th:value="${product.productID}">
+                    <form method="post" th:id="'editForm_id_'+${product.productID}" th:action="@{${baseUrl}+'/update'}">
+                        <input type="hidden" name="productID" th:value="${product.productID}">
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Категория ABC</label>
                                     <select class="form-control form-control-lg" name="abcID">
-                                        <option th:each="abcId : ${abcList.keySet()}" th:value="${abcID}" th:text="${abcList.get(abcId).getCode}" th:selected="${abcId==product.abcID}"></option>
+                                        <option th:each="abcItem : ${abcList}" th:value="${abcItem.getAbcID()}" th:text="${abcItem.getCode()}" th:selected="${abcItem.getAbcID() == product.abcID}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -402,7 +192,7 @@
                                 <div class="form-group">
                                     <label>Категория</label>
                                     <select class="form-control form-control-lg" name="categoryID">
-                                        <option th:each="categoryId : ${categoriesList.keySet()}" th:value="${categoryID}" th:text="${categoriesList.get(categoryId).getCategoryName}" th:selected="${categoryId==product.categoryID}"></option>
+                                        <option th:each="categoryItem : ${categoriesList}" th:value="${categoryItem.getCategoryID()}" th:text="${categoryItem.getCategoryName()}" th:selected="${categoryItem.getCategoryID() == product.getCategoryID()}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -410,31 +200,37 @@
 
                         <div class="form-group">
                             <label>Название</label>
-                            <textarea class="form-control"  name="name" rows="3" th:text="${product.productName}"></textarea>
+                            <textarea class="form-control"  name="productName" rows="3" th:text="${product.getProductName()}"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Описание</label>
-                            <textarea class="form-control"  name="description" rows="3" th:text="${product.description}"></textarea>
+                            <textarea class="form-control"  name="description" rows="3" th:text="${product.getDescription()}"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Поставщик</label>
                             <select class="form-control form-control-lg" name="supplierID">
-                                <option th:each="supplierID : ${supplierList.keySet()}" th:value="${supplierID}" th:text="${supplierList.get(supplierID).supplierName}" th:selected="${supplierID == product.supplierID}"></option>
+                                <option th:each="supplierItem : ${supplierList}" th:value="${supplierItem.getSupplierID()}" th:text="${supplierItem.getSupplierName()}" th:selected="${supplierItem.getSupplierID() == product.getSupplierID()}"></option>
                             </select>
                         </div>
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Код товара</label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${product.productCode}">
+                                    <input type="text" class="form-control form-control-lg" name="productCode" th:value="${product.getProductCode()}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label>Внутрений код</label>
+                                    <input type="text" class="form-control form-control-lg" name="intBarcode" th:value="${product.getIntBarcode()}">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Еденици измерения</label>
-                                    <select class="form-control form-control-lg" name="unitOfMeasureID">
-                                        <option th:each="unit : ${unitList}" th:value="${unit.unitOfMeasureID}" th:text="${unit.unitName}" th:selected="${unit.unitOfMeasureID==product.unitOfMeasureID}"></option>
-                                    </select>
+                                    <label>Внешний код</label>
+                                    <input type="text" class="form-control form-control-lg" name="extBarcode" th:value="${product.getExtBarcode()}">
                                 </div>
                             </div>
                         </div>
@@ -442,35 +238,35 @@
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Вес товара(кг)</label>
-                                    <input type="text" class="form-control form-control-lg" name="weight" th:value="${product.weight}">
+                                    <input type="text" class="form-control form-control-lg" name="weight" th:value="${#numbers.formatDecimal(product.getWeight(), 1, 6)}">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объем товара(м^2)</label>
-                                    <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
+                                    <label>Объем товара(м^3)</label>
+                                    <input type="text" class="form-control form-control-lg" name="volume" th:value="${#numbers.formatDecimal(product.getVolume(), 1, 6)}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label>Минимальный уровень запасов (для уведомлений)</label>
-                            <input type="text" class="form-control form-control-lg" name="minimumStockLevel" th:value="${product.minimumStockLevel}">
+                            <input type="text" class="form-control form-control-lg" name="minimumStockLevel" value="">
                         </div>
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" th:id="'chek_expirationDateRequired_'+${product.productID}" class="custom-control-input"  th:checked="${product.expirationDateRequired ? true: false}" >
-                                            <label class="custom-control-label" th:for="'chek_expirationDateRequired_'+${product.productID}">Требуется ли отслеживание срока годности?</label>
+                                            <input type="checkbox" name="expirationDateRequired" value = "1" th:id="'chek_expirationDateRequired_'+${product.getProductID()}" class="custom-control-input"  th:checked="${product.getExpirationDateRequired() ? true: false}" >
+                                            <label class="custom-control-label" th:for="'chek_expirationDateRequired_'+${product.getProductID()}">Требуется ли отслеживание срока годности?</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" th:id="'chek_del_'+${product.productID}"  th:checked="${product.del ? true: false}" >
-                                            <label class="custom-control-label" th:for="'chek_del_'+${product.productID}" >Не использоваить</label>
+                                            <input type="checkbox" name="del" value = "1" class="custom-control-input" th:id="'chek_del_'+${product.getProductID()}"  th:checked="${product.getDel() ? true: false}" >
+                                            <label class="custom-control-label" th:for="'chek_del_'+${product.getProductID()}" >Не использоваить</label>
                                     </div>
                                 </div>
                             </div>
@@ -479,29 +275,63 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${product.productID}">Сохранить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${product.getProductID()}">Сохранить</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" th:id="'delModal_id_'+${product.productID}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${product.productID}" aria-hidden="true">
+    <div class="modal fade" th:id="'delModal_id_'+${product.getProductID()}" tabindex="-1" role="dialog" th:aria-labelledby="'delModal_id_'+${product.getProductID()}" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-darkblue text-white">
                 <div class="modal-header">
-                    <h5 class="modal-title" th:id="'delModalLabel'+${product.productID}" th:text="'Удалить место хранения:' + ${product.productID}">Удалить Зону хранения: Название роли</h5>
+                    <h5 class="modal-title" th:id="'delModalLabel'+${product.getProductID()}" th:text="'Удалить место хранения:' + ${product.getProductID()}">Удалить Зону хранения: Название роли</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${product.productID}" th:action="@{${baseUrl}+'/del'}">
-                        <input type="hidden" name="zoneId" th:value="${product.productID}">
+                    <form th:id="'editForm_id_'+${product.getProductID()}" th:action="@{${baseUrl}+'/del'}">
+                        <input type="hidden" name="zoneId" th:value="${product.getProductID()}">
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${product.productID}">Удалить</button>
+                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${product.getProductID()}">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" th:id="'barCodeModal_id_'+${product.getProductID()}" tabindex="-1" role="dialog" th:aria-labelledby="'barCodeModal_id_'+${product.getProductID()}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-darkblue text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'barCodeModalLabel'+${product.getProductID()}" th:text="'Штрих-код товара:' + ${product.getProductName()}">Название товара</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="m-auto" style="width: 380px;">
+                          <!-- вставляем сгенерированный код в виде векторного рисунка -->
+                          <svg class="d-block m-auto" th:id="'barcode_'+${product.getProductID()}"></svg>
+                          <script th:inline="javascript">
+                              document.addEventListener('DOMContentLoaded', function(){
+                                  JsBarcode([['#barcode_' + ${product.getProductID()}]], [[${ product.getExtBarcode() != null && !product.getExtBarcode().isEmpty() ? product.getExtBarcode() : product.getIntBarcode() }]], {
+                                      format: "CODE128",
+                                      displayValue: true,
+                                      fontSize: 20,
+                                      width: 2,
+                                      height: 100
+                                  });
+                              });
+                          </script>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary" th:form="'delForm_id_'+${product.getProductID()}">Печать</button>
                 </div>
             </div>
         </div>
@@ -532,37 +362,7 @@
 
 
 
-<!-- Theme style picker modal window and options ends -->
-
-<!-- Global js mandatory -->
-<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
-<script th:src="@{/js/popper.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
-<script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
-<!-- Global js ends -->
-
-<!-- Vendor or 3rd party js -->
-
-<!-- date range picker -->
-<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
-<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
-
-
-<!-- Vendor or 3rd party js ends -->
-
-<!-- Customized template js mandatory -->
-<script th:src="@{/js/main.js}"></script>
-<!-- Customized template js ends -->
-
-<!-- theme picker -->
-<script th:src="@{/js/style-picker.js}"></script>
-<!-- theme picker ends -->
-
-<!-- Generator BAR-code -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-
-<!-- My scriots -->
-<script th:src="@{/js/scripts.js}"></script>
+<div th:replace="~{scripts_connect :: content}"></div>
 
 <!-- Customized page level js -->
 <script>

@@ -38,41 +38,14 @@ public class UsersController {
 
         List<Employee> employees = employeeService.getAllEmployee();
 
-        List<Role> roles = roleService.getAllRole();
-
-        HashMap<Integer, Employee> aas = arrayEmployee(employees);
-        System.out.println(aas);
-
-        for (UserString user : user_list) {
-         System.out.println(user.getUserID());
-         System.out.println(aas.get(user.getEmployeeID()).getEmployeeID());
-        }
 
         model.addAttribute("title", "Список пользователей");
         model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("userList", user_list);
-        model.addAttribute("employeeList", aas);
         model.addAttribute("employeeList1", employees);
-        model.addAttribute("roleList", roles);
         model.addAttribute("user", new UserEntity());
 
         return "users";
-    }
-
-    private HashMap<Integer, Employee> arrayEmployee(List<Employee> employeeList){
-        HashMap<Integer, Employee> arr = new HashMap<>();
-        for (Employee employee : employeeList){
-            arr.put(employee.getEmployeeID(), employee);
-        }
-        return arr;
-    }
-
-    private Employee[] employees(List<Employee> employeeList){
-        Employee[] arr = new Employee[employeeList.size()];
-        for (Employee employee : employeeList){
-            arr[employee.getEmployeeID()] =  employee;
-        }
-        return arr;
     }
 
     @PostMapping("/add")

@@ -224,28 +224,31 @@ public class RestApiController {
         return orderHead;
     }
 
+    //@RequestMapping(value="/update_products", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value="/update_products", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     //@RequestMapping(value = "/loadCityByCountry", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseJson addProducts(@RequestBody String json) throws JsonProcessingException {
         int kol = 0;
 
+        System.out.println(json);
+
         /*
         * {
             "products":[
-             {
-              "supplierCode": "ПО0008253",
-              "volume": 0.000045,
-              "weight": 0.00992,
-              "extBarcode": "8595013612309",
-              "intBarcode": "2100000238941",
-              "productCode": "023894",
-              "productName": "Маркер перманент. Centropen PERMANENT 1 мм черный круглый 1 шт",
-              "categoryName": "Маркеры перманентные",
-              "unitOfMeasure": "шт",
-              "upacovka": "1\/10\/200",
-              "abcCode": "A"
-             }
+                 {
+                    "supplierCode": "ПО0008253",
+                    "volume": 0.000045,
+                    "weight": 0.00992,
+                    "extBarcode": "8595013612309",
+                    "intBarcode": "2100000238941",
+                    "productCode": "023894",
+                    "productName": "Маркер перманент. Centropen PERMANENT 1 мм черный круглый 1 шт",
+                    "categoryName": "Маркеры перманентные",
+                    "unitOfMeasure": "шт",
+                    "upacovka": "1\/10\/200",
+                    "abcCode": "A"
+                },
             ]
             }
             */

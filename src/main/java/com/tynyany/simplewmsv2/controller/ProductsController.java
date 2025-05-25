@@ -2,6 +2,7 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ProductRepository;
 import com.tynyany.simplewmsv2.entity.*;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.service.ABCService;
 import com.tynyany.simplewmsv2.service.CategoryService;
 import com.tynyany.simplewmsv2.service.ProductService;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import java.util.List;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductsController {
+    private final String baseUrl = "products";
     private final ProductRepository productRepository;
     private final ProductService productService;
     private final CategoryService categoryService;
@@ -27,21 +31,63 @@ public class ProductsController {
 
     @GetMapping
     public String index(Model model) {
-        List<Product> productList = productService.getAllProduct();
+
+        //List<Product> productList = productService.getAllProduct();
+        List<ProductTableString> productList = productService.getAllProductTableString();
+//        for (ProductTableString productTableString : productList) {
+//            System.out.println(productTableString);
+//        }
 
         model.addAttribute("title", "Список товаров");
+        model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("productsList", productList);
-        model.addAttribute("abcList", abcHashMap());
-        model.addAttribute("categoriesList", categoriesHashMap());
-        model.addAttribute("unitList", unitList());
-        model.addAttribute("supplierList", supplierHashMap());
+        model.addAttribute("abcList", abcService.getAll());
+        model.addAttribute("categoriesList", categoryService.getAll());
+        model.addAttribute("supplierList", supplierService.getAll());
         return "products";
     }
 
-    @GetMapping("/add")
-    public String addProduct(Model model) {
-        model.addAttribute("title", "Добавить товар");
-        return "add_user";
+    @PostMapping("/update")
+    public String update(@ModelAttribute ProductFormField productTableString) {
+        System.out.println(productTableString);
+        //ProductFormField(
+        // productID=3,
+        // productName=null,
+        // productCode=null,
+        // description=,
+        // weight=2,340000,
+        // volume=0,003430,
+        // categoryID=8,
+        // abcID=2,
+        // expirationDateRequired=false,
+        // del=false,
+        // supplierID=2,
+        // extBarcode=null,
+        // intBarcode=null,
+        // categoryName=null,
+        // abcName=null,
+        // supplierName=null)
+        if(!productRepository.existsById(productTableString.getProductID())){
+            throw new UserNotFoundException("Product not found: id = " + productTableString.getProductID());
+        }
+        productService.updateProduct(
+                new Product(
+                        productTableString.getProductID(),
+                        productTableString.getProductName(),
+                        productTableString.getProductCode(),
+                        productTableString.getDescription(),
+                        Float.valueOf(productTableString.getWeight().replace(',', '.')),
+                        Float.valueOf(productTableString.getVolume().replace(',', '.')),
+                        productTableString.getCategoryID(),
+                        productTableString.getAbcID(),
+                        productTableString.getExpirationDateRequired(),
+                        productTableString.getDel(),
+                        productTableString.getSupplierID(),
+                        productTableString.getExtBarcode(),
+                        productTableString.getIntBarcode()
+                )
+        );
+        return "redirect:/" + baseUrl;
     }
 
     public static ABC[] abcList(){
@@ -54,6 +100,7 @@ public class ProductsController {
         abcList[4] = new ABC(4, "D", "Товары из данной категории имеют очень низкую стоимость или полностью перестали продаваться, а иногда даже вышли из строя либо устарели.", false);
         return abcList;
     }
+
     public HashMap<Integer, ABC> abcHashMap(){
         List<ABC> abcList = abcService.getAll();
 
@@ -79,10 +126,6 @@ public class ProductsController {
         productsList[9] = new Product(9, "Тетрадь 96 л. А5+ кл. скреп. офс. Schoolformat ЦВЕТЫ МИНИМАЛ мел. карт., спл. УФ-лак", "249243", "", 0.02F, 0.01F, 4, 1, false, false, 2,  "", "20002525245");
         return  productsList;
     }
-
-
-
-
 
     public static Category[] categoriesList(){
         Category[] categoriesList = new Category[8];
@@ -114,6 +157,7 @@ public class ProductsController {
         unitOfMeasures[2] = new UnitOfMeasure(2, "Упаковка", "Уп.", false);
         return unitOfMeasures;
     }
+
     public static UnitOfMeasure[] unitHashMap(){
         UnitOfMeasure[] unitOfMeasures = new UnitOfMeasure[3];
         unitOfMeasures[0] = new UnitOfMeasure(0, "Не указана еденица", "Нет", false);
