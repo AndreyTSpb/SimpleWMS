@@ -261,6 +261,7 @@ public class RestApiController {
              * Проверяем существует ли товар с нужным кодом или нет
              */
             Optional<ProductEntity> productT = productRepository.findOneByProductCode(productERP.getProductCode());
+
             if(productT.isEmpty()) {
                 /*
                  * Формирование продукта для добавления в БД
@@ -379,19 +380,27 @@ public class RestApiController {
         System.out.println(json);
         int kol = 0;
         ObjectMapper objectMapper = new ObjectMapper();
-        for (CustomerERP customerERP : objectMapper.readValue(json, CustomerERP[].class)){
-            customerService.add(new Customer(0,
-                    customerERP.getCustomerCode(),
-                    customerERP.getCustomerName(),
-                    customerERP.getPhone(),
-                    customerERP.getEmail(),
-                    customerERP.getAddress(),
-                    false,
-                    customerERP.getWorkingTimeStr(),
-                    customerERP.getWorkingTimeEnd()
-            ));
-            kol++;
+
+        for (CustomerERP customerERP : objectMapper.readValue(json, CustomerERP[].class)) {
+            /*
+        Проверка по коду клиента стьли такой уже в базе
+         */
+            Optional<CustomerEntity> customerEntity = customerRepository.findByCustomerCode(customerERP.getCustomerCode());
+            if(customerEntity.isEmpty()) {
+                customerService.add(new Customer(0,
+                        customerERP.getCustomerCode(),
+                        customerERP.getCustomerName(),
+                        customerERP.getPhone(),
+                        customerERP.getEmail(),
+                        customerERP.getAddress(),
+                        false,
+                        customerERP.getWorkingTimeStr(),
+                        customerERP.getWorkingTimeEnd()
+                ));
+                kol++;
+            }
         }
+
 
         return new ResponseJson(1, "Клиенты добавлены: " + kol);
     }
