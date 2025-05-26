@@ -38,7 +38,8 @@ public class RestApiController {
 
     private final SupplierService supplierService;
     private final ProductRepository productRepository;
-
+    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
     private final ReceivingRepository receivingRepository;
     private final ReceivingService receivingService;
     private final ReceivingLineRepository receivingLineRepository;
@@ -367,5 +368,32 @@ public class RestApiController {
         return new ResponseJson(1, "Обновлен справочник ролей");
     }
 
+    /**
+     * Добавление данных по клиентам через запрос
+     * @param json
+     * @return
+     */
+    @RequestMapping(value = "/add_customers", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseJson addCustomer(@RequestBody String json) throws JsonProcessingException {
+        System.out.println(json);
+        int kol = 0;
+        ObjectMapper objectMapper = new ObjectMapper();
+        for (CustomerERP customerERP : objectMapper.readValue(json, CustomerERP[].class)){
+            customerService.add(new Customer(0,
+                    customerERP.getCustomerCode(),
+                    customerERP.getCustomerName(),
+                    customerERP.getPhone(),
+                    customerERP.getEmail(),
+                    customerERP.getAddress(),
+                    false,
+                    customerERP.getWorkingTimeStr(),
+                    customerERP.getWorkingTimeEnd()
+            ));
+            kol++;
+        }
+
+        return new ResponseJson(1, "Клиенты добавлены: " + kol);
+    }
 
 }
