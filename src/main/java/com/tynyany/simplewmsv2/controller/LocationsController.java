@@ -8,13 +8,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/locations")
 @RequiredArgsConstructor
 public class LocationsController {
     @GetMapping
     public String index(Model model) {
-        Zone[] zones = ZonesController.zonesList();
+        List<Zone> zones = ZonesController.zonesList();
         Location[] locationList = locationsList();
 
 

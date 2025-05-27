@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
 import static com.tynyany.simplewmsv2.controller.RolesController.RoleList;
+import static com.tynyany.simplewmsv2.controller.ZonesController.zonesList;
 
 @Controller
 @RequestMapping(path = "/api", produces="application/json")
@@ -46,6 +47,8 @@ public class RestApiController {
     private final ReceivingLineService receivingLineService;
 
     private final RoleService roleService;
+    private final ZoneService zoneService;
+    private final ZoneRepository zoneRepository;
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody
@@ -404,4 +407,19 @@ public class RestApiController {
         return new ResponseJson(1, "Клиенты добавлены: " + kol);
     }
 
+
+    @RequestMapping(value = "/add_zones", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJson addZones() {
+
+        for(Zone zone : zonesList()){
+            if(zone != null){
+                Optional<ZoneEntity> zoneEntity =zoneRepository.findByZoneName(zone.getZoneName());
+                if(zoneEntity.isEmpty()) {
+                    zoneService.add(zone);
+                }
+            }
+        }
+        return new ResponseJson(1, "Обновлен справочник секций");
+    }
 }

@@ -61,10 +61,10 @@
                                 <p class="mb-0 template-inverse" th:text="${zone.zoneName}">this role</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${zone.description}">this login</p>
+                                <p class="mb-0 template-inverse" th:text="${zone.code}">this role</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${zone.code}">this role</p>
+                                <p class="mb-0 template-inverse" th:text="${zone.description}">this login</p>
                             </td>
                             <td>
                                 <span th:if="${zone.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
@@ -79,7 +79,7 @@
                                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${zone.zoneID}">Просмотр</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${zone.zoneID}">Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${location.locationID}">Штрих-код</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${zone.zoneID}">Штрих-код</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${zone.zoneID}">Удалить</a>
                                     </div>
                                 </div>
@@ -144,20 +144,21 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${zone.zoneID}" th:action="@{${baseUrl}+'/update'}">
+                    <form method="post" th:id="'editForm_id_'+${zone.zoneID}" th:action="@{${baseUrl}+'/update'}">
 
-                        <input type="hidden" name="zoneId" th:value="${zone.zoneID}">
+                        <input type="hidden" name="zoneID" th:value="${zone.zoneID}">
+                        <input type="hidden" name="del" th:value="${zone.getDel()}">
                         <div class="form-group">
                             <label>Название зоны хрнения</label>
-                            <input type="text" class="form-control form-control-lg" name="zoneName" th:value="${zone.zoneName}" readonly>
+                            <input type="text" class="form-control form-control-lg" name="zoneName" th:value="${zone.getZoneName()}">
                         </div>
                         <div class="form-group">
-                            <label>Код зоны хрнения</label>
-                            <input type="text" class="form-control form-control-lg" name="zoneCode" th:value="${zone.code}" readonly>
+                            <label>Код зоны хранения</label>
+                            <input type="text" class="form-control form-control-lg" name="code" th:value="${zone.getCode()}">
                         </div>
                         <div class="form-group">
                             <label>Описание</label>
-                            <textarea class="form-control form-control-lg" rows="3" name="description" th:text="${zone.description}"></textarea>
+                            <textarea class="form-control form-control-lg" rows="3" name="description" th:text="${zone.getDescription()}"></textarea>
                         </div>
                     </form>
                 </div>
@@ -179,8 +180,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${zone.zoneID}" th:action="@{${baseUrl}+'/del'}">
-                        <input type="hidden" name="zoneId" th:value="${zone.zoneID}">
+                    <form method="post" th:id="'delForm_id_'+${zone.zoneID}" th:action="@{${baseUrl}+'/del'}">
+                        <input type="hidden" name="zoneID" th:value="${zone.zoneID}">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -203,23 +204,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addForm" th:action="@{${baseUrl}+'/add'}">
+                <form id="addForm" method="post" th:action="@{${baseUrl}+'/add'}">
                     <div class="form-group">
-                        <label>Табельный номер</label>
-                        <input type="text" class="form-control form-control-lg" name="tabNum" value="">
+                        <label>Название зоны</label>
+                        <input type="text" class="form-control form-control-lg" name="zoneName" value="">
                     </div>
                     <div class="form-group" >
-                        <label>Фамилия</label>
-                        <input type="text" class="form-control form-control-lg" name="LastName" value="">
-                        <label>Имя</label>
-                        <input type="text" class="form-control form-control-lg" name="Name" value="">
+                        <label>Код зоны</label>
+                        <input type="text" class="form-control form-control-lg" name="code" value="">
                     </div>
                     <div class="form-group">
-                        <label>Роль</label>
-                        <select class="form-control form-control-lg" name="roleName">
-                            <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.name}"></option>
-                        </select>
+                        <label>Описание</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
                     </div>
+                    <input type="hidden" name="zoneID" value="0">
+                    <input type="hidden" name="del" value="0">
                 </form>
             </div>
             <div class="modal-footer">
@@ -230,82 +229,8 @@
     </div>
 </div>
 
-<!-- Theme style picker modal window and options ends -->
+<div th:replace="~{scripts_connect :: content}"></div>
 
-<!-- Global js mandatory -->
-<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
-<script th:src="@{/js/popper.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
-<!-- Global js ends -->
-
-<!-- Vendor or 3rd party js -->
-
-<!-- date range picker -->
-<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
-<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
-
-
-<!-- Vendor or 3rd party js ends -->
-
-<!-- Customized template js mandatory -->
-<script th:src="@{/js/main.js}"></script>
-<!-- Customized template js ends -->
-
-<!-- theme picker -->
-<script th:src="@{/js/style-picker.js}"></script>
-<!-- theme picker ends -->
-
-<!-- Customized page level js -->
-<script>
-    'use strict'
-    $(document).ready(function() {
-        /* task dropdown action */
-        $('#tasks a').on('click', function(e) {
-            e.preventDefault()
-            $(this).tab('show')
-        });
-
-        /* calander picker */
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-
-        function cb(start, end) {
-            $('#daterangeadminux span').html(start.format('MMM D, YY') + ' - ' + end.format('MMM D, YY'));
-        }
-
-        $('#daterangeadminux').daterangepicker({
-            startDate: start,
-            endDate: end,
-            opens: 'left',
-            ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            }
-        }, cb);
-
-        cb(start, end);
-        $('#daterangeadminux').on('show.daterangepicker', function(ev, picker) {
-            var thisdp = $('.daterangepicker');
-            setTimeout(function() {
-                thisdp.addClass('active');
-            }, 100);
-        });
-        $('#daterangeadminux').on('hide.daterangepicker', function(ev, picker) {
-            var thisdpc = $('.daterangepicker');
-            thisdpc.removeClass('active');
-
-        });
-        var path = '../assets/img/background-part.png';
-        $('.daterangepicker').append('<div class="background" style="background-image: url(' + path + '); z-index:-1; height:80px;"><img th:src="@{/img/background-part.png}" alt="" style="display:none"></div>')
-        /* calander picker ends */
-
-    });
-
-</script>
 <!-- Customized page level js ends -->
 </body>
 

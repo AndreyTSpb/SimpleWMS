@@ -34,7 +34,6 @@ public class CustomersController {
 
     @GetMapping("/update")
     public String update(@ModelAttribute Customer customer, Model model) {
-        System.out.println(customer);
         if(!customerRepository.existsById(customer.getCustomerID())){
             throw new UserNotFoundException("Customer not found: id = " + customer.getCustomerID());
         }
