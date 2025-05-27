@@ -1,30 +1,45 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.CustomerRepository;
 import com.tynyany.simplewmsv2.entity.Customer;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
+import com.tynyany.simplewmsv2.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 //customer_list
 @Controller
 @RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomersController {
+    private final CustomerService customerService;
+    private final String baseUrl = "customers";
+    private final CustomerRepository customerRepository;
+
     @GetMapping
     public String index(Model model) {
 
+        List<Customer> customerList = customerService.getAll();
         model.addAttribute("title", "Список клиентов");
-        model.addAttribute("customerList", customerList());
-
+        model.addAttribute("customerList", customerList);
+        model.addAttribute("baseUrl", baseUrl);
         return "customers";
     }
 
-    @GetMapping("/add")
-    public String add(Model model) {
-        model.addAttribute("title", "Добавить поставщика");
-        return "add_user";
+    @GetMapping("/update")
+    public String update(@ModelAttribute Customer customer, Model model) {
+        System.out.println(customer);
+        if(!customerRepository.existsById(customer.getCustomerID())){
+            throw new UserNotFoundException("Customer not found: id = " + customer.getCustomerID());
+        }
+        customerService.update(customer);
+        return "redirect:/" + baseUrl;
     }
 
     public static Customer[] customerList(){

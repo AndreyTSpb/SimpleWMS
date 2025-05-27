@@ -6,6 +6,7 @@ import com.tynyany.simplewmsv2.entity.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,7 +21,22 @@ public class DefaultCustomerService implements CustomerService {
 
     @Override
     public List<Customer> getAll() {
-        return List.of();
+        Iterable<CustomerEntity> customerEntities = customerRepository.findAll();
+        ArrayList<Customer> customers = new ArrayList<>();
+        for (CustomerEntity customerEntity : customerEntities) {
+            customers.add(new Customer(
+               customerEntity.getCustomerId(),
+               customerEntity.getCustomerCode(),
+               customerEntity.getCustomerName(),
+               customerEntity.getPhone(),
+                    customerEntity.getEmail(),
+                    customerEntity.getAddress(),
+                    customerEntity.getDel(),
+                    customerEntity.getWorkingTimeStr(),
+                    customerEntity.getWorkingTimeEnd()
+            ));
+        }
+        return customers;
     }
 
     @Override
@@ -41,11 +57,33 @@ public class DefaultCustomerService implements CustomerService {
 
     @Override
     public void update(Customer customer) {
-
+        CustomerEntity customerEntity = new CustomerEntity(
+                customer.getCustomerID(),
+                customer.getCustomerCode(),
+                customer.getCustomerName(),
+                customer.getPhone(),
+                customer.getEmail(),
+                customer.getAddress(),
+                customer.getWorkingTimeStr(),
+                customer.getWorkingTimeEnd(),
+                customer.getDel()
+        );
+        customerRepository.save(customerEntity);
     }
 
     @Override
     public void del(Customer customer) {
-
+        CustomerEntity customerEntity = new CustomerEntity(
+                customer.getCustomerID(),
+                customer.getCustomerCode(),
+                customer.getCustomerName(),
+                customer.getPhone(),
+                customer.getEmail(),
+                customer.getAddress(),
+                customer.getWorkingTimeStr(),
+                customer.getWorkingTimeEnd(),
+                true
+        );
+        customerRepository.save(customerEntity);
     }
 }

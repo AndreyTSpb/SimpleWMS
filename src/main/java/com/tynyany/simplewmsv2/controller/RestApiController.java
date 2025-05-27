@@ -342,11 +342,10 @@ public class RestApiController {
     @ResponseBody
     public ResponseJson addSupplier(@RequestBody String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        // Deserialize the JSON string into an array of User objects
-        Supplier[] suppliers = objectMapper.readValue(json, Supplier[].class);
-
-        for (Supplier supplier : suppliers){
-            supplierService.add(supplier);
+        for (Supplier supplier : objectMapper.readValue(json, Supplier[].class)){
+            Optional<SupplierEntity> supplierEntity = supplierRepository.findTopBySupplierCode(supplier.getSupplierCode());
+            if(supplierEntity.isEmpty())
+                supplierService.add(supplier);
         }
 
         return new ResponseJson(1, "Good1");
