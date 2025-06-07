@@ -1,7 +1,9 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.LocationRepository;
 import com.tynyany.simplewmsv2.entity.Location;
 import com.tynyany.simplewmsv2.entity.Zone;
+import com.tynyany.simplewmsv2.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +16,13 @@ import java.util.List;
 @RequestMapping("/locations")
 @RequiredArgsConstructor
 public class LocationsController {
+    private final LocationService locationService;
+    private final LocationRepository locationRepository;
+
     @GetMapping
     public String index(Model model) {
         List<Zone> zones = ZonesController.zonesList();
-        Location[] locationList = locationsList();
+        List<Location> locationList = locationService.getAllLocation();
 
 
         model.addAttribute("title", "Список мест хранения");

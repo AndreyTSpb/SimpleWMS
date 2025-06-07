@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static com.tynyany.simplewmsv2.controller.LocationsController.locationsList;
 import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
 import static com.tynyany.simplewmsv2.controller.RolesController.RoleList;
 import static com.tynyany.simplewmsv2.controller.ZonesController.zonesList;
@@ -49,6 +50,8 @@ public class RestApiController {
     private final RoleService roleService;
     private final ZoneService zoneService;
     private final ZoneRepository zoneRepository;
+    private final LocationRepository locationRepository;
+    private final LocationService locationService;
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody
@@ -414,12 +417,26 @@ public class RestApiController {
 
         for(Zone zone : zonesList()){
             if(zone != null){
-                Optional<ZoneEntity> zoneEntity =zoneRepository.findByZoneName(zone.getZoneName());
+                Optional<ZoneEntity> zoneEntity = zoneRepository.findByZoneName(zone.getZoneName());
                 if(zoneEntity.isEmpty()) {
                     zoneService.add(zone);
                 }
             }
         }
         return new ResponseJson(1, "Обновлен справочник секций");
+    }
+
+    @RequestMapping(value = "/add_locations", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseJson addLocations() {
+        for (Location location : locationsList()){
+            if(location != null){
+                Optional<LocationEntity> locationEntity = locationRepository.findByLocationCode(location.getLocationCode());
+                if(locationEntity.isEmpty()) {
+                    locationService.addLocation(location);
+                }
+            }
+        }
+        return new ResponseJson(1, "Обновлен справочник мест хранения");
     }
 }
