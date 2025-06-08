@@ -1,13 +1,18 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.LocationEntity;
 import com.tynyany.simplewmsv2.dao.LocationRepository;
+import com.tynyany.simplewmsv2.dao.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Location;
 import com.tynyany.simplewmsv2.entity.Zone;
 import com.tynyany.simplewmsv2.service.LocationService;
+import com.tynyany.simplewmsv2.service.ZoneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -16,8 +21,11 @@ import java.util.List;
 @RequestMapping("/locations")
 @RequiredArgsConstructor
 public class LocationsController {
+    final private String baseUrl = "locations";
     private final LocationService locationService;
     private final LocationRepository locationRepository;
+    private final ZoneRepository zoneRepository;
+    private final ZoneService zoneService;
 
     @GetMapping
     public String index(Model model) {
@@ -28,13 +36,35 @@ public class LocationsController {
         model.addAttribute("title", "Список мест хранения");
         model.addAttribute("locationList", locationList);
         model.addAttribute("zoneList", zones);
+        model.addAttribute("locationEntity", new LocationEntity());
+        model.addAttribute("baseUrl", baseUrl);
         return "locations";
     }
 
-    @GetMapping("/add")
-    public String add(Model model) {
-        model.addAttribute("title", "Добавить место хранения");
-        return "add_user";
+    @PostMapping("/add")
+    public String add(@ModelAttribute LocationEntity locationEntity) {
+        System.out.println(locationEntity);
+        Zone zone = zoneService.getByID(locationEntity.getZoneID());
+
+        String row = (locationEntity.getRow().length() > 1)? locationEntity.getRow():"0" + locationEntity.getRow();
+        String x = (locationEntity.getX() > 9)? locationEntity.getX() + "": "0"+locationEntity.getX();
+        String y = String.valueOf(locationEntity.getY());
+        String z = String.valueOf(locationEntity.getY());
+        String locationCode = zone.getCode() + "-" + row + "-" + x + "-" + y + "-" + z;
+
+        locationService.addLocation(new Location(
+                locationEntity.getLocationID(),
+                locationCode,
+                row,
+                locationEntity.getX(),
+                locationEntity.getY(),
+                locationEntity.getZ(),
+                locationEntity.getCapacity(),
+                locationEntity.getAvailable() == 1,
+                false,
+                locationEntity.getZoneID()
+        ));
+        return "redirect:/" + baseUrl;
     }
 
     public static Location[] locationsList(){
