@@ -70,8 +70,8 @@ public class DefaultLocationService implements LocationService {
                 location.getY(),
                 location.getZ(),
                 location.getCapacity(),
-                (location.getAvailable()) ? 1:0,
-                (location.getDel()) ? 1:0,
+                (location.getAvailable() != null) ? 1:0,
+                (location.getDel() != null) ? 1:0,
                 location.getZoneID()
         );
         locationRepository.save(entity);
@@ -79,6 +79,9 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public void delLocation(int locationID) {
-
+        LocationEntity entity = locationRepository.findById(locationID).orElse(null);
+        assert entity != null;
+        entity.setDel(1);
+        locationRepository.save(entity);
     }
 }

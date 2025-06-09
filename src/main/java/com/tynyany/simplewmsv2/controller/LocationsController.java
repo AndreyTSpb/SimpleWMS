@@ -5,16 +5,17 @@ import com.tynyany.simplewmsv2.dao.LocationRepository;
 import com.tynyany.simplewmsv2.dao.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Location;
 import com.tynyany.simplewmsv2.entity.Zone;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
+import com.tynyany.simplewmsv2.models.CreateCodeLocation;
+import com.tynyany.simplewmsv2.models.LocationTableString;
 import com.tynyany.simplewmsv2.service.LocationService;
 import com.tynyany.simplewmsv2.service.ZoneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,12 +30,10 @@ public class LocationsController {
 
     @GetMapping
     public String index(Model model) {
-        List<Zone> zones = ZonesController.zonesList();
-        List<Location> locationList = locationService.getAllLocation();
-
+        List<Zone> zones = zoneService.getAll();
 
         model.addAttribute("title", "Список мест хранения");
-        model.addAttribute("locationList", locationList);
+        model.addAttribute("locationList", locationListTableString());
         model.addAttribute("zoneList", zones);
         model.addAttribute("locationEntity", new LocationEntity());
         model.addAttribute("baseUrl", baseUrl);
@@ -44,17 +43,19 @@ public class LocationsController {
     @PostMapping("/add")
     public String add(@ModelAttribute LocationEntity locationEntity) {
         System.out.println(locationEntity);
-        Zone zone = zoneService.getByID(locationEntity.getZoneID());
+        //Zone zone = zoneService.getByID(locationEntity.getZoneID());
 
         String row = (locationEntity.getRow().length() > 1)? locationEntity.getRow():"0" + locationEntity.getRow();
-        String x = (locationEntity.getX() > 9)? locationEntity.getX() + "": "0"+locationEntity.getX();
-        String y = String.valueOf(locationEntity.getY());
-        String z = String.valueOf(locationEntity.getY());
-        String locationCode = zone.getCode() + "-" + row + "-" + x + "-" + y + "-" + z;
+//        String x = (locationEntity.getX() > 9)? locationEntity.getX() + "": "0"+locationEntity.getX();
+//        String y = String.valueOf(locationEntity.getY());
+//        String z = String.valueOf(locationEntity.getZ());
+//        String locationCode = zone.getCode() + "-" + row + "-" + x + "-" + y + "-" + z;
+
+        CreateCodeLocation locationCode = new CreateCodeLocation(locationEntity.getRow(), locationEntity.getX(), locationEntity.getY(), locationEntity.getZ(), zoneService.getByID(locationEntity.getZoneID()).getCode());
 
         locationService.addLocation(new Location(
                 locationEntity.getLocationID(),
-                locationCode,
+                locationCode.getLocationCode(),
                 row,
                 locationEntity.getX(),
                 locationEntity.getY(),
@@ -92,4 +93,88 @@ public class LocationsController {
         return locationsList;
     }
 
+    /**
+     * Формируем список для выдачи в таблицу
+     * @return List
+     */
+    private List<LocationTableString> locationListTableString(){
+        List<LocationTableString> locationListTableString = new ArrayList<>();
+        List<Location> locationList = locationService.getAllLocation();
+
+        if(!locationList.isEmpty()){
+            for(Location location : locationList){
+
+                String zoneZoneName;
+                if(location.getZoneID() != 0){
+                    zoneZoneName = zoneService.getByID(location.getZoneID()).getZoneName();
+                }else {
+                    zoneZoneName = "Не назначена зона";
+                }
+
+                locationListTableString.add(new LocationTableString(
+                        location.getLocationID(),
+                        location.getLocationCode(),
+                        location.getRow(),
+                        location.getX(),
+                        location.getY(),
+                        location.getZ(),
+                        location.getCapacity(),
+                        location.getAvailable(),
+                        location.getDel(),
+                        location.getZoneID(),
+                        zoneZoneName
+                ));
+            }
+        }else{
+            locationListTableString.add(new LocationTableString(
+                    0,
+                    "null",
+                    "null",
+                    0,
+                    0,
+                    0,
+                    0,
+                    false,
+                    false,
+                    0,
+                    "null"
+            ));
+        }
+        return locationListTableString;
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute Location location) {
+        System.out.println(location);
+        //Location(locationID=19, locationCode=null, row=888, x=1, y=3, z=3, capacity=1.0, available=null, del=null, zoneID=4)
+        if(!locationRepository.existsById(location.getLocationID())){
+            throw new UserNotFoundException("Location not found: id = " + location.getLocationID());
+        }
+
+        // При обновлении каждый раз пересобираем код места хранения (чтобы не делать проверку были ли какиен то изменения)
+        CreateCodeLocation locationCode = new CreateCodeLocation(location.getRow(), location.getX(), location.getY(), location.getZ(), zoneService.getByID(location.getZoneID()).getCode());
+
+        locationService.updateLocation(new Location(
+                location.getLocationID(),
+                locationCode.getLocationCode(),
+                location.getRow(),
+                location.getX(),
+                location.getY(),
+                location.getZ(),
+                location.getCapacity(),
+                location.getAvailable(),
+                location.getDel(),
+                location.getZoneID()
+        ));
+        return "redirect:/" + baseUrl;
+    }
+
+    @RequestMapping("/del")
+    public String del(@RequestParam(value = "locationID", required = true) int locationID) {
+        if(!locationRepository.existsById(locationID)){
+            throw new UserNotFoundException("Location not found: id = " + locationID);
+        }
+        locationService.delLocation(locationID);
+        return "redirect:/" + baseUrl;
+    }
 }

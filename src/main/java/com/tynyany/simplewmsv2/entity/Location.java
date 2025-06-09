@@ -1,8 +1,12 @@
 package com.tynyany.simplewmsv2.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.Value;
 
-@Value
+@Data
+@NoArgsConstructor
 public class Location {
     int locationID;
     String locationCode;

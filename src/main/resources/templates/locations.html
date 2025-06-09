@@ -60,32 +60,32 @@
                         <tr>
                             <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
                             <!-- Employee(employeeID=0, employeeName=Тыняный Андрей, tabNum=00001, del=false, roleID=7) -->
-                            <td th:text="${location.locationID}">0001</td>
+                            <td th:text="${location.getLocationID()}">0001</td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${location.locationCode}">Код места</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getLocationCode()}">Код места</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${zoneList[location.zoneID].zoneName}">Зона</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getZoneName()}">Зона</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${location.row}">Ряд</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getRow()}">Ряд</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${location.x}">Х</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getX()}">Х</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${location.y}">У</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getY()}">У</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${location.z}">З</p>
+                                <p class="mb-0 template-inverse" th:text="${location.getZ()}">З</p>
                             </td>
                             <td>
-                                <span th:if="${location.available == false}"><div class="btn-danger btn btn-sm">Занято</div></span>
-                                <span th:if="${location.available == true}"><div class="btn-success btn btn-sm">Свободно</div></span>
+                                <span th:if="${location.getAvailable() == false}"><div class="btn-danger btn btn-sm">Занято</div></span>
+                                <span th:if="${location.getAvailable() == true}"><div class="btn-success btn btn-sm">Свободно</div></span>
                             </td>
                             <td>
-                                <span th:if="${location.del == false}"><div class="btn-success btn btn-sm">Активен</div></span>
-                                <span th:if="${location.del == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
+                                <span th:if="${location.getDel() == false}"><div class="btn-success btn btn-sm">Активен</div></span>
+                                <span th:if="${location.getDel() == true}"><div class="btn-danger btn btn-sm">Отключен</div></span>
 
                             </td>
                             <td>
@@ -94,10 +94,10 @@
                                         <i class="material-icons">more_horiz</i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${location.locationID}">Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${location.locationID}">Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${location.locationID}">Штрих-код</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${location.locationID}">Удалить</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${location.getLocationID()}">Просмотр</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${location.getLocationID()}">Редактировать</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${location.getLocationID()}">Штрих-код</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${location.getLocationID()}">Удалить</a>
                                     </div>
                                 </div>
                             </td>
@@ -133,7 +133,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Зона хранения</label>
-                        <input type="text" class="form-control form-control-lg" name="zone" th:value="${zoneList[location.zoneID].zoneName}" readonly>
+                        <input type="text" class="form-control form-control-lg" name="zone" th:value="${location.zoneName}" readonly>
                     </div>
                     <div class="form-group">
                         <label>Номер ряда</label>
@@ -173,10 +173,11 @@
 
                 <div class="modal-body">
                     <form th:id="'editForm_id_'+${location.locationID}" th:action="@{${baseUrl}+'/update'}" method="post">
-                        <input type="hidden" name="zoneId" th:value="${location.locationID}">
+                        <input type="hidden" name="locationID" th:value="${location.locationID}">
+                        <input type="hidden" name="locationCode" th:value="${location.locationCode}">
                         <div class="form-group">
                             <label>Зона хранения</label>
-                            <select class="form-control form-control-lg" name="zone">
+                            <select class="form-control form-control-lg" name="zoneID">
                                 <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.zoneName}" th:selected="${zone.zoneID==location.zoneID}"></option>
                             </select>
                         </div>
@@ -192,13 +193,29 @@
                             <label>Номер полки если место разделено на несколько</label>
                             <input type="text" class="form-control form-control-lg" name="z" th:value="${location.z}">
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input"  th:checked="${location.available ? true: false}" >
-                                    <label class="custom-control-label" >Место доступно</label>
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" th:id="'available_'+${location.locationID}" name="available" th:checked="${location.available ? true: false}" value="1">
+                                            <label class="custom-control-label" th:for="'available_'+${location.locationID}">Место доступно</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" th:id="'del_'+${location.locationID}" name="del" th:checked="${location.del ? true: false}" value="1">
+                                            <label class="custom-control-label" th:for="'del_'+${location.locationID}">Не использовать</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        <div class="form-group">
+                        <label>Объем места</label>
+                        <input type="text" class="form-control form-control-lg" name="capacity"  th:value="${location.capacity}">
+                    </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -219,8 +236,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${location.locationID}" th:action="@{${baseUrl}+'/del'}">
-                        <input type="hidden" name="zoneId" th:value="${location.locationID}">
+                    <form th:id="'delForm_id_'+${location.locationID}" th:action="@{${baseUrl}+'/del'}">
+                        <input type="hidden" name="locationID" th:value="${location.locationID}">
                     </form>
                 </div>
                 <div class="modal-footer">
