@@ -4,20 +4,30 @@ import com.tynyany.simplewmsv2.entity.Location;
 import lombok.Value;
 
 @Value
-public class LocationTableString extends Location {
+public class LocationTableString {
     String zoneName;
+    int locationID;
+    String locationCode;
+    String row;
+    int x;
+    int y;
+    int z;
+    float capacity;
+    Boolean available;
+    Boolean del;
+    int zoneID;
 
     public LocationTableString(int locationID, String locationCode, String row, int x, int y, int z, float capacity, Boolean available, Boolean del, int zoneID, String zoneName) {
         this.zoneName = zoneName;
-        this.setLocationID(locationID);
-        this.setLocationCode(locationCode);
-        this.setRow(row);
-        this.setX(x);
-        this.setY(y);
-        this.setZ(z);
-        this.setCapacity(capacity);
-        this.setAvailable(available);
-        this.setDel(del);
-        this.setZoneID(zoneID);
+        this.locationID = locationID;
+        this.locationCode = locationCode;
+        this.row = row;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.capacity = capacity;
+        this.available = available;
+        this.del = del;
+        this.zoneID = zoneID;
     }
 }

@@ -63,13 +63,13 @@ public class ZonesController {
     public static List<Zone> zonesList(){
         List<Zone> zonesList = new ArrayList<>();
 
-        zonesList.add(new Zone(0, "Не используется", "not", "Не используется", true));
-        zonesList.add(new Zone(1, "Ангар", "ANG", "Хранение бумаги", false));
-        zonesList.add(new Zone(2, "Секция 1", "SC1", "Бумажно беловая продукция", false));
-        zonesList.add(new Zone(3, "Секция 2", "SC2", "Канцелярские товары", false));
-        zonesList.add(new Zone(4, "Секция 3", "HOZ", "Хозяйственные товары и прочее", false));
-        zonesList.add(new Zone(5, "Секция 4", "BRK", "Брак и неликвид", false));
-        zonesList.add(new Zone(6, "Приемка", "INT", "Место приемки товара", false));
+        zonesList.add(new Zone(1, "Не используется", "not", "Не используется", true));
+        zonesList.add(new Zone(2, "Ангар", "ANG", "Хранение бумаги", false));
+        zonesList.add(new Zone(3, "Секция 1", "SC1", "Бумажно беловая продукция", false));
+        zonesList.add(new Zone(4, "Секция 2", "SC2", "Канцелярские товары", false));
+        zonesList.add(new Zone(5, "Секция 3", "HOZ", "Хозяйственные товары и прочее", false));
+        zonesList.add(new Zone(6, "Секция 4", "BRK", "Брак и неликвид", false));
+        zonesList.add(new Zone(7, "Приемка", "INT", "Место приемки товара", false));
         return zonesList;
     }
 }

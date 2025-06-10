@@ -3,7 +3,10 @@ package com.tynyany.simplewmsv2.service;
 import com.tynyany.simplewmsv2.dao.LocationEntity;
 import com.tynyany.simplewmsv2.dao.LocationRepository;
 import com.tynyany.simplewmsv2.entity.Location;
+import com.tynyany.simplewmsv2.models.LocationTableString;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.List;
 public class DefaultLocationService implements LocationService {
 
     final LocationRepository locationRepository;
+    final ZoneService zoneService;
 
     @Override
     public Location getLocationByID(int locationID) {
@@ -41,6 +45,26 @@ public class DefaultLocationService implements LocationService {
             );
         }
         return locations;
+    }
+
+    /**
+     * Выборка всех мест для таблицы с пагинацией
+     *
+     * @return Page<LocationEntity>
+     */
+    @Override
+    public Page<LocationEntity> getAllLocationForTable(Pageable pageable) {
+        Page<LocationEntity> page = locationRepository.findAllBy(pageable);
+        System.out.println(page.getTotalElements());
+        //
+        return page;
+    }
+
+    @Override
+    public Page<LocationEntity> getAllLocationForTableWithFilter(String filter, Pageable pageable) {
+        Page<LocationEntity> page = locationRepository.findByLocationCodeIsLikeIgnoreCase("%"+filter+"%", pageable);
+        System.out.println(page.getTotalElements());
+        return page;
     }
 
     @Override

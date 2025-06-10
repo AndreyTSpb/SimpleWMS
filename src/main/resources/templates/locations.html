@@ -35,7 +35,7 @@
                                 <i class="material-icons md-18">add</i> Добаить
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">
-                                <i class="material-icons md-18">cloud_download</i> Export
+                                <i class="material-icons md-18">cloud_download</i> Выгрузить
                             </button>
                         </div>
                     </div>
@@ -104,6 +104,21 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="card-footer">
+                    <nav class="mb-4">
+                        <ul class="pagination pagination-rounded justify-content-center" >
+                            <li class="page-item" th:style="${previewPage < 0 ? 'display:none;':''}">
+                                <a class="page-link" th:href="@{${baseUrl}+'?page='+${previewPage}+${filter}}"><i class="material-icons">keyboard_arrow_left</i></a>
+                            </li>
+                            <li class="page-item" th:classappend="${n == currentPage ? 'active' : ''}" th:each="n: ${#numbers.sequence(0, totalPage)}">
+                                <a class="page-link" th:href="@{${baseUrl}+'?page='+${n}+${filter}}" th:text="${n}+1"></a>
+                            </li>
+                            <li class="page-item" th:style="${nextPage > totalPage ? 'display:none;':''}">
+                                <a class="page-link" th:href="@{${baseUrl}+'?page='+${nextPage}+${filter}}"><i class="material-icons">keyboard_arrow_right</i></a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
