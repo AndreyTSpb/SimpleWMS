@@ -276,8 +276,22 @@ public class RestApiController {
                  * Формирование продукта для добавления в БД
                  */
                 Category category = categoryRepository.findByCategoryName(productERP.getCategoryName());
+                // Если нет категории создаем ее
+                if(category == null) {
+                    categoryService.addCategory(new Category(
+                            0,
+                            productERP.getCategoryName(),
+                            "Нет описания",
+                            false
+                    ));
+                    category = categoryRepository.findByCategoryName(productERP.getCategoryName());
+                }
+
                 ABC abc = abcRepository.findByCode(productERP.getAbcCode());
 
+                /*
+                * Add Supplier
+                 */
                 int supplierId = 0;
                 Optional<SupplierEntity> supplier = supplierRepository.findTopBySupplierCode(productERP.getSupplierCode());
                 if (supplier.isPresent()) {
@@ -285,7 +299,9 @@ public class RestApiController {
                     supplierId = sup.getSupplierID();
                 }
 
-                /* если нет бар кода генерируем его - чисто только тут*/
+                /*
+                * если нет бар кода генерируем его - чисто только тут
+                */
                 String extbarcode = productERP.getExtBarcode();
                 if(Objects.equals(extbarcode, "1")){
                     CodeGenerator ext = new CodeGenerator("460");
