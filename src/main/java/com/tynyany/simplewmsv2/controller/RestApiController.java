@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tynyany.simplewmsv2.dao.*;
 import com.tynyany.simplewmsv2.entity.*;
+import com.tynyany.simplewmsv2.models.CodeGenerator;
+import com.tynyany.simplewmsv2.repository.*;
 import com.tynyany.simplewmsv2.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.LocationsController.locationsList;
@@ -282,6 +285,18 @@ public class RestApiController {
                     supplierId = sup.getSupplierID();
                 }
 
+                /* если нет бар кода генерируем его - чисто только тут*/
+                String extbarcode = productERP.getExtBarcode();
+                if(Objects.equals(extbarcode, "1")){
+                    CodeGenerator ext = new CodeGenerator("460");
+                    extbarcode = ext.getGeneratedCode();
+                }
+                String intbarcode = productERP.getIntBarcode();
+                if(Objects.equals(intbarcode, "1")){
+                    CodeGenerator intC = new CodeGenerator("200");
+                    intbarcode = intC.getGeneratedCode();
+                }
+
 
                 Product product = new Product(
                         0,
@@ -295,8 +310,8 @@ public class RestApiController {
                         false,
                         false,
                         supplierId,
-                        productERP.getExtBarcode(),
-                        productERP.getIntBarcode()
+                        extbarcode,
+                        intbarcode
 
                 );
                 productService.addProduct(product);

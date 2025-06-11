@@ -1,7 +1,6 @@
 package com.tynyany.simplewmsv2.controller;
 
-import com.tynyany.simplewmsv2.dao.ZoneEntity;
-import com.tynyany.simplewmsv2.dao.ZoneRepository;
+import com.tynyany.simplewmsv2.repository.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Zone;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.service.ZoneService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/zones")

@@ -1,9 +1,7 @@
 package com.tynyany.simplewmsv2.controller;
 
-import com.tynyany.simplewmsv2.dao.SupplierRepository;
-import com.tynyany.simplewmsv2.entity.ABC;
+import com.tynyany.simplewmsv2.repository.SupplierRepository;
 import com.tynyany.simplewmsv2.entity.Supplier;
-import com.tynyany.simplewmsv2.entity.User;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.service.SupplierService;
 import lombok.RequiredArgsConstructor;

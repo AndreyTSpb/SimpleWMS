@@ -1,9 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.UserEntity;
-import com.tynyany.simplewmsv2.dao.UserRepository;
+import com.tynyany.simplewmsv2.repository.UserRepository;
 import com.tynyany.simplewmsv2.entity.Employee;
-import com.tynyany.simplewmsv2.entity.Role;
 import com.tynyany.simplewmsv2.entity.User;
 import com.tynyany.simplewmsv2.entity.UserString;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Controller

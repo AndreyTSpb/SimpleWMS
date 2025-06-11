@@ -1,6 +1,6 @@
 package com.tynyany.simplewmsv2.controller;
 
-import com.tynyany.simplewmsv2.dao.EmployeeRepository;
+import com.tynyany.simplewmsv2.repository.EmployeeRepository;
 import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.Role;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;

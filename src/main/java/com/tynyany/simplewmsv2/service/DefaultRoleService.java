@@ -1,7 +1,7 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.RoleEntity;
-import com.tynyany.simplewmsv2.dao.RoleRepository;
+import com.tynyany.simplewmsv2.repository.RoleRepository;
 import com.tynyany.simplewmsv2.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

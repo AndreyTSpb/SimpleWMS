@@ -1,13 +1,5 @@
 package com.tynyany.simplewmsv2.models;
 
-import com.tynyany.simplewmsv2.dao.ZoneEntity;
-import com.tynyany.simplewmsv2.dao.ZoneRepository;
-import com.tynyany.simplewmsv2.entity.Zone;
-import com.tynyany.simplewmsv2.exception.UserNotFoundException;
-import com.tynyany.simplewmsv2.service.ZoneService;
-import lombok.Getter;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-
 public class CreateCodeLocation {
     private String locationCode;
     private final String row;

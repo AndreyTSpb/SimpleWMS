@@ -1,10 +1,9 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
-import com.tynyany.simplewmsv2.dao.ReceivingRepository;
+import com.tynyany.simplewmsv2.repository.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.Receiving;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

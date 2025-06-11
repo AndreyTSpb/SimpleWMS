@@ -1,10 +1,12 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.*;
-import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.entity.User;
 import com.tynyany.simplewmsv2.entity.UserString;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
+import com.tynyany.simplewmsv2.repository.EmployeeRepository;
+import com.tynyany.simplewmsv2.repository.RoleRepository;
+import com.tynyany.simplewmsv2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

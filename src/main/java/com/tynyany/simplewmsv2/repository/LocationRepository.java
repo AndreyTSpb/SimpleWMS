@@ -1,5 +1,6 @@
-package com.tynyany.simplewmsv2.dao;
+package com.tynyany.simplewmsv2.repository;
 
+import com.tynyany.simplewmsv2.dao.LocationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

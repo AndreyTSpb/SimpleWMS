@@ -1,9 +1,8 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.LocationEntity;
-import com.tynyany.simplewmsv2.dao.LocationRepository;
+import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.entity.Location;
-import com.tynyany.simplewmsv2.models.LocationTableString;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

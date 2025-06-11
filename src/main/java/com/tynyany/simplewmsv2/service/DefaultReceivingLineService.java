@@ -1,14 +1,11 @@
 package com.tynyany.simplewmsv2.service;
 
-import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
-import com.tynyany.simplewmsv2.dao.ReceivingLineRepository;
-import com.tynyany.simplewmsv2.entity.Product;
+import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.entity.ReceivingLine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

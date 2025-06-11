@@ -1,5 +1,6 @@
-package com.tynyany.simplewmsv2.dao;
+package com.tynyany.simplewmsv2.repository;
 
+import com.tynyany.simplewmsv2.dao.UserEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 

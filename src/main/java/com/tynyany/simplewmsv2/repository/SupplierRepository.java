@@ -1,5 +1,6 @@
-package com.tynyany.simplewmsv2.dao;
+package com.tynyany.simplewmsv2.repository;
 
+import com.tynyany.simplewmsv2.dao.SupplierEntity;
 import com.tynyany.simplewmsv2.entity.Supplier;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

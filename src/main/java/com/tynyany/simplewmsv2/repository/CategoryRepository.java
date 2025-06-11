@@ -1,5 +1,6 @@
-package com.tynyany.simplewmsv2.dao;
+package com.tynyany.simplewmsv2.repository;
 
+import com.tynyany.simplewmsv2.dao.CategoryEntity;
 import com.tynyany.simplewmsv2.entity.Category;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

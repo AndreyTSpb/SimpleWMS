@@ -1,8 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
-import com.tynyany.simplewmsv2.dao.ProductRepository;
-import com.tynyany.simplewmsv2.dao.ReceivingLineRepository;
-import com.tynyany.simplewmsv2.dao.ReceivingRepository;
+import com.tynyany.simplewmsv2.repository.ProductRepository;
+import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
+import com.tynyany.simplewmsv2.repository.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.EmployeeService;
 import com.tynyany.simplewmsv2.service.ReceivingService;

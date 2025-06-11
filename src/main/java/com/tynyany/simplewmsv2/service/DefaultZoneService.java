@@ -1,7 +1,7 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ZoneEntity;
-import com.tynyany.simplewmsv2.dao.ZoneRepository;
+import com.tynyany.simplewmsv2.repository.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Zone;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;

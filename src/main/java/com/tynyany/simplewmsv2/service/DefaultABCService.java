@@ -1,10 +1,8 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ABCEntity;
-import com.tynyany.simplewmsv2.dao.ABCRepository;
-import com.tynyany.simplewmsv2.dao.CategoryEntity;
+import com.tynyany.simplewmsv2.repository.ABCRepository;
 import com.tynyany.simplewmsv2.entity.ABC;
-import com.tynyany.simplewmsv2.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

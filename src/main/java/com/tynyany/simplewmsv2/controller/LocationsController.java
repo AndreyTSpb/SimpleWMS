@@ -1,8 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.LocationEntity;
-import com.tynyany.simplewmsv2.dao.LocationRepository;
-import com.tynyany.simplewmsv2.dao.ZoneRepository;
+import com.tynyany.simplewmsv2.repository.LocationRepository;
+import com.tynyany.simplewmsv2.repository.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Location;
 import com.tynyany.simplewmsv2.entity.Zone;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
