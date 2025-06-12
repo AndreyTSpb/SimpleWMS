@@ -17,7 +17,15 @@ public class DefaultSupplierService implements SupplierService{
 
     @Override
     public Supplier getByID(int supplierID) {
-        return null;
+        SupplierEntity supplierEntity = supplierRepository.findById(supplierID).orElse(null);
+        if(supplierEntity == null) return null;
+        return new Supplier(supplierEntity.getSupplierID(),
+                supplierEntity.getSupplierName(),
+                supplierEntity.getSupplierCode(),
+                supplierEntity.getContactPerson(),
+                supplierEntity.getPhoneNumber(),
+                supplierEntity.getEmail(),
+                supplierEntity.getDel());
     }
 
     @Override

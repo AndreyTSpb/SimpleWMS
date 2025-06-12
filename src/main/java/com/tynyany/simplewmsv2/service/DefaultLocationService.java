@@ -53,17 +53,13 @@ public class DefaultLocationService implements LocationService {
      */
     @Override
     public Page<LocationEntity> getAllLocationForTable(Pageable pageable) {
-        Page<LocationEntity> page = locationRepository.findAllBy(pageable);
-        System.out.println(page.getTotalElements());
         //
-        return page;
+        return locationRepository.findAllBy(pageable);
     }
 
     @Override
     public Page<LocationEntity> getAllLocationForTableWithFilter(String filter, Pageable pageable) {
-        Page<LocationEntity> page = locationRepository.findByLocationCodeIsLikeIgnoreCase("%"+filter+"%", pageable);
-        System.out.println(page.getTotalElements());
-        return page;
+        return locationRepository.findByLocationCodeIsLikeIgnoreCase("%"+filter+"%", pageable);
     }
 
     @Override

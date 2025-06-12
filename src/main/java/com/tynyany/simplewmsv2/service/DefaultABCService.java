@@ -17,8 +17,9 @@ public class DefaultABCService implements ABCService{
 
     @Override
     public ABC getByID(int abcID) {
-
-        return null;
+        ABCEntity entity = abcRepository.findById(abcID).orElse(null);
+        if(entity == null) return null;
+        return new ABC(entity.getAbcID(), entity.getCode(), entity.getDescription(), entity.getDel());
     }
 
     @Override

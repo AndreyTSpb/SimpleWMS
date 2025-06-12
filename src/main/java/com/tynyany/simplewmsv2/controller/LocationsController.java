@@ -44,11 +44,11 @@ public class LocationsController {
 
         if (filter != null && !filter.isEmpty()) {
             filterString = "&filter="+filter;
-            page = locationService.getAllLocationForTableWithFilter(filter,pageable);
+            page = locationService.getAllLocationForTableWithFilter(filter, pageable);
         } else {
             page = locationService.getAllLocationForTable(pageable);
         }
-        System.out.println(page);
+
         int currentPage = pageable.getPageNumber();
 
         if(currentPage < 0) currentPage = 0;

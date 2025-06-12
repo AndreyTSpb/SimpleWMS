@@ -11,8 +11,11 @@ import java.util.List;
 public interface LocationService {
     Location getLocationByID(int locationID);
     List<Location> getAllLocation();
+
     Page<LocationEntity> getAllLocationForTable(Pageable pageable);
+
     Page<LocationEntity> getAllLocationForTableWithFilter(String filter, Pageable pageable);
+
     void addLocation(Location location);
     void updateLocation(Location location);
     void delLocation(int locationID);

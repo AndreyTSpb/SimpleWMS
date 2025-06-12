@@ -15,7 +15,11 @@ public class DefaultCategoryService implements CategoryService{
     final CategoryRepository categoryRepository;
     @Override
     public Category getByID(int categoryID) {
-        return null;
+        CategoryEntity categoryEntity = categoryRepository.findById(categoryID).orElse(null);
+        if (categoryEntity == null) {
+            return null;
+        }
+        return new Category(categoryEntity.getCategoryID(),categoryEntity.getCategoryName(),categoryEntity.getDescription(),categoryEntity.getDel());
     }
 
     @Override

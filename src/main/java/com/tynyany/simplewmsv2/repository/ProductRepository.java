@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface ProductRepository extends CrudRepository<ProductEntity, Integer> {
     Optional<ProductEntity> findOneByProductCode(String productCode);
 
-    //Page<ProductEntity> findByProductNameIsLikeIgnoreCase(String filter, Pageable pageable);
+    Page<ProductEntity> findAll(Pageable pageable);
+    Page<ProductEntity> findByProductNameIsLikeIgnoreCase(String filter, Pageable pageable);
     //Page<ProductEntity> findByProductNameIsLikeIgnoreCaseOrProductCodeIsLikeIgnoreCase(String filter, Pageable pageable);
 }

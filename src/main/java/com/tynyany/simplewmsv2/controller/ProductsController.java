@@ -1,5 +1,7 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.*;
+import com.tynyany.simplewmsv2.repository.CategoryRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
@@ -8,15 +10,18 @@ import com.tynyany.simplewmsv2.service.CategoryService;
 import com.tynyany.simplewmsv2.service.ProductService;
 import com.tynyany.simplewmsv2.service.SupplierService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/products")
@@ -30,17 +35,37 @@ public class ProductsController {
     private final SupplierService supplierService;
 
     @GetMapping
-    public String index(Model model) {
+    public String index(@RequestParam(required = false, defaultValue = "") String filter,
+                        Model model,
+                        @PageableDefault(sort = { "productName" }, direction = Sort.Direction.ASC) Pageable pageable) {
 
-        //List<Product> productList = productService.getAllProduct();
-        List<ProductTableString> productList = productService.getAllProductTableString();
-//        for (ProductTableString productTableString : productList) {
-//            System.out.println(productTableString);
-//        }
+        Page<ProductEntity> page;
+        String filterString = "";
+
+        if (filter != null && !filter.isEmpty()) {
+            filterString = "&filter="+filter;
+            page = productService.getAllProductWithPagingAndFilter(pageable, "%"+filter+"%");
+        } else {
+            page = productService.getAllProductWithPaging(pageable);
+        }
+
+        int currentPage = pageable.getPageNumber();
+
+        if(currentPage < 0) currentPage = 0;
+
+        int totalPages = page.getTotalPages()-1;
+        if(totalPages < 0) totalPages = 0;
 
         model.addAttribute("title", "Список товаров");
         model.addAttribute("baseUrl", baseUrl);
-        model.addAttribute("productsList", productList);
+
+        model.addAttribute("totalPage", totalPages);
+        model.addAttribute("filter", filterString);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("previewPage", currentPage-1);
+        model.addAttribute("nextPage", currentPage+1);
+
+        model.addAttribute("productsList", allProductTableString(page));
         model.addAttribute("abcList", abcService.getAll());
         model.addAttribute("categoriesList", categoryService.getAll());
         model.addAttribute("supplierList", supplierService.getAll());
@@ -174,5 +199,68 @@ public class ProductsController {
             arr.put(supplier.getSupplierID(), supplier);
         }
         return arr;
+    }
+
+    public List<ProductTableString> allProductTableString(Page<ProductEntity> iterable) {
+
+        ArrayList<ProductTableString> products = new ArrayList<>();
+        if(iterable.isEmpty()){
+            products.add(new ProductTableString(
+                    new Product(0, "0", "0", "0", 0F, 0F, 0, 0, false, false, 0, "0", "0"),
+                    "0",
+                    "0",
+                    "0")
+            );
+            return products;
+        }
+        for (ProductEntity productEntity : iterable) {
+            //Category Name
+            String categoryName = "";
+            if(productEntity.getCategoryID() != 0){
+                Category category = categoryService.getByID(productEntity.getCategoryID());
+                if(category != null){
+                    categoryName = category.getCategoryName();
+                }
+            }
+            // ABC name
+            String adcName = "";
+            if(productEntity.getAbcID() != 0){
+                ABC abc = abcService.getByID(productEntity.getAbcID());
+                if(abc != null){
+                    adcName = abc.getCode();
+                }
+            }
+
+            // Supplier
+            String supplierName = "";
+            if(productEntity.getSupplierID() != 0){
+                Supplier supplier = supplierService.getByID(productEntity.getSupplierID());
+                if(supplier != null){
+                    supplierName = supplier.getSupplierName();
+                }
+            }
+
+            products.add(new ProductTableString(
+                    new Product(
+                            productEntity.getProductID(),
+                            productEntity.getProductName(),
+                            productEntity.getProductCode(),
+                            productEntity.getDescription(),
+                            productEntity.getWeight(),
+                            productEntity.getVolume(),
+                            productEntity.getCategoryID(),
+                            productEntity.getAbcID(),
+                            productEntity.getExpirationDateRequired(),
+                            productEntity.getDel(),
+                            productEntity.getSupplierID(),
+                            productEntity.getExtBarCode(),
+                            productEntity.getIntBarCode()
+                    ),
+                    categoryName,
+                    adcName,
+                    supplierName)
+            );
+        }
+        return products;
     }
 }

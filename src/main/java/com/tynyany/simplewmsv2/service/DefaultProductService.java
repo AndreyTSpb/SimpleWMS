@@ -8,6 +8,8 @@ import com.tynyany.simplewmsv2.repository.CategoryRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -107,6 +109,16 @@ public class DefaultProductService implements ProductService{
             );
         }
         return products;
+    }
+
+    @Override
+    public Page<ProductEntity> getAllProductWithPaging(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<ProductEntity> getAllProductWithPagingAndFilter(Pageable pageable, String filter) {
+        return productRepository.findByProductNameIsLikeIgnoreCase(filter, pageable);
     }
 
 
