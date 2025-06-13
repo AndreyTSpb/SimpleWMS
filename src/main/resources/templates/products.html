@@ -98,18 +98,11 @@
                 <div th:replace="~{pagings :: content}"></div>
             </div>
         </div>
-
-        <div class="row mx-0 upgrad-box position-absolute" id="upgrad-box" style="display: none; bottom: 40px; z-index: 9999;" >
-            <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h4 class="fs15 font-weight-light mb-3">Обновление даных <a class="close-btn"><i class="material-icons">close</i></a></h4>
-                        <p class="text-mute" id="upgrad-box-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- Main container ends -->
+
+        <!-- Всплывающие сообщения -->
+        <div th:replace="~{update_record_modal :: content}"></div>
+        <!-- Всплывающие сообщения END -->
 
     </div>
 

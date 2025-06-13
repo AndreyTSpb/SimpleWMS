@@ -37,16 +37,15 @@ $(document).ready(function () {
 
     if(btnUpdateProducts != null){
         btnUpdateProducts.addEventListener("click", ()=>{
-
-            $('#addModal').modal('show');
-
-            setTimeout(ajaxUpdateProduct(product_list), 30000);
-
+            const modalWaiting  = $('#addModal');
+            modalWaiting.modal('show');
+            //setTimeout(ajaxUpdateProduct(product_list, modalWaiting), 1000);
+            setTimeout(() => ajaxUpdateProduct(product_list, modalWaiting), 1000);
         });
 
     }
 
-    function ajaxUpdateProduct(product_list){
+    function ajaxUpdateProduct(product_list, modalWaiting){
         $.ajax({
             type: "POST",
             contentType : 'application/json; charset=utf-8',
@@ -57,15 +56,21 @@ $(document).ready(function () {
             timeout: 600000,
             success: function (data) {
                 console.log("SUCCESS : ", data);
-                $('#addModal').modal('hide');
-                $('#upgrad-box').show();
-                $('#upgrad-box-text').text(data.message);
+                modalWaiting.modal('hide');
+                const modalAlert = $('#upgrad-box');
+                modalAlert.css("display", "block");
+                //$('#upgrad-box-text').text(data.message);
+                const html = '<div class="col-12">'+
+                                        '<div class="card mb-4">'+
+                                            '<div class="card-body">'+
+                                                '<h4 class="fs15 font-weight-light mb-3">Обновление данных <a class="close-btn"><i class="material-icons" style="padding-top: 2px;">close</i></a></h4>'+
+                                                '<p class="text-mute">' + data.message + '</p>'+
+                                            '</div>'+
+                                        '</div>'+
+                                    '</div>';
+                modalAlert.append(html);
             },
-            error: function (e) {
-
-                console.log("ERROR : ", e);
-
-            }
+            error: function (e) {console.log("ERROR : ", e);}
         });
     }
 

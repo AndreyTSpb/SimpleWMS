@@ -1,6 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.*;
+import com.tynyany.simplewmsv2.models.AddCookie;
+import com.tynyany.simplewmsv2.models.DelCookie;
 import com.tynyany.simplewmsv2.repository.CategoryRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.entity.*;
@@ -9,6 +11,9 @@ import com.tynyany.simplewmsv2.service.ABCService;
 import com.tynyany.simplewmsv2.service.CategoryService;
 import com.tynyany.simplewmsv2.service.ProductService;
 import com.tynyany.simplewmsv2.service.SupplierService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +22,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +43,8 @@ public class ProductsController {
     @GetMapping
     public String index(@RequestParam(required = false, defaultValue = "") String filter,
                         Model model,
+                        HttpServletRequest request,
+                        HttpServletResponse response,
                         @PageableDefault(sort = { "productName" }, direction = Sort.Direction.ASC) Pageable pageable) {
 
         Page<ProductEntity> page;
@@ -44,6 +52,7 @@ public class ProductsController {
 
         if (filter != null && !filter.isEmpty()) {
             filterString = "&filter="+filter;
+            //page = productService.getAllProductWithPagingAndFilter(pageable, "%"+filter+"%");
             page = productService.getAllProductWithPagingAndFilter(pageable, "%"+filter+"%");
         } else {
             page = productService.getAllProductWithPaging(pageable);
@@ -55,6 +64,20 @@ public class ProductsController {
 
         int totalPages = page.getTotalPages()-1;
         if(totalPages < 0) totalPages = 0;
+
+
+        String updateMessage = null;
+        String cookieName = "alertMessage";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    // Кука с этим именем есть
+                    updateMessage = cookie.getValue().replace('_', ' ');
+                    response.addCookie(new DelCookie(cookieName).getCookie());
+                }
+            }
+        }
 
         model.addAttribute("title", "Список товаров");
         model.addAttribute("baseUrl", baseUrl);
@@ -69,32 +92,17 @@ public class ProductsController {
         model.addAttribute("abcList", abcService.getAll());
         model.addAttribute("categoriesList", categoryService.getAll());
         model.addAttribute("supplierList", supplierService.getAll());
+        model.addAttribute("updateMessage", updateMessage);
         return "products";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute ProductFormField productTableString) {
-        System.out.println(productTableString);
-        //ProductFormField(
-        // productID=3,
-        // productName=null,
-        // productCode=null,
-        // description=,
-        // weight=2,340000,
-        // volume=0,003430,
-        // categoryID=8,
-        // abcID=2,
-        // expirationDateRequired=false,
-        // del=false,
-        // supplierID=2,
-        // extBarcode=null,
-        // intBarcode=null,
-        // categoryName=null,
-        // abcName=null,
-        // supplierName=null)
+    public String update(@ModelAttribute ProductFormField productTableString, HttpServletResponse response, HttpServletRequest request) {
+
         if(!productRepository.existsById(productTableString.getProductID())){
             throw new UserNotFoundException("Product not found: id = " + productTableString.getProductID());
         }
+
         productService.updateProduct(
                 new Product(
                         productTableString.getProductID(),
@@ -112,6 +120,10 @@ public class ProductsController {
                         productTableString.getIntBarcode()
                 )
         );
+        String cookieName = "alertMessage";
+        //Add Cookie
+        response.addCookie(new AddCookie(cookieName, "Обновлен_товар_код:_" + productTableString.getProductCode()).getCookie());
+
         return "redirect:/" + baseUrl;
     }
 

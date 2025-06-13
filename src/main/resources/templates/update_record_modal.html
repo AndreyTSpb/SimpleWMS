@@ -1,0 +1,14 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="content" class="row mx-0 upgrad-box position-absolute" id="upgrad-box" th:styleappend="${updateMessage != null ? 'display:block' : 'display:none'}" style="bottom: 40px; z-index: 9999;" >
+    <div class="col-12" th:if="${updateMessage != null}">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="fs15 font-weight-light mb-3">Обновление данных <a class="close-btn"><i class="material-icons" style="padding-top: 2px;">close</i></a></h4>
+          <p class="text-mute" id="upgrad-box-text" th:text="${updateMessage}">Обновлен товар: З30016546</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

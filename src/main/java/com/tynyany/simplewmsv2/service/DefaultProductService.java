@@ -118,7 +118,8 @@ public class DefaultProductService implements ProductService{
 
     @Override
     public Page<ProductEntity> getAllProductWithPagingAndFilter(Pageable pageable, String filter) {
-        return productRepository.findByProductNameIsLikeIgnoreCase(filter, pageable);
+        //return productRepository.findByProductNameIsLikeIgnoreCase(filter, pageable);
+        return productRepository.findByProductNameIsLikeIgnoreCaseOrProductCodeIsLikeIgnoreCase(filter, filter, pageable);
     }
 
 

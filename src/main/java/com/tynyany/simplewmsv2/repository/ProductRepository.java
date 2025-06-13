@@ -13,5 +13,5 @@ public interface ProductRepository extends CrudRepository<ProductEntity, Integer
 
     Page<ProductEntity> findAll(Pageable pageable);
     Page<ProductEntity> findByProductNameIsLikeIgnoreCase(String filter, Pageable pageable);
-    //Page<ProductEntity> findByProductNameIsLikeIgnoreCaseOrProductCodeIsLikeIgnoreCase(String filter, Pageable pageable);
+    Page<ProductEntity> findByProductNameIsLikeIgnoreCaseOrProductCodeIsLikeIgnoreCase(String filter1, String filter2, Pageable pageable);
 }
