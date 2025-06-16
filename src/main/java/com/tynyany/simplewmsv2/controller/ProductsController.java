@@ -3,7 +3,6 @@ package com.tynyany.simplewmsv2.controller;
 import com.tynyany.simplewmsv2.dao.*;
 import com.tynyany.simplewmsv2.models.AddCookie;
 import com.tynyany.simplewmsv2.models.DelCookie;
-import com.tynyany.simplewmsv2.repository.CategoryRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
@@ -82,6 +81,7 @@ public class ProductsController {
         model.addAttribute("title", "Список товаров");
         model.addAttribute("baseUrl", baseUrl);
 
+        model.addAttribute("updateMessage", updateMessage);
         model.addAttribute("totalPage", totalPages);
         model.addAttribute("filter", filterString);
         model.addAttribute("currentPage", currentPage);
@@ -92,7 +92,7 @@ public class ProductsController {
         model.addAttribute("abcList", abcService.getAll());
         model.addAttribute("categoriesList", categoryService.getAll());
         model.addAttribute("supplierList", supplierService.getAll());
-        model.addAttribute("updateMessage", updateMessage);
+
         return "products";
     }
 

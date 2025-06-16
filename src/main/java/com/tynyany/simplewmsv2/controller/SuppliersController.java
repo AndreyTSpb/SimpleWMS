@@ -1,10 +1,21 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.ProductEntity;
+import com.tynyany.simplewmsv2.dao.SupplierEntity;
+import com.tynyany.simplewmsv2.models.AddCookie;
+import com.tynyany.simplewmsv2.models.DelCookie;
 import com.tynyany.simplewmsv2.repository.SupplierRepository;
 import com.tynyany.simplewmsv2.entity.Supplier;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.service.SupplierService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +34,57 @@ public class SuppliersController {
     private final String baseUrl = "suppliers";
 
     @GetMapping
-    public String index(Model model) {
+    public String index(@RequestParam(required = false, defaultValue = "") String filter,
+                        Model model,
+                        HttpServletRequest request,
+                        HttpServletResponse response,
+                        @PageableDefault(sort = { "supplierName" }, direction = Sort.Direction.ASC) Pageable pageable) {
+
+        Page<SupplierEntity> page;
+        String filterString = "";
+
+        if (filter != null && !filter.isEmpty()) {
+            filterString = "&filter="+filter;
+            //page = productService.getAllProductWithPagingAndFilter(pageable, "%"+filter+"%");
+            page = supplierService.getAllSupplierWithPageableAndFiler(pageable, "%"+filter+"%");
+        } else {
+            page = supplierService.getAllSupplierWithPageable(pageable);
+        }
+
+        int currentPage = pageable.getPageNumber();
+
+        if(currentPage < 0) currentPage = 0;
+
+        int totalPages = page.getTotalPages()-1;
+        if(totalPages < 0) totalPages = 0;
+
+        String updateMessage = null;
+        String cookieName = "alertMessage";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    // Кука с этим именем есть
+                    updateMessage = cookie.getValue().replace('_', ' ');
+                    response.addCookie(new DelCookie(cookieName).getCookie());
+                }
+            }
+        }
+
         model.addAttribute("title", "Список поставщиков");
-        model.addAttribute("supplierList", supplierHashMap());
+        model.addAttribute("supplierList", supplierHashMap(page));
         model.addAttribute("baseUrl", baseUrl);
+
+        // сообщение об обновлении данных
+        model.addAttribute("updateMessage", updateMessage);
+
+        // пагинация
+        model.addAttribute("totalPage", totalPages);
+        model.addAttribute("filter", filterString);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("previewPage", currentPage-1);
+        model.addAttribute("nextPage", currentPage+1);
+
         return "suppliers";
     }
 
@@ -37,10 +95,16 @@ public class SuppliersController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Supplier supplier){
-        if(!supplierRepository.existsById(supplier.getSupplierID()))
-            throw new UserNotFoundException("Supplier not found: id = " + supplier.getSupplierID());
+    public String update(@ModelAttribute Supplier supplier, HttpServletResponse response){
+        System.out.println(supplier);
+        if(!supplierRepository.existsById(supplier.getSupplierID())){
+            response.addCookie(new AddCookie("alertMessage", "Не_найден_поставщик_с_ID:_" +supplier.getSupplierID()).getCookie());
+            return "redirect:/" + baseUrl;
+        }
         supplierService.update(supplier);
+
+        //Add Cookie
+        response.addCookie(new AddCookie("alertMessage", "Обновлен_поставщик_код:" +supplier.getSupplierCode()).getCookie());
         return "redirect:/" + baseUrl;
     }
 
@@ -69,11 +133,11 @@ public class SuppliersController {
      * Получение поставщиков в виде списка
      * @return
      */
-    public  List<HashMap<String, String>> supplierHashMap(){
-        List<Supplier> supplierList = supplierService.getAll();
+    public  List<HashMap<String, String>> supplierHashMap(Page<SupplierEntity> iterable){
+
         List<HashMap<String, String>> arr = new ArrayList<>();
 
-        if(supplierList.isEmpty()){
+        if(iterable.isEmpty()){
             arr.add(hashMapSupplier(
                     "ничего нет",
                     "ничего нет" ,
@@ -84,13 +148,13 @@ public class SuppliersController {
                     "ничего нет"));
         }else {
             int kol = 0;
-            for (Supplier supplier : supplierList) {
+            for (SupplierEntity supplier : iterable) {
                 arr.add(hashMapSupplier(
                         Integer.toString(supplier.getSupplierID()),
                         supplier.getSupplierName(),
                         supplier.getSupplierCode(),
                         supplier.getContactPerson(),
-                        supplier.getPhone(),
+                        supplier.getPhoneNumber(),
                         supplier.getEmail(),
                         Boolean.toString(supplier.getDel())));
             }
@@ -99,7 +163,7 @@ public class SuppliersController {
     }
 
     /**
-     * Собираем в асоциативный массив
+     * Собираем в ассоциативный массив
      * @param id
      * @param name
      * @param code

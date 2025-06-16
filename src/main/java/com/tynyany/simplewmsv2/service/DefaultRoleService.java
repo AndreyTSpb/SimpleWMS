@@ -17,7 +17,13 @@ public class DefaultRoleService implements RoleService{
 
     @Override
     public Role getRoleByID(int roleID) {
-        return null;
+        RoleEntity roleEntity = roleRepository.findById(roleID).orElse(null);
+        assert roleEntity != null;
+        return new Role(
+                roleEntity.getRoleID(),
+                roleEntity.getRoleName(),
+                roleEntity.getNote()
+        );
     }
 
     @Override

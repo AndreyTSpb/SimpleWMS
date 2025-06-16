@@ -95,6 +95,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div th:replace="~{pagings :: content}"></div>
             </div>
         </div>
         <!-- Main container ends -->
@@ -162,7 +163,7 @@
                 </div>
                 <div class="modal-body">
                     <form method="post" th:id="'editForm_id_'+${supplier.supplierID}" th:action="@{${baseUrl}+'/update'}">
-                        <input type="hidden" name="customerID" th:value="${supplier.supplierID}">
+                        <input type="hidden" name="supplierID" th:value="${supplier.supplierID}">
 
                         <div class="form-group">
                             <label>Код поставщика</label>

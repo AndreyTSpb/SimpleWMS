@@ -4,6 +4,8 @@ import com.tynyany.simplewmsv2.dao.SupplierEntity;
 import com.tynyany.simplewmsv2.repository.SupplierRepository;
 import com.tynyany.simplewmsv2.entity.Supplier;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -69,5 +71,15 @@ public class DefaultSupplierService implements SupplierService{
     @Override
     public void del(Supplier supplier) {
 
+    }
+
+    @Override
+    public Page<SupplierEntity> getAllSupplierWithPageable(Pageable pageable) {
+        return supplierRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<SupplierEntity> getAllSupplierWithPageableAndFiler(Pageable pageable, String filter) {
+        return supplierRepository.findBySupplierNameLikeIgnoreCaseOrSupplierCodeLikeIgnoreCase(filter, filter, pageable);
     }
 }

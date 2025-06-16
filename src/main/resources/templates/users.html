@@ -82,7 +82,7 @@
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#viewModal_id_'+${user.userID}">Просмотр</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${user.userID}">Редактировать</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#resetModal_id_'+${user.userID}">Сброс пароля</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${location.locationID}">Штрих-код</a>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${user.userID}">Штрих-код</a>
                                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#delModal_id_'+${user.userID}">Удалить</a>
                                     </div>
                                 </div>
@@ -92,9 +92,14 @@
                         </tbody>
                     </table>
                 </div>
+                <div th:replace="~{pagings :: content}"></div>
             </div>
         </div>
         <!-- Main container ends -->
+
+        <!-- Всплывающие сообщения -->
+        <div th:replace="~{update_record_modal :: content}"></div>
+        <!-- Всплывающие сообщения END -->
 
     </div>
 

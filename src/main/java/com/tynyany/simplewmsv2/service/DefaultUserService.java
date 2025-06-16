@@ -8,6 +8,8 @@ import com.tynyany.simplewmsv2.repository.EmployeeRepository;
 import com.tynyany.simplewmsv2.repository.RoleRepository;
 import com.tynyany.simplewmsv2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -120,5 +122,15 @@ public class DefaultUserService implements UserService{
                 user.getEmployeeID()
         );
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public Page<UserEntity> getAllUserPageable(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<UserEntity> getAllUserPageableWithFilter(Pageable pageable, String filter) {
+        return userRepository.findByLoginLikeIgnoreCase(pageable, filter);
     }
 }
