@@ -1,5 +1,8 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.dao.ReceivingEntity;
+import com.tynyany.simplewmsv2.dao.UserEntity;
+import com.tynyany.simplewmsv2.models.DelCookie;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
@@ -7,12 +10,20 @@ import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.EmployeeService;
 import com.tynyany.simplewmsv2.service.ReceivingService;
 import com.tynyany.simplewmsv2.service.RoleService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,12 +52,58 @@ public class ReceivingController {
 
 
     @GetMapping("/list")
-    public String index(Model model) {
+    public String index(@RequestParam(required = false, defaultValue = "") String filter,
+                        Model model,
+                        HttpServletRequest request,
+                        HttpServletResponse response,
+                        @PageableDefault(sort = { "receivingDate" }, direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<ReceivingEntity> page;
+        String filterString = "";
+
+        if (filter != null && !filter.isEmpty()) {
+            filterString = "&filter="+filter;
+            page = receivingService.getAllPageableWithFilter(pageable, "%"+filter+"%");
+        } else {
+            page = receivingService.getAllPageable(pageable);
+        }
+
         model.addAttribute("title", "Страница со списком всех приходов товаров");
         model.addAttribute("baseUrl", baseUrl);
-        model.addAttribute("receivingList", arrayReceivingList());
+        model.addAttribute("receivingList", arrayReceivingList(page));
         model.addAttribute("headerList", PickingRouteController.listHeader());
         model.addAttribute("stringList", PickingRouteController.stringsListPicking());
+
+        int currentPage = pageable.getPageNumber();
+
+        if(currentPage < 0) currentPage = 0;
+
+        int totalPages = page.getTotalPages()-1;
+        if(totalPages < 0) totalPages = 0;
+
+        String updateMessage = null;
+        String cookieName = "alertMessage";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    // Кука с этим именем есть
+                    updateMessage = cookie.getValue().replace('_', ' ');
+                    response.addCookie(new DelCookie(cookieName).getCookie());
+                }
+            }
+        }
+
+        // сообщение об обновлении данных
+        model.addAttribute("updateMessage", updateMessage);
+
+        // пагинация
+        model.addAttribute("totalPage", totalPages);
+        model.addAttribute("filter", filterString);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("previewPage", currentPage-1);
+        model.addAttribute("nextPage", currentPage+1);
+
         return "receiving_list";
     }
 
@@ -81,31 +138,32 @@ public class ReceivingController {
         return itog;
     }
 
-    private  List<HashMap<String, String>> arrayReceivingList(){
+    private  List<HashMap<String, String>> arrayReceivingList(Page<ReceivingEntity> page){
 
-
-        List<Receiving> receivings = receivingService.getAll();
-        System.out.println(receivingService.getByID(1));
-
+        System.out.println(page);
         List<HashMap<String, String>> arr = new ArrayList<>();
 
         Status[] statuses = receivingStatuses();
 
         int kol = 1;
-        if (receivings != null ){
-            for(Receiving item : receivings){
+        if (page != null ){
+            for(ReceivingEntity item : page){
+                System.out.println(item);
                 HashMap<String, String> row = new HashMap<>();
                 row.put("ID", Integer.toString(item.getReceivingID()));
-                row.put("dtWaiting", new SimpleDateFormat("yyyyMMdd").format(item.getReceivingDate()));
-                row.put("dtReal", new SimpleDateFormat("yyyyMMdd").format(item.getGetReceivingDate()));
+                row.put("dtWaiting", (item.getReceivingDate() != null ) ? new SimpleDateFormat("yyyy-MM-dd").format(item.getReceivingDate()) : "0000-00-00");
+                row.put("dtReal", (item.getGetReceivingDate() != null)? new SimpleDateFormat("yyyy-MM-dd").format(item.getGetReceivingDate()) : "0000-00-00");
                 row.put("numOrder", item.getDocumentNumber());
                 row.put("employee", Integer.toString(item.getEmployeeID()));
+
                 row.put("sumWeight", "0");
                 row.put("sumVolume", "0");
                 row.put("qntRow", "0");
-                row.put("status", statuses[item.getStatusID()].getName());
 
-                arr.add(kol++, row);
+                row.put("status", statuses[item.getStatusID()].getName());
+                System.out.println(row);
+
+                arr.add(row);
             }
         }else{
             //Нет записей
