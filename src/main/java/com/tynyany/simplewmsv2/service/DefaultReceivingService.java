@@ -60,6 +60,6 @@ public class DefaultReceivingService implements ReceivingService{
 
     @Override
     public Page<ReceivingEntity> getAllPageableWithFilter(Pageable pageable, String filter) {
-        return receivingRepository.findByDocumentNumberLikeIgnoreCaseOrReceivingDateLikeIgnoreCase(filter, Timestamp.valueOf(filter), pageable);
+        return receivingRepository.findByDocumentNumberLikeIgnoreCase(filter, pageable);
     }
 }

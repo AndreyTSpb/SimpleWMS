@@ -27,7 +27,22 @@ public class DefaultProductService implements ProductService{
 
     @Override
     public Product getProductByID(int productID) {
-        return null;
+        Optional<ProductEntity> product = productRepository.findById(productID);
+        return product.map(productEntity -> new Product(
+                productEntity.getProductID(),
+                productEntity.getProductName(),
+                productEntity.getProductCode(),
+                productEntity.getDescription(),
+                productEntity.getWeight(),
+                productEntity.getVolume(),
+                productEntity.getCategoryID(),
+                productEntity.getAbcID(),
+                productEntity.getExpirationDateRequired(),
+                productEntity.getDel(),
+                productEntity.getSupplierID(),
+                productEntity.getExtBarCode(),
+                productEntity.getIntBarCode()
+        )).orElse(null);
     }
 
     @Override

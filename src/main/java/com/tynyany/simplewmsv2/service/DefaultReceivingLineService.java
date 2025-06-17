@@ -6,7 +6,9 @@ import com.tynyany.simplewmsv2.entity.ReceivingLine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +50,24 @@ public class DefaultReceivingLineService implements ReceivingLineService{
     @Override
     public void del(ReceivingLine receivingLine) {
 
+    }
+
+    @Override
+    public List<ReceivingLine> getAllLinesForReceiving(int receivingID) {
+        ArrayList<ReceivingLineEntity> receivingLineOption = receivingLineRepository.findAllByReceivingIDAndDel(receivingID, false);
+        if(receivingLineOption.isEmpty()) {
+            return null;
+        }
+        List<ReceivingLine> resultList = new ArrayList<>();
+        // Предположим, что у вас есть метод преобразования ReceivingLineEntity в ReceivingLine
+
+        for(ReceivingLineEntity receivingLineEntity : receivingLineOption) {
+            ReceivingLine receivingLine = convertToReceivingLine(receivingLineEntity);
+            resultList.add(receivingLine);
+        }
+        return resultList;
+    }
+    private ReceivingLine convertToReceivingLine(ReceivingLineEntity entity) {
+        return new ReceivingLine(entity.getReceivingLineID(),entity.getQuantityProduct(), entity.getQuantityReceived(), entity.getExpirationDate(), entity.getReceivingID(), entity.getLocationID(), entity.getProductID(), entity.getDel(), entity.getNote());
     }
 }

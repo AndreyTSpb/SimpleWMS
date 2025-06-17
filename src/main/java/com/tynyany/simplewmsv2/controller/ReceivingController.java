@@ -2,14 +2,13 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.dao.UserEntity;
+import com.tynyany.simplewmsv2.models.CalculationVolumeAndWeightUponReceipt;
 import com.tynyany.simplewmsv2.models.DelCookie;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
-import com.tynyany.simplewmsv2.service.EmployeeService;
-import com.tynyany.simplewmsv2.service.ReceivingService;
-import com.tynyany.simplewmsv2.service.RoleService;
+import com.tynyany.simplewmsv2.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,6 +44,8 @@ public class ReceivingController {
 
 
     final String baseUrl = "receiving";
+    private final ReceivingLineService receivingLineService;
+    private final ProductService productService;
 
     private int sumQnt = 0;
     private float sumWeight = 0;
@@ -156,9 +157,10 @@ public class ReceivingController {
                 row.put("numOrder", item.getDocumentNumber());
                 row.put("employee", Integer.toString(item.getEmployeeID()));
 
-                row.put("sumWeight", "0");
-                row.put("sumVolume", "0");
-                row.put("qntRow", "0");
+                CalculationVolumeAndWeightUponReceipt calc = new CalculationVolumeAndWeightUponReceipt(item.getReceivingID(), receivingLineService, productService);
+                row.put("sumWeight", (calc.getWeight()>0) ? String.valueOf(calc.getWeight()) :"0");
+                row.put("sumVolume", (calc.getVolume()>0)? String.valueOf(calc.getVolume()) :"0");
+                row.put("qntRow", String.valueOf(calc.getQntProducts()));
 
                 row.put("status", statuses[item.getStatusID()].getName());
                 System.out.println(row);

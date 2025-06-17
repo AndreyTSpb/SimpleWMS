@@ -17,4 +17,6 @@ public interface ReceivingRepository extends CrudRepository<ReceivingEntity, Int
 
     Page<ReceivingEntity> findAll(Pageable pageable);
     Page<ReceivingEntity> findByDocumentNumberLikeIgnoreCaseOrReceivingDateLikeIgnoreCase(String documentNumber, Timestamp receivingDate, Pageable pageable);
+
+    Page<ReceivingEntity> findByDocumentNumberLikeIgnoreCase(String filter, Pageable pageable);
 }

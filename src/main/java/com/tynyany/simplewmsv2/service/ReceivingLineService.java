@@ -15,4 +15,6 @@ public interface ReceivingLineService {
     void update(ReceivingLine receivingLine);
 
     void del(ReceivingLine receivingLine);
+
+    List<ReceivingLine> getAllLinesForReceiving(int receivingID);
 }

@@ -158,6 +158,7 @@ public class RestApiController {
             System.out.println(line.weight);
             System.out.println(productRepository.findOneByProductCode(line.code));
             Optional<ProductEntity> productT = productRepository.findOneByProductCode(line.code);
+
             if(productT.isEmpty()) {
                 //TO DO: СДЕЛАТЬ ЗАПРОС НА ПОЛУЧЕНИЯ ДАННЫХ ПО ТОВАРУ
             }
