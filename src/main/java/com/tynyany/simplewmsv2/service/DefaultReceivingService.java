@@ -56,7 +56,17 @@ public class DefaultReceivingService implements ReceivingService{
 
     @Override
     public void update(Receiving receiving) {
-
+        ReceivingEntity entity = new ReceivingEntity(
+                receiving.getReceivingID(),
+                receiving.getReceivingDate(),
+                receiving.getGetReceivingDate(),
+                receiving.getDocumentNumber(),
+                receiving.getStatusID(),
+                receiving.getEmployeeID(),
+                receiving.getSupplierID(),
+                receiving.getDel()
+        );
+        receivingRepository.save(entity);
     }
 
     @Override

@@ -96,8 +96,7 @@ public class SuppliersController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute Supplier supplier, HttpServletResponse response){
-        System.out.println(supplier);
-        if(!supplierRepository.existsById(supplier.getSupplierID())){
+       if(!supplierRepository.existsById(supplier.getSupplierID())){
             response.addCookie(new AddCookie("alertMessage", "Не_найден_поставщик_с_ID:_" +supplier.getSupplierID()).getCookie());
             return "redirect:/" + baseUrl;
         }

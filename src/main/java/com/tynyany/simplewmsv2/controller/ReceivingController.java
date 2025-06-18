@@ -2,8 +2,10 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.dao.UserEntity;
+import com.tynyany.simplewmsv2.models.AddCookie;
 import com.tynyany.simplewmsv2.models.CalculationVolumeAndWeightUponReceipt;
 import com.tynyany.simplewmsv2.models.DelCookie;
+import com.tynyany.simplewmsv2.models.FormStartReceiving;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
@@ -19,11 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,9 +137,29 @@ public class ReceivingController {
         return "edit_receiving";
     }
 
-    @GetMapping("/start_receiving")
-    public String startReceiving(){
-        return "edit_receiving";
+    @PostMapping("/start_receiving")
+    public String startReceiving(@ModelAttribute FormStartReceiving form, HttpServletResponse response){
+
+        if(!receivingRepository.existsById(form.getOrderID())){
+            response.addCookie(new AddCookie("alertMessage", "Не_найден_приход_с_ИД:_" + form.getOrderID()).getCookie());
+            return "redirect:/" + baseUrl + "/list";
+        }
+
+        Receiving receiving = receivingService.getByID(form.getOrderID());
+
+        receivingService.update(new Receiving(
+                receiving.getReceivingID(),
+                receiving.getReceivingDate(),
+                Timestamp.valueOf(form.getDate_start()),
+                receiving.getDocumentNumber(),
+                1,
+                form.getEmployeeID(),
+                receiving.getSupplierID(),
+                false)
+        );
+
+        response.addCookie(new AddCookie("alertMessage", "Обновлена_запись_с_ИД:_" + form.getOrderID()).getCookie());
+        return "redirect:/" + baseUrl + "/edit/"+form.getOrderID();
     }
 
     private HashMap<String, String> orderItog() {
