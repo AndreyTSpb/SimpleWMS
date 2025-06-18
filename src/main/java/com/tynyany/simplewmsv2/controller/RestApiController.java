@@ -221,7 +221,7 @@ public class RestApiController {
 //    }
 
     private  HashMap<String, String> orderHead(int orderID){
-        Receiving receiving = receivingList()[orderID]; //Одну выбрали приходную накладную
+        Receiving receiving = receivingService.getByID(orderID); //Одну выбрали приходную накладную
         Status receivingStatus = receivingStatuses()[receiving.getStatusID()];
         Supplier supplier = SuppliersController.supplierList()[receiving.getStatusID()];
 
@@ -232,6 +232,9 @@ public class RestApiController {
         orderHead.put("supplierName", supplier.getSupplierName());
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
+        orderHead.put("receivingStatus", receivingStatus.getName());
+        orderHead.put("receivingID", String.valueOf(receiving.getReceivingID()));
+        orderHead.put("employeeName", employee.getEmployeeName());
         return orderHead;
     }
 

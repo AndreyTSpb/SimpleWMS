@@ -46,6 +46,7 @@ public class ReceivingController {
     final String baseUrl = "receiving";
     private final ReceivingLineService receivingLineService;
     private final ProductService productService;
+    private final SupplierService supplierService;
 
     private int sumQnt = 0;
     private float sumWeight = 0;
@@ -110,10 +111,15 @@ public class ReceivingController {
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") int id, Model model){
+
         model.addAttribute("id", id);
+        model.addAttribute("baseUrl", baseUrl);
+
         model.addAttribute("orderHead", orderHead(id));
         model.addAttribute("orderLines", orderLine(id));
         model.addAttribute("orderItog", orderItog());
+
+        model.addAttribute("employeeList", employeeService.getAllEmployee());
         return "edit_receiving";
     }
 
@@ -128,6 +134,11 @@ public class ReceivingController {
         model.addAttribute("orderHead", orderHead(id));
         model.addAttribute("orderLines", orderLine(id));
         model.addAttribute("orderItog", orderItog());
+        return "edit_receiving";
+    }
+
+    @GetMapping("/start_receiving")
+    public String startReceiving(){
         return "edit_receiving";
     }
 
@@ -191,15 +202,18 @@ public class ReceivingController {
     //пример
     private  HashMap<String, String> orderHead(int orderID){
         List<Role> roles = roleService.getAllRole();
-        List<Employee> employees = employeeService.getAllEmployee();
 
-        Receiving receiving = receivingList()[orderID]; //Одну выбрали приходную накладную
-        Supplier supplier = SuppliersController.supplierList()[receiving.getStatusID()];
+        Receiving receiving = receivingService.getByID(orderID); //Одну выбрали приходную накладную
+        System.out.println(receiving);
+        if(receiving == null){
+            return null;
+        }
+        Supplier supplier = supplierService.getByID(receiving.getSupplierID());
 
         //Новый приход без сотрудника
         Employee employee;
         if(receiving.getEmployeeID() > 0) {
-            employee = employees.get(receiving.getEmployeeID());
+            employee = employeeService.getEmployeeByID(receiving.getEmployeeID());
         }else{
             employee = new Employee(
                     0,
@@ -213,7 +227,8 @@ public class ReceivingController {
         HashMap<String, String> orderHead = new HashMap<>();
         orderHead.put("orderId", Integer.toString(orderID));
         orderHead.put("orderERP", receiving.getDocumentNumber());
-        orderHead.put("status", "Создан");
+        orderHead.put("status", receivingStatuses()[receiving.getStatusID()].getName());
+        orderHead.put("statusID", String.valueOf(receiving.getStatusID()));
         orderHead.put("supplierName", supplier.getSupplierName());
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("employeeTabNum", employee.getTabNum());
@@ -225,19 +240,25 @@ public class ReceivingController {
     }
 
     private List<HashMap<String, String>> orderLine(int orderId){
+        List<ReceivingLine> receivingLines = receivingLineService.getAllLinesForReceiving(orderId);
+
+        if (receivingLines == null){
+            return null;
+        }
         List<HashMap<String, String>> arr = new ArrayList<>();
         int kol = 1;
-        for(ReceivingLine item : receivingLinesList()){
+        for(ReceivingLine item : receivingLines){
             HashMap<String, String> strArr = new HashMap<>();
 
-            Product product = ProductsController.producstList()[item.getProductID()]; //Данные по продукту
+            Product product = productService.getProductByID(item.getProductID()); //Данные по продукту
 
             int qntOrder = item.getQuantityProduct();
             int qntFact = item.getQuantityReceived();
-            float weightOrder = product.getWeight()*qntOrder;
-            float volumeOrder = product.getVolume()*qntOrder;
-            float weightFact = product.getWeight()*qntFact;
-            float volumeFact = product.getVolume()*qntFact;
+            float weightOrder = product.getWeight() * qntOrder;
+            float volumeOrder = product.getVolume() * qntOrder;
+
+            float weightFact  = product.getWeight() * qntFact;
+            float volumeFact  = product.getVolume() * qntFact;
 
 
             this.sumQnt += qntFact;
@@ -246,41 +267,22 @@ public class ReceivingController {
 
             strArr.put("kol", String.valueOf(kol++));
             strArr.put("productID", String.valueOf(item.getProductID()));
-            strArr.put("name", ProductsController.producstList()[item.getProductID()].getProductName());
-            strArr.put("code", ProductsController.producstList()[item.getProductID()].getProductCode());
-            strArr.put("ext_barcode", ProductsController.producstList()[item.getProductID()].getExtBarcode());
-            strArr.put("int_barcode", ProductsController.producstList()[item.getProductID()].getIntBarcode());
+            strArr.put("name", product.getProductName());
+            strArr.put("code", product.getProductCode());
+            strArr.put("ext_barcode", product.getExtBarcode());
+            strArr.put("int_barcode", product.getIntBarcode());
             strArr.put("qntOrder", String.valueOf(qntOrder));
             strArr.put("qntFact", String.valueOf(qntFact));
-            strArr.put("weightOrder", String.valueOf(Math.floor(weightOrder)));
-            strArr.put("weightFact", String.valueOf(Math.floor(weightFact)));
-            strArr.put("volumeOrder", String.valueOf(Math.floor(volumeOrder)));
-            strArr.put("volumeFact", String.valueOf(Math.floor(volumeFact)));
+            strArr.put("weightOrder", String.valueOf(weightOrder));
+            strArr.put("weightFact", String.valueOf(weightFact));
+            strArr.put("volumeOrder", String.valueOf(volumeOrder));
+            strArr.put("volumeFact", String.valueOf(volumeFact));
             strArr.put("expirationDate", String.valueOf(item.getExpirationDate()));
             strArr.put("note", item.getNote());
 
             arr.add(strArr);
         }
         return  arr;
-    }
-
-    public static Receiving[] receivingList(){
-        Receiving[] receivings = new Receiving[2];
-
-        receivings[0] = new Receiving(0, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, 1, false);
-        receivings[1] = new Receiving(1, java.sql.Timestamp.valueOf( "2025-02-25 11:10:00" ), java.sql.Timestamp.valueOf( "2025-02-25 12:10:00" ), "З30015266", 2, 0, 1, false);
-
-        return receivings;
-    }
-
-    public static ReceivingLine[] receivingLinesList(){
-        ReceivingLine[] receivingLines = new ReceivingLine[5];
-        receivingLines[0] = new ReceivingLine(0, 200, 120, java.sql.Timestamp.valueOf( "2027-02-25 00:00:00" ), 1, 0, 3, false, "Механические повреждения");
-        receivingLines[1] = new ReceivingLine(1, 205, 200, java.sql.Timestamp.valueOf( "2027-02-25 00:00:00" ), 1, 0, 2, false, "Просрочены 5 штук");
-        receivingLines[2] = new ReceivingLine(2, 100, 100, java.sql.Timestamp.valueOf( "2027-02-25 00:00:00" ), 1, 0, 1, false, "");
-        receivingLines[3] = new ReceivingLine(3, 135, 132, java.sql.Timestamp.valueOf( "2027-02-25 00:00:00" ), 1, 0, 4, false, "Повреждена упаковка");
-        receivingLines[4] = new ReceivingLine(4, 160, 152, java.sql.Timestamp.valueOf( "2027-02-25 00:00:00" ), 1, 0, 5, false, "Нечитаема этикетка");
-        return  receivingLines;
     }
 
     public static Status[] receivingStatuses(){

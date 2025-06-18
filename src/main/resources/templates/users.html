@@ -185,7 +185,7 @@
                                 <input type="text" class="form-control" name="login" th:value="${user.login}">
                         </div>
                         <div class="form-group">
-                                <label>Сотрудник</label>
+                                <label>Сотрудник:</label>
                                 <select class="form-control" name = "employeeID" >
                                     <option th:each="employee : ${employeeList1}" th:value="${employee.employeeID}" th:text="${employee.employeeName}" th:selected="${employee.employeeID == user.employeeID}"></option>
                                 </select>

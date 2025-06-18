@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,17 @@ public class DefaultReceivingService implements ReceivingService{
 
     @Override
     public Receiving getByID(int receivingID) {
-        return null;
+        Optional<ReceivingEntity> optional = receivingRepository.findById(receivingID);
+        return optional.map(receivingEntity -> new Receiving(
+                receivingEntity.getReceivingID(),
+                receivingEntity.getReceivingDate(),
+                receivingEntity.getGetReceivingDate(),
+                receivingEntity.getDocumentNumber(),
+                receivingEntity.getStatusID(),
+                receivingEntity.getEmployeeID(),
+                receivingEntity.getSupplierID(),
+                receivingEntity.getDel()
+        )).orElse(null);
     }
 
     @Override
