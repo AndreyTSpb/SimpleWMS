@@ -40,3 +40,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks {
+	bootJar {
+		archiveFileName.set("SimpleWMS.jar")
+	}
+}

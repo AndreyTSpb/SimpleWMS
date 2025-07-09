@@ -51,6 +51,7 @@ public class RestApiController {
     private final ReceivingLineService receivingLineService;
 
     private final RoleService roleService;
+    private final RoleRepository roleRepository;
     private final ZoneService zoneService;
     private final ZoneRepository zoneRepository;
     private final LocationRepository locationRepository;
@@ -396,17 +397,25 @@ public class RestApiController {
      * Справочник ролей заполняем ( по факту может лучще отдельный список и все)
      * @return
      */
-    @RequestMapping(value="/add_roles", method= RequestMethod.GET)
+    @RequestMapping(value="/add_roles", method= RequestMethod.POST)
     @ResponseBody
-    public ResponseJson addRoles(){
+    public ResponseJson addRoles(@RequestBody String json) throws JsonProcessingException{
 
-        for(Role role : RoleList()){
-            if(role != null){
-                System.out.println(role);
+        int kol = 0;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        System.out.println(json);
+
+        for (Role role : objectMapper.readValue(json, Role[].class)){
+            System.out.println(role);
+            /* Проверка по наименованию естьли такой уже в базе */
+            Optional<RoleEntity> roleEntity = roleRepository.findByRoleName(role.getRoleName());
+            if(roleEntity.isEmpty()){
                 roleService.addRole(role);
+                kol++;
             }
         }
-        return new ResponseJson(1, "Обновлен справочник ролей");
+        return new ResponseJson(1, "Обновлен справочник ролей: " + kol);
     }
 
     /**
@@ -417,14 +426,12 @@ public class RestApiController {
     @RequestMapping(value = "/add_customers", method = RequestMethod.POST)
     @ResponseBody
     public ResponseJson addCustomer(@RequestBody String json) throws JsonProcessingException {
-        System.out.println(json);
+
         int kol = 0;
         ObjectMapper objectMapper = new ObjectMapper();
 
         for (CustomerERP customerERP : objectMapper.readValue(json, CustomerERP[].class)) {
-            /*
-        Проверка по коду клиента стьли такой уже в базе
-         */
+            /* Проверка по коду клиента стьли такой уже в базе */
             Optional<CustomerEntity> customerEntity = customerRepository.findByCustomerCode(customerERP.getCustomerCode());
             if(customerEntity.isEmpty()) {
                 customerService.add(new Customer(0,

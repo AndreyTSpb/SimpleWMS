@@ -1,8 +1,13 @@
 package com.tynyany.simplewmsv2.entity;
 
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.*;
 
-@Value
+@Data
+@Getter
+@Builder
+@NoArgsConstructor
+@JsonAutoDetect
 public class Role {
     int roleID;
     String roleName;
