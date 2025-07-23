@@ -126,7 +126,7 @@
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                                 <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${orderItems.productID}">ШтрихКод</a>
-                                                <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${orderItems.productID}">Редактировать</a>
+                                                <a th:if="${orderHead.statusID == '1'}" class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${orderItems.productID}">Редактировать</a>
                                             </div>
                                         </div>
                                     </td>
@@ -144,7 +144,7 @@
                             <form id="form_del_receiving" method="post" action="/del">
                                 <input type="hidden" name="id" th:value="${orderHead.orderId}">
                             </form>
-                            <a th:href="@{'/'+ ${baseUrl}}" class="btn btn-outline-secondary">Назад</a>
+                            <a href="/receiving/list" class="btn btn-outline-secondary">Назад</a>
                             <button type="submit" th:if="${orderHead.statusID == '1'}" form="form_close_receiving"  class="btn btn-outline-success float-right">Завершить приемку</button>
                             <button type="submit" th:if="${orderHead.statusID == '1'}" form="form_del_receiving"  class="btn btn-outline-danger float-right pr-1">Отменить приемку</button>
                             <button th:if="${orderHead.statusID == '0'}" class="btn btn-outline-template float-right" data-toggle="modal" data-target="#startReceiving">Начать приемку</button>
@@ -181,7 +181,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'editForm_id_'+${orderItems.productID}" th:action="@{${baseUrl}+'/update'}">
+                    <form th:id="'editForm_id_'+${orderItems.productID}" action="/receiving/update_string_product" method="post">
                         <input type="hidden" name="productId" th:value="${orderItems.productID}">
                         <div class="row">
                             <div class="col-lg-6 col-12">

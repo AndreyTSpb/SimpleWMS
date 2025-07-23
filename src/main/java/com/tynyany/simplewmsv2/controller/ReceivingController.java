@@ -162,6 +162,13 @@ public class ReceivingController {
         return "redirect:/" + baseUrl + "/edit/"+form.getOrderID();
     }
 
+    @PostMapping("/update_string_product")
+    public String updateStringProduct(@ModelAttribute HashMap<String, String> arr, HttpServletResponse response){
+        System.out.println(arr);
+        return "redirect:/" + baseUrl + "/list";
+    }
+
+
     private HashMap<String, String> orderItog() {
         HashMap<String, String> itog = new HashMap<>();
         itog.put("sunQnt", String.valueOf(this.sumQnt));
