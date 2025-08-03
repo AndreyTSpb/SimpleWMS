@@ -1,6 +1,7 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.entity.ReceivingLine;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,21 @@ public class DefaultReceivingLineService implements ReceivingLineService{
 
     @Override
     public ReceivingLine getByID(int receivingLineID) {
-        return null;
+        ReceivingLineEntity receivingLineEntity = receivingLineRepository.findById(receivingLineID).orElse(null);
+        System.out.println(receivingLineEntity);
+
+        if(receivingLineEntity == null) return null;
+        return new ReceivingLine(
+                receivingLineEntity.getReceivingLineID(),
+                receivingLineEntity.getQuantityProduct(),
+                receivingLineEntity.getQuantityReceived(),
+                receivingLineEntity.getExpirationDate(),
+                receivingLineEntity.getReceivingID(),
+                receivingLineEntity.getLocationID(),
+                receivingLineEntity.getProductID(),
+                receivingLineEntity.getDel(),
+                receivingLineEntity.getNote()
+        );
     }
 
     @Override

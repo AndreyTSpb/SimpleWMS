@@ -183,7 +183,7 @@
                 <div class="modal-body">
                     <form th:id="'editForm_id_'+${orderItems.productID}" action="/receiving/update_string_product" method="post">
                         <input type="hidden" name="productId" th:value="${orderItems.productID}">
-                        <input type="hidden" name="numLine" th:value="${orderItems.kol}">
+                        <input type="hidden" name="numLine" th:value="${orderItems.rowId}">
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">

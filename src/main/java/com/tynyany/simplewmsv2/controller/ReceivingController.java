@@ -2,10 +2,7 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.dao.UserEntity;
-import com.tynyany.simplewmsv2.models.AddCookie;
-import com.tynyany.simplewmsv2.models.CalculationVolumeAndWeightUponReceipt;
-import com.tynyany.simplewmsv2.models.DelCookie;
-import com.tynyany.simplewmsv2.models.FormStartReceiving;
+import com.tynyany.simplewmsv2.models.*;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
@@ -176,8 +173,10 @@ public class ReceivingController {
      */
     @PostMapping("/update_string_product")
     public String updateStringProduct(@ModelAttribute ReceivingLineForm arr, HttpServletResponse response){
-        System.out.println(arr);
         //ReceivingLineForm(numLine=1, productId=33, extBarcode=4600709420174, intBarcode=2004637788393, qntOrder=200, qntFact=10, expirationDate=, note=111111 еуые еуым, zoneId=1, locationId=1)
+        //ReceivingLineForm(numLine=1, productId=12, extBarcode=4600950660955, intBarcode=2000253470536, qntOrder=200, qntFact=100, expirationDate=2025-08-31, note=еуые еуче, zoneId=1, locationId=1)
+        UpdateStringReceiving updateStringReceiving = new UpdateStringReceiving(arr);
+        updateStringReceiving.updateReceivingLine();
         return "redirect:/" + baseUrl + "/list";
     }
 
@@ -306,6 +305,7 @@ public class ReceivingController {
             this.sumVolume += volumeFact;
 
             strArr.put("kol", String.valueOf(kol++));
+            strArr.put("rowId", String.valueOf(item.getReceivingLineID()));
             strArr.put("productID", String.valueOf(item.getProductID()));
             strArr.put("name", product.getProductName());
             strArr.put("code", product.getProductCode());

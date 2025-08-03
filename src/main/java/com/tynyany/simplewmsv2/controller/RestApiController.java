@@ -151,13 +151,6 @@ public class RestApiController {
             *             "int_barcode": "20002525245"
             *         }
             * */
-            System.out.println(line.code);
-            System.out.println(line.ext_barcode);
-            System.out.println(line.int_barcode);
-            System.out.println(line.qnt);
-            System.out.println(line.volume);
-            System.out.println(line.weight);
-            System.out.println(productRepository.findOneByProductCode(line.code));
             Optional<ProductEntity> productT = productRepository.findOneByProductCode(line.code);
 
             if(productT.isEmpty()) {
