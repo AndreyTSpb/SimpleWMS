@@ -47,6 +47,8 @@ public class ReceivingController {
     private final ReceivingLineService receivingLineService;
     private final ProductService productService;
     private final SupplierService supplierService;
+    private final ZoneService zoneService;
+    private final LocationService locationService;
 
     private int sumQnt = 0;
     private float sumWeight = 0;
@@ -119,7 +121,11 @@ public class ReceivingController {
         model.addAttribute("orderLines", orderLine(id));
         model.addAttribute("orderItog", orderItog());
 
+        //Для селекторов
         model.addAttribute("employeeList", employeeService.getAllEmployee());
+        model.addAttribute("zoneList", zoneService.getAll());
+        model.addAttribute("locationList", locationService.getAllLocation());
+
         return "edit_receiving";
     }
 
@@ -162,9 +168,16 @@ public class ReceivingController {
         return "redirect:/" + baseUrl + "/edit/"+form.getOrderID();
     }
 
+    /**
+     * Обновления данных по строке при приемке товара
+     * @param arr
+     * @param response
+     * @return
+     */
     @PostMapping("/update_string_product")
-    public String updateStringProduct(@ModelAttribute HashMap<String, String> arr, HttpServletResponse response){
+    public String updateStringProduct(@ModelAttribute ReceivingLineForm arr, HttpServletResponse response){
         System.out.println(arr);
+        //ReceivingLineForm(numLine=1, productId=33, extBarcode=4600709420174, intBarcode=2004637788393, qntOrder=200, qntFact=10, expirationDate=, note=111111 еуые еуым, zoneId=1, locationId=1)
         return "redirect:/" + baseUrl + "/list";
     }
 
@@ -306,6 +319,8 @@ public class ReceivingController {
             strArr.put("volumeFact", String.valueOf(volumeFact));
             strArr.put("expirationDate", String.valueOf(item.getExpirationDate()));
             strArr.put("note", item.getNote());
+            strArr.put("zoneId", "");
+            strArr.put("locationId", "");
 
             arr.add(strArr);
         }

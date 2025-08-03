@@ -183,17 +183,18 @@
                 <div class="modal-body">
                     <form th:id="'editForm_id_'+${orderItems.productID}" action="/receiving/update_string_product" method="post">
                         <input type="hidden" name="productId" th:value="${orderItems.productID}">
+                        <input type="hidden" name="numLine" th:value="${orderItems.kol}">
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Внешний штрих код</label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${orderItems.ext_barcode}">
+                                    <input type="text" class="form-control form-control-lg" name="extBarcode" th:value="${orderItems.ext_barcode}">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Внутриний штрих код</label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${orderItems.int_barcode}">
+                                    <label>Внутрений штрих код</label>
+                                    <input type="text" class="form-control form-control-lg" name="intBarcode" th:value="${orderItems.int_barcode}">
                                 </div>
                             </div>
                         </div>
@@ -201,13 +202,31 @@
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Количество по накладной: </label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${orderItems.qntOrder}">
+                                    <input type="text" class="form-control form-control-lg" name="qntOrder" th:value="${orderItems.qntOrder}">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Принятое количество: </label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${orderItems.qntFact}">
+                                    <input type="text" class="form-control form-control-lg" name="qntFact" th:value="${orderItems.qntFact}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Зона хранения: </label>
+                                    <select class="form-control" name = "zoneId" >
+                                        <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.code}" th:selected="${zone.zoneID == orderItems.zoneId}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Место хранения: </label>
+                                    <select class="form-control" name = "locationId" >
+                                        <option th:each="location : ${locationList}" th:value="${location.locationID}" th:text="${location.locationCode}" th:selected="${location.locationID == orderItems.locationId}"></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -215,7 +234,7 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>Описание брака: </label>
-                                    <textarea class="form-control" rows="4" th:text="${orderItems.note}"></textarea>
+                                    <textarea class="form-control" rows="4" th:text="${orderItems.note}" name="note"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +242,7 @@
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Срок годности (если требуется): </label>
-                                    <input type="text" class="form-control form-control-lg" name="code" th:value="${orderItems.expirationDate}">
+                                    <input type="date" class="form-control form-control-lg" name="expirationDate" th:value="${orderItems.expirationDate}">
                                 </div>
                             </div>
                         </div>
