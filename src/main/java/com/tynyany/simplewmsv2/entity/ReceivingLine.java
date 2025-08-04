@@ -13,10 +13,11 @@ public class ReceivingLine {
     int receivingID;
     int locationID;
     int productID;
+    Boolean complite;
     Boolean del;
     String note; //Примечание к приемке
 
-    public ReceivingLine(int receivingLineID, int quantityProduct, int quantityReceived, Timestamp expirationDate, int receivingID, int locationID, int productID, Boolean del, String note){
+    public ReceivingLine(int receivingLineID, int quantityProduct, int quantityReceived, Timestamp expirationDate, int receivingID, int locationID, int productID, Boolean complite, Boolean del, String note){
 
         this.receivingLineID = receivingLineID;
         this.quantityProduct = quantityProduct;
@@ -25,6 +26,7 @@ public class ReceivingLine {
         this.receivingID = receivingID;
         this.locationID = locationID;
         this.productID = productID;
+        this.complite = complite;
         this.del = del;
         this.note = note;
     }

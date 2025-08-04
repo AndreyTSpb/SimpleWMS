@@ -38,7 +38,7 @@ public class DefaultBatchService implements BatchService {
     }
 
     @Override
-    public void add(Batch batch) {
+    public int add(Batch batch) {
         BatchEntity batchEntity = new BatchEntity(
                 0,
                 batch.getProduct_id(),
@@ -49,7 +49,8 @@ public class DefaultBatchService implements BatchService {
                 batch.getReceiving_id(),
                 batch.getDel()
         );
-        batchRepository.save(batchEntity);
+        BatchEntity saveEntity = batchRepository.save(batchEntity);
+        return saveEntity.getBatch_id();
     }
 
     @Override

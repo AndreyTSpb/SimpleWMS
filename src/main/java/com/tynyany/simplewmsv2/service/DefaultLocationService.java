@@ -1,6 +1,7 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.LocationEntity;
+import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.entity.Location;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,19 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public Location getLocationByID(int locationID) {
-        return null;
+        LocationEntity locationEntity = locationRepository.findById(locationID)
+                .orElseThrow(() -> new UserNotFoundException("Employee not found:id =" +locationID));
+
+        return new Location(locationEntity.getLocationID(),
+                locationEntity.getLocationCode(),
+                locationEntity.getRow(),
+                locationEntity.getX(),
+                locationEntity.getY(),
+                locationEntity.getZ(),
+                locationEntity.getCapacity(),
+                locationEntity.getAvailable() != 0,
+                locationEntity.getDel() != 0,
+                locationEntity.getZoneID());
     }
 
     @Override

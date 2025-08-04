@@ -1,8 +1,9 @@
 package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
-import com.tynyany.simplewmsv2.dao.UserEntity;
 import com.tynyany.simplewmsv2.models.*;
+import com.tynyany.simplewmsv2.models.StockMovement;
+import com.tynyany.simplewmsv2.repository.BatchRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/receiving")
@@ -38,6 +40,7 @@ public class ReceivingController {
     private final ProductRepository productRepository;
     private final ReceivingLineRepository receivingLineRepository;
     private final ReceivingRepository receivingRepository;
+    private final BatchRepository batchRepository;
 
 
     final String baseUrl = "receiving";
@@ -46,6 +49,10 @@ public class ReceivingController {
     private final SupplierService supplierService;
     private final ZoneService zoneService;
     private final LocationService locationService;
+
+    private final BatchService batchService;
+    private final StockService stockService;
+    private final StockMovementService stockMovementService;
 
     private int sumQnt = 0;
     private float sumWeight = 0;
@@ -96,6 +103,7 @@ public class ReceivingController {
         }
 
         // сообщение об обновлении данных
+        assert updateMessage != null;
         model.addAttribute("updateMessage", updateMessage);
 
         // пагинация
@@ -109,13 +117,17 @@ public class ReceivingController {
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") int id, Model model){
+    public String edit(@PathVariable("id") int id,
+                       Model model,
+                       HttpServletRequest request,
+                       HttpServletResponse response
+    ){
 
         model.addAttribute("id", id);
         model.addAttribute("baseUrl", baseUrl);
 
-        model.addAttribute("orderHead", orderHead(id));
-        model.addAttribute("orderLines", orderLine(id));
+        model.addAttribute("orderHead", Objects.requireNonNull(orderHead(id)));
+        model.addAttribute("orderLines", Objects.requireNonNull(orderLine(id)));
         model.addAttribute("orderItog", orderItog());
 
         //Для селекторов
@@ -123,8 +135,14 @@ public class ReceivingController {
         model.addAttribute("zoneList", zoneService.getAll());
         model.addAttribute("locationList", locationService.getAllLocation());
 
+        UpdateMessageAlert updateMessageAlert = new UpdateMessageAlert(request,response);
+        if(updateMessageAlert.updateMessage != null)
+            model.addAttribute("updateMessage", updateMessageAlert.updateMessage);
+
         return "edit_receiving";
     }
+
+
 
     @GetMapping("/torg_12/{id}")
     public String torg12(){
@@ -173,11 +191,18 @@ public class ReceivingController {
      */
     @PostMapping("/update_string_product")
     public String updateStringProduct(@ModelAttribute ReceivingLineForm arr, HttpServletResponse response){
-        //ReceivingLineForm(numLine=1, productId=33, extBarcode=4600709420174, intBarcode=2004637788393, qntOrder=200, qntFact=10, expirationDate=, note=111111 еуые еуым, zoneId=1, locationId=1)
-        //ReceivingLineForm(numLine=1, productId=12, extBarcode=4600950660955, intBarcode=2000253470536, qntOrder=200, qntFact=100, expirationDate=2025-08-31, note=еуые еуче, zoneId=1, locationId=1)
-        UpdateStringReceiving updateStringReceiving = new UpdateStringReceiving(arr);
+
+        UpdateStringReceiving updateStringReceiving = new UpdateStringReceiving(arr, batchService, receivingLineService);
+        //Обновляем строки прихода
         updateStringReceiving.updateReceivingLine();
-        return "redirect:/" + baseUrl + "/list";
+        //Добавление новой партии
+        int batchId = updateStringReceiving.addBatheString();
+        //Отмечаем движение по складу и изменяем количество на остатках
+        new StockMovement(batchId,0,1,arr.getQntFact(),arr.getProductId(),arr.getEmployerId(),1,0,stockMovementService, stockService);
+
+        response.addCookie(new AddCookie("alertMessage", "Обновлена_строка_с_ИД:_" + arr.getNumLine()).getCookie());
+        //Возврашаем на страницу приемки
+        return "redirect:/" + baseUrl + "/edit/" + arr.getOrderId();
     }
 
 
@@ -268,8 +293,10 @@ public class ReceivingController {
         orderHead.put("orderERP", receiving.getDocumentNumber());
         orderHead.put("status", receivingStatuses()[receiving.getStatusID()].getName());
         orderHead.put("statusID", String.valueOf(receiving.getStatusID()));
+        orderHead.put("supplierId", Integer.toString(supplier.getSupplierID()));
         orderHead.put("supplierName", supplier.getSupplierName());
         orderHead.put("supplierCode", supplier.getSupplierCode());
+        orderHead.put("employerId", Integer.toString(employee.getEmployeeID()));
         orderHead.put("employeeTabNum", employee.getTabNum());
         orderHead.put("employeeName", employee.getEmployeeName());
         orderHead.put("employeeRole", (employee.getRoleID() > 0) ? roles.get(employee.getRoleID()).getRoleName() : "");
@@ -319,8 +346,21 @@ public class ReceivingController {
             strArr.put("volumeFact", String.valueOf(volumeFact));
             strArr.put("expirationDate", String.valueOf(item.getExpirationDate()));
             strArr.put("note", item.getNote());
-            strArr.put("zoneId", "");
-            strArr.put("locationId", "");
+
+            //Предпологаемое место хранения
+            int locationId = item.getLocationID();
+
+            int zoneId = 0;
+            if(locationId > 0) {
+                Location location = locationService.getLocationByID(locationId);
+                if(location !=null)
+                    zoneId = location.getZoneID();
+            }
+            strArr.put("zoneId", String.valueOf(zoneId));
+            strArr.put("locationId",String.valueOf(locationId));
+
+            //Обработана или нет
+            strArr.put("complete", String.valueOf(item.getComplite()));
 
             arr.add(strArr);
         }

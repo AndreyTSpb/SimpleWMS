@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.LocationsController.locationsList;
 import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
-import static com.tynyany.simplewmsv2.controller.RolesController.RoleList;
 import static com.tynyany.simplewmsv2.controller.ZonesController.zonesList;
 
 @Controller
@@ -166,7 +165,8 @@ public class RestApiController {
                     receivingID,
                     0,
                         productID,
-                    false,
+                        false,
+                        false,
                     ""
                 ));
             }

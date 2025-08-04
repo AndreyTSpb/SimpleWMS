@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,9 +18,9 @@ public class BatchEntity {
     private int batch_id; //Уникальный идентификатор партии.
     private int product_id; //Ссылка на товар.
     private int supplier_id; //Ссылка на поставщика.
-    private int date_received; //Дата поступления партии
+    private Timestamp date_received; //Дата поступления партии
     private int quantity_received; //Количество товара в партии при поступлении
-    private int expiry_date; //Срок годности (если есть)
+    private Timestamp expiry_date; //Срок годности (если есть)
     private int receiving_id; //номер накладной поставщика
     private Boolean del = false;
 }

@@ -23,6 +23,7 @@ public class ReceivingLineEntity{
     int receivingID;
     int locationID;
     int productID;
+    Boolean complete;
     Boolean del;
     String note; //Примечание к приемке
 }

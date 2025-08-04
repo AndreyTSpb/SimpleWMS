@@ -1,7 +1,6 @@
 package com.tynyany.simplewmsv2.service;
 
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
-import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.entity.ReceivingLine;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +29,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
                 receivingLineEntity.getReceivingID(),
                 receivingLineEntity.getLocationID(),
                 receivingLineEntity.getProductID(),
+                receivingLineEntity.getComplete(),
                 receivingLineEntity.getDel(),
                 receivingLineEntity.getNote()
         );
@@ -51,6 +50,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
                     receivingLine.getReceivingID(),
                     receivingLine.getLocationID(),
                     receivingLine.getProductID(),
+                    receivingLine.getComplite(),
                     receivingLine.getDel(),
                     receivingLine.getNote()
             );
@@ -59,7 +59,19 @@ public class DefaultReceivingLineService implements ReceivingLineService{
 
     @Override
     public void update(ReceivingLine receivingLine) {
-
+        ReceivingLineEntity receivingLineEntity = new ReceivingLineEntity(
+                receivingLine.getReceivingLineID(),
+                receivingLine.getQuantityProduct(),
+                receivingLine.getQuantityReceived(),
+                receivingLine.getExpirationDate(),
+                receivingLine.getReceivingID(),
+                receivingLine.getLocationID(),
+                receivingLine.getProductID(),
+                receivingLine.getComplite(),
+                receivingLine.getDel(),
+                receivingLine.getNote()
+        );
+        receivingLineRepository.save(receivingLineEntity);
     }
 
     @Override
@@ -83,6 +95,6 @@ public class DefaultReceivingLineService implements ReceivingLineService{
         return resultList;
     }
     private ReceivingLine convertToReceivingLine(ReceivingLineEntity entity) {
-        return new ReceivingLine(entity.getReceivingLineID(),entity.getQuantityProduct(), entity.getQuantityReceived(), entity.getExpirationDate(), entity.getReceivingID(), entity.getLocationID(), entity.getProductID(), entity.getDel(), entity.getNote());
+        return new ReceivingLine(entity.getReceivingLineID(),entity.getQuantityProduct(), entity.getQuantityReceived(), entity.getExpirationDate(), entity.getReceivingID(), entity.getLocationID(), entity.getProductID(), entity.getComplete(), entity.getDel(), entity.getNote());
     }
 }

@@ -184,6 +184,9 @@
                     <form th:id="'editForm_id_'+${orderItems.productID}" action="/receiving/update_string_product" method="post">
                         <input type="hidden" name="productId" th:value="${orderItems.productID}">
                         <input type="hidden" name="numLine" th:value="${orderItems.rowId}">
+                        <input type="hidden" name="orderId" th:value="${orderHead.orderId}">
+                        <input type="hidden" name="supplierId" th:value="${orderHead.supplierId}">
+                        <input type="hidden" name="employerId" th:value="${orderHead.employerId}">
                         <div class="row">
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
@@ -208,7 +211,7 @@
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
                                     <label>Принятое количество: </label>
-                                    <input type="text" class="form-control form-control-lg" name="qntFact" th:value="${orderItems.qntFact}">
+                                    <input  type="text" class="form-control form-control-lg" name="qntFact" th:value="${orderItems.qntFact}">
                                 </div>
                             </div>
                         </div>
@@ -217,7 +220,7 @@
                                 <div class="form-group">
                                     <label>Зона хранения: </label>
                                     <select class="form-control" name = "zoneId" >
-                                        <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.code}" th:selected="${zone.zoneID == orderItems.zoneId}"></option>
+                                        <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.code}" th:selected="${zone.zoneID.toString() == orderItems.zoneId}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -225,7 +228,7 @@
                                 <div class="form-group">
                                     <label>Место хранения: </label>
                                     <select class="form-control" name = "locationId" >
-                                        <option th:each="location : ${locationList}" th:value="${location.locationID}" th:text="${location.locationCode}" th:selected="${location.locationID == orderItems.locationId}"></option>
+                                        <option th:each="location : ${locationList}" th:value="${location.locationID}" th:text="${location.locationCode}" th:selected="${location.locationID.toString() == orderItems.locationId}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -250,8 +253,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary" th:form="'editForm_id_'+${orderItems.productID}">Подтвердить</button>
+                    <button th:if="${orderItems.complete == 'null' || orderItems.complete == 'false'}" type="submit" class="btn btn-primary" th:form="'editForm_id_'+${orderItems.productID}">Подтвердить</button>
                 </div>
+                <div th:text="${orderItems}"></div>
             </div>
         </div>
     </div>

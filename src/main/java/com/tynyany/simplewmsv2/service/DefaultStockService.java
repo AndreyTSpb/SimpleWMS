@@ -29,6 +29,25 @@ public class DefaultStockService implements StockService {
     }
 
     @Override
+    public Stock getByBatchIdAndFromLocationId(int batchId, int fromLocationId, Boolean delete) {
+        StockEntity stockEntity = stockRepository.findByBatchIdAndLocationIdAndDel(batchId, fromLocationId, delete);
+        if (stockEntity == null) {
+            new RuntimeException("Не найден остаток для партии " + batchId + " в местоположении " + fromLocationId);
+            return null;
+        };
+
+        return new Stock(
+                stockEntity.getStockId(),
+                stockEntity.getProduct_id(),
+                stockEntity.getBatchId(),
+                stockEntity.getLocationId(),
+                stockEntity.getQuantity(),
+                stockEntity.getDel()
+        );
+    }
+
+
+    @Override
     public List<Stock> getAll() {
         return List.of();
     }

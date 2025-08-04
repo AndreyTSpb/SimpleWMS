@@ -38,7 +38,7 @@ public class DefaultCategoryService implements CategoryService{
     }
 
     @Override
-    public void addCategory(Category category) {
+    public int addCategory(Category category) {
         CategoryEntity categoryEntity = new CategoryEntity(
                 0,
                 category.getCategoryName(),
@@ -46,7 +46,8 @@ public class DefaultCategoryService implements CategoryService{
                 false
 
         );
-        categoryRepository.save(categoryEntity);
+        CategoryEntity categoryEntity1 = categoryRepository.save(categoryEntity);
+        return categoryEntity1.getCategoryID();
     }
 
     @Override

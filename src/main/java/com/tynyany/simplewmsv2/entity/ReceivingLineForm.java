@@ -22,5 +22,7 @@ public class ReceivingLineForm {
     String note;
     int zoneId;
     int locationId;
-
+    int orderId;
+    int supplierId;
+    int employerId;
 }

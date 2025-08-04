@@ -7,7 +7,7 @@ import java.util.List;
 public interface ABCService {
     ABC getByID(int abcID);
     List<ABC> getAll();
-    void addABC(ABC abc);
+    int addABC(ABC abc);
     void updateABC(ABC abc);
     void delABC(ABC abc);
 }

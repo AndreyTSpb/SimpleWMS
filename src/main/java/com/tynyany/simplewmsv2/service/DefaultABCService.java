@@ -38,14 +38,15 @@ public class DefaultABCService implements ABCService{
     }
 
     @Override
-    public void addABC(ABC abc) {
+    public int addABC(ABC abc) {
         ABCEntity abcEntity = new ABCEntity(
                 0,
                 abc.getCode(),
                 abc.getDescription(),
                 false
         );
-        abcRepository.save(abcEntity);
+        ABCEntity abcEntity1 = abcRepository.save(abcEntity);
+        return abcEntity1.getAbcID();
     }
 
     @Override

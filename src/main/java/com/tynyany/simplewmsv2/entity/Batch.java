@@ -2,6 +2,8 @@ package com.tynyany.simplewmsv2.entity;
 
 import lombok.Value;
 
+import java.sql.Timestamp;
+
 /**
  * Партия товара
  */
@@ -10,13 +12,13 @@ public class Batch {
     int batch_id; //Уникальный идентификатор партии.
     int product_id; //Ссылка на товар.
     int supplier_id; //Ссылка на поставщика.
-    int date_received; //Дата поступления партии
+    Timestamp date_received; //Дата поступления партии
     int quantity_received; //Количество товара в партии при поступлении
-    int expiry_date; //Срок годности (если есть)
+    Timestamp expiry_date; //Срок годности (если есть)
     int receiving_id; //номер накладной поставщика
     Boolean del;
 
-    public Batch(int batchId, int productId, int supplierId, int dateReceived, int quantityReceived, int expiryDate, int receivingId, Boolean del) {
+    public Batch(int batchId, int productId, int supplierId, Timestamp dateReceived, int quantityReceived, Timestamp expiryDate, int receivingId, Boolean del) {
 
         this.batch_id = batchId;
         this.product_id = productId;

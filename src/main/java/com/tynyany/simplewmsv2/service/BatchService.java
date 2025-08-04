@@ -7,7 +7,7 @@ import java.util.List;
 public interface BatchService {
     Batch getById(int batche_id);
     List<Batch> getAll();
-    void add(Batch batche);
+    int add(Batch batche);
     void update(Batch batche);
     void delete(int batche_id);
 }
