@@ -31,7 +31,8 @@
                             <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
-                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
+                            <form id="form_update" method="get" action="/receiving/update_placement_route"></form>
+                            <button form="form_update" class="btn btn-sm btn-outline-template ml-2"  type="submit">
                                 <i class="material-icons md-18">update</i> Обновить данные
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">

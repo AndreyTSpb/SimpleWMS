@@ -86,7 +86,6 @@ public class DefaultReceivingLineService implements ReceivingLineService{
             return null;
         }
         List<ReceivingLine> resultList = new ArrayList<>();
-        // Предположим, что у вас есть метод преобразования ReceivingLineEntity в ReceivingLine
 
         for(ReceivingLineEntity receivingLineEntity : receivingLineOption) {
             ReceivingLine receivingLine = convertToReceivingLine(receivingLineEntity);

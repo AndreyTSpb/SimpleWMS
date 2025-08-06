@@ -9,6 +9,7 @@ import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -183,6 +184,29 @@ public class ReceivingController {
         return "redirect:/" + baseUrl + "/edit/"+form.getOrderID();
     }
 
+    @PostMapping("/stop_receiving")
+    public String stopReceiving(@ModelAttribute FormCloseOrDeleteReceiving form, HttpServletResponse response){
+        if(!receivingRepository.existsById(form.getOrderId())){
+            response.addCookie(new AddCookie("alertMessage", "Не_найден_приход_с_ИД:_" + form.getOrderId()).getCookie());
+            return "redirect:/" + baseUrl + "/list";
+        }
+
+        Receiving receiving = receivingService.getByID(form.getOrderId());
+
+        receivingService.update(new Receiving(
+                receiving.getReceivingID(),
+                receiving.getReceivingDate(),
+                receiving.getReceivingDate(),
+                receiving.getDocumentNumber(),
+                2,
+                receiving.getEmployeeID(),
+                receiving.getSupplierID(),
+                false)
+        );
+        response.addCookie(new AddCookie("alertMessage", "Отгрузка_:_" + form.getOrderId() + "_завершина").getCookie());
+        return "redirect:/" + baseUrl + "/edit/"+form.getOrderId();
+    }
+
     /**
      * Обновления данных по строке при приемке товара
      * @param arr
@@ -205,6 +229,15 @@ public class ReceivingController {
         return "redirect:/" + baseUrl + "/edit/" + arr.getOrderId();
     }
 
+    @GetMapping("/update_placement_route")
+    public String updatePlacementRoute(HttpServletResponse response){
+
+        GenerationProductPlacementRoutes upd = new GenerationProductPlacementRoutes(stockService);
+
+        response.addCookie(new AddCookie("alertMessage", "Добавлено_" + "_записей").getCookie());
+        //Возврашаем на страницу приемки
+        return "redirect:/product_placement";
+    }
 
     private HashMap<String, String> orderItog() {
         HashMap<String, String> itog = new HashMap<>();
@@ -375,6 +408,8 @@ public class ReceivingController {
         receivingStatuses[3] = new Status(3, "Отменена");
         return receivingStatuses;
     }
+
+
 
 
 }

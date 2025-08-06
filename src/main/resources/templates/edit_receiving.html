@@ -138,11 +138,11 @@
                             <br>
                         </div>
                         <div class="card-footer border-top">
-                            <form id="form_close_receiving" method="post" action="/close">
-                                <input type="hidden" name="id" th:value="${orderHead.orderId}">
+                            <form id="form_close_receiving" method="post" action="/receiving/stop_receiving">
+                                <input type="hidden" name="orderId" th:value="${orderHead.orderId}">
                             </form>
-                            <form id="form_del_receiving" method="post" action="/del">
-                                <input type="hidden" name="id" th:value="${orderHead.orderId}">
+                            <form id="form_del_receiving" method="post" action="/receiving/del_receiving">
+                                <input type="hidden" name="orderId" th:value="${orderHead.orderId}">
                             </form>
                             <a href="/receiving/list" class="btn btn-outline-secondary">Назад</a>
                             <button type="submit" th:if="${orderHead.statusID == '1'}" form="form_close_receiving"  class="btn btn-outline-success float-right">Завершить приемку</button>

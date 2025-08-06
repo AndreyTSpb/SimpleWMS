@@ -15,7 +15,7 @@ public class Batch {
     Timestamp date_received; //Дата поступления партии
     int quantity_received; //Количество товара в партии при поступлении
     Timestamp expiry_date; //Срок годности (если есть)
-    int receiving_id; //номер накладной поставщика
+    int receiving_id; //номер строки накладной поставщика
     Boolean del;
 
     public Batch(int batchId, int productId, int supplierId, Timestamp dateReceived, int quantityReceived, Timestamp expiryDate, int receivingId, Boolean del) {

@@ -27,10 +27,10 @@ public class DefaultCustomerService implements CustomerService {
         ArrayList<Customer> customers = new ArrayList<>();
         for (CustomerEntity customerEntity : customerEntities) {
             customers.add(new Customer(
-               customerEntity.getCustomerId(),
-               customerEntity.getCustomerCode(),
-               customerEntity.getCustomerName(),
-               customerEntity.getPhone(),
+                    customerEntity.getCustomerId(),
+                    customerEntity.getCustomerCode(),
+                    customerEntity.getCustomerName(),
+                    customerEntity.getPhone(),
                     customerEntity.getEmail(),
                     customerEntity.getAddress(),
                     customerEntity.getDel(),

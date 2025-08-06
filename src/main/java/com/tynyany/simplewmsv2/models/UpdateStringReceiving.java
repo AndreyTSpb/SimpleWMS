@@ -90,7 +90,7 @@ public class UpdateStringReceiving {
                 new Timestamp(System.currentTimeMillis()),
                 this.qntFact,
                 Timestamp.valueOf(this.expirationDate + " 00:00:00.123456789"),
-                this.locationId,
+                this.receivingStringId,
                 false
         );
         return batchService.add(batch);
