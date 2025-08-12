@@ -61,7 +61,8 @@ public class DefaultStockService implements StockService {
 
     @Override
     public List<StockGettingRowsUnplacedItems> gettingRowsUnplacedItems(int zoneId) {
-        Iterable<ResultStockDTOSelectBatchProductLocation> iterable = stockRepository.findAllByLeftJoinProductBatchLocationGroupByZoneId(zoneId);
+        //Gjkexbnm cgbcjr
+        Iterable<ResultStockDTOSelectBatchProductLocation> iterable = stockRepository.findAllByLeftJoinProductBatchLocationGroupByZoneId(zoneId, "0");
         ArrayList<StockGettingRowsUnplacedItems> arr = new ArrayList<>();
         for(ResultStockDTOSelectBatchProductLocation entity : iterable){
             arr.add(
@@ -78,7 +79,8 @@ public class DefaultStockService implements StockService {
                             entity.getY(),
                             entity.getZ(),
                             entity.getSum_weight(),
-                            entity.getSum_volume()
+                            entity.getSum_volume(),
+                            entity.getR_l_id()
                     )
             );
         }

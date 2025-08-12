@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,6 @@ public class DefaultReceivingLineService implements ReceivingLineService{
     @Override
     public ReceivingLine getByID(int receivingLineID) {
         ReceivingLineEntity receivingLineEntity = receivingLineRepository.findById(receivingLineID).orElse(null);
-        System.out.println(receivingLineEntity);
 
         if(receivingLineEntity == null) return null;
         return new ReceivingLine(
@@ -30,6 +30,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
                 receivingLineEntity.getLocationID(),
                 receivingLineEntity.getProductID(),
                 receivingLineEntity.getComplete(),
+                receivingLineEntity.getPlacementRoute(),
                 receivingLineEntity.getDel(),
                 receivingLineEntity.getNote()
         );
@@ -51,6 +52,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
                     receivingLine.getLocationID(),
                     receivingLine.getProductID(),
                     receivingLine.getComplite(),
+                    receivingLine.getPlacementRoute(),
                     receivingLine.getDel(),
                     receivingLine.getNote()
             );
@@ -68,6 +70,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
                 receivingLine.getLocationID(),
                 receivingLine.getProductID(),
                 receivingLine.getComplite(),
+                receivingLine.getPlacementRoute(),
                 receivingLine.getDel(),
                 receivingLine.getNote()
         );
@@ -93,7 +96,29 @@ public class DefaultReceivingLineService implements ReceivingLineService{
         }
         return resultList;
     }
+
+    @Override
+    public void routeСreated(int r_l_id) {
+        Optional<ReceivingLineEntity> entity = receivingLineRepository.findById(r_l_id);
+        entity.ifPresent(receivingLineEntity -> receivingLineRepository.save(
+                new ReceivingLineEntity(
+                        receivingLineEntity.getReceivingLineID(),
+                        receivingLineEntity.getQuantityProduct(),
+                        receivingLineEntity.getQuantityReceived(),
+                        receivingLineEntity.getExpirationDate(),
+                        receivingLineEntity.getReceivingID(),
+                        receivingLineEntity.getLocationID(),
+                        receivingLineEntity.getProductID(),
+                        receivingLineEntity.getComplete(),
+                        true,
+                        receivingLineEntity.getDel(),
+                        receivingLineEntity.getNote()
+                )
+        ));
+
+    }
+
     private ReceivingLine convertToReceivingLine(ReceivingLineEntity entity) {
-        return new ReceivingLine(entity.getReceivingLineID(),entity.getQuantityProduct(), entity.getQuantityReceived(), entity.getExpirationDate(), entity.getReceivingID(), entity.getLocationID(), entity.getProductID(), entity.getComplete(), entity.getDel(), entity.getNote());
+        return new ReceivingLine(entity.getReceivingLineID(),entity.getQuantityProduct(), entity.getQuantityReceived(), entity.getExpirationDate(), entity.getReceivingID(), entity.getLocationID(), entity.getProductID(), entity.getComplete(), entity.getPlacementRoute(), entity.getDel(), entity.getNote());
     }
 }

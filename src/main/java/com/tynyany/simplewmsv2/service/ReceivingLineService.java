@@ -17,4 +17,6 @@ public interface ReceivingLineService {
     void del(ReceivingLine receivingLine);
 
     List<ReceivingLine> getAllLinesForReceiving(int receivingID);
+
+    void routeСreated(int r_l_id);
 }

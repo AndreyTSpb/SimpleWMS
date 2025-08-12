@@ -73,6 +73,7 @@ public class UpdateStringReceiving {
                         this.locationId,
                         receivingLine.getProductID(),
                         true,
+                        receivingLine.getPlacementRoute(),
                         receivingLine.getDel(),
                         this.note
                 )

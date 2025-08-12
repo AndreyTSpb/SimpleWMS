@@ -13,11 +13,12 @@ public class ReceivingLine {
     int receivingID;
     int locationID;
     int productID;
-    Boolean complite;
+    Boolean complite; //приемка завершина или нет
+    Boolean placementRoute; //Создан маршрут размещения да/нет
     Boolean del;
     String note; //Примечание к приемке
 
-    public ReceivingLine(int receivingLineID, int quantityProduct, int quantityReceived, Timestamp expirationDate, int receivingID, int locationID, int productID, Boolean complite, Boolean del, String note){
+    public ReceivingLine(int receivingLineID, int quantityProduct, int quantityReceived, Timestamp expirationDate, int receivingID, int locationID, int productID, Boolean complite, Boolean placementRoute, Boolean del, String note){
 
         this.receivingLineID = receivingLineID;
         this.quantityProduct = quantityProduct;
@@ -27,6 +28,7 @@ public class ReceivingLine {
         this.locationID = locationID;
         this.productID = productID;
         this.complite = complite;
+        this.placementRoute = placementRoute;
         this.del = del;
         this.note = note;
     }

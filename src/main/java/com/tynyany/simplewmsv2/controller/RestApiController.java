@@ -167,6 +167,7 @@ public class RestApiController {
                         productID,
                         false,
                         false,
+                        false,
                     ""
                 ));
             }

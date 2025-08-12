@@ -24,6 +24,7 @@ public class ReceivingLineEntity{
     int locationID;
     int productID;
     Boolean complete;
+    Boolean placementRoute;
     Boolean del;
     String note; //Примечание к приемке
 }

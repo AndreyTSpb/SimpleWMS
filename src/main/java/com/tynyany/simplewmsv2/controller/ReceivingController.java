@@ -9,7 +9,6 @@ import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingRepository;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.service.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,6 +53,8 @@ public class ReceivingController {
     private final BatchService batchService;
     private final StockService stockService;
     private final StockMovementService stockMovementService;
+    private final PlacementRouteService placementRouteService;
+    private final PlacementRouteLineService placementRouteLineService;
 
     private int sumQnt = 0;
     private float sumWeight = 0;
@@ -232,7 +233,7 @@ public class ReceivingController {
     @GetMapping("/update_placement_route")
     public String updatePlacementRoute(HttpServletResponse response){
 
-        GenerationProductPlacementRoutes upd = new GenerationProductPlacementRoutes(stockService);
+        GenerationProductPlacementRoutes upd = new GenerationProductPlacementRoutes(stockService, placementRouteService, placementRouteLineService, receivingLineService);
 
         response.addCookie(new AddCookie("alertMessage", "Добавлено_" + "_записей").getCookie());
         //Возврашаем на страницу приемки

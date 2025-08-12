@@ -13,7 +13,7 @@ public interface StockRepository extends CrudRepository<StockEntity, Integer> {
 
     @Query(value = "SELECT" +
             " s.stock_id AS id, s.batch_id AS batch_id, s.product_id AS product_id, s.quantity AS qnt, p.product_name AS product_name, p.int_bar_code AS int_barcode, p.ext_bar_code AS ext_barcode, rl.locationid AS loc_id," +
-            " l.location_code AS loc_code, l.x AS x, l.y AS y, l.z AS z, (p.weight*s.quantity) AS sum_weight, (p.volume*s.quantity) AS sum_volume " +
+            " l.location_code AS loc_code, l.x AS x, l.y AS y, l.z AS z, (p.weight*s.quantity) AS sum_weight, (p.volume*s.quantity) AS sum_volume, rl.receiving_lineid AS r_l_id " +
             "FROM stocks AS s LEFT JOIN batches AS b ON s.batch_id = b.batch_id" +
             "        LEFT JOIN product AS p ON s.product_id = p.productid" +
             "        LEFT JOIN receiving_line AS rl ON b.receiving_id = rl.receiving_lineid" +
@@ -23,7 +23,8 @@ public interface StockRepository extends CrudRepository<StockEntity, Integer> {
             "  AND s.location_id = 1" +
             "  AND s.quantity > 0" +
             "  AND rl.del = FALSE" +
+            "  AND rl.placement_route NOT IN (TRUE)" +
             "  AND rl.complete = TRUE" +
-            "  AND l.zoneid IN (?1)", nativeQuery = true)
-    Iterable<ResultStockDTOSelectBatchProductLocation> findAllByLeftJoinProductBatchLocationGroupByZoneId(int ZoneId);
+            "  AND l.zoneid IN (?1);" , nativeQuery = true)
+    Iterable<ResultStockDTOSelectBatchProductLocation> findAllByLeftJoinProductBatchLocationGroupByZoneId(int ZoneId, String batchesId);
 }

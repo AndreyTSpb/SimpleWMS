@@ -17,4 +17,5 @@ public class StockGettingRowsUnplacedItems {
     private int z;
     private Float sum_weight;
     private Float sum_volume;
+    private int r_l_id; //receiving_line_id
 }
