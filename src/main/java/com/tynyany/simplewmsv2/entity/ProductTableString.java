@@ -1,10 +1,8 @@
 package com.tynyany.simplewmsv2.entity;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Value
 public class ProductTableString extends Product{
     String categoryName;
