@@ -78,7 +78,7 @@ public class ReceivingController {
             page = receivingService.getAllPageable(pageable);
         }
 
-        model.addAttribute("title", "Страница со списком всех приходов товаров");
+        model.addAttribute("title", "Список приходных накладных");
         model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("receivingList", arrayReceivingList(page));
         model.addAttribute("headerList", PickingRouteController.listHeader());
@@ -264,7 +264,7 @@ public class ReceivingController {
                 row.put("dtWaiting", (item.getReceivingDate() != null ) ? new SimpleDateFormat("yyyy-MM-dd").format(item.getReceivingDate()) : "0000-00-00");
                 row.put("dtReal", (item.getGetReceivingDate() != null)? new SimpleDateFormat("yyyy-MM-dd").format(item.getGetReceivingDate()) : "0000-00-00");
                 row.put("numOrder", item.getDocumentNumber());
-                row.put("employee", Integer.toString(item.getEmployeeID()));
+                row.put("employee", getEmployName(item.getEmployeeID()));
 
                 CalculationVolumeAndWeightUponReceipt calc = new CalculationVolumeAndWeightUponReceipt(item.getReceivingID(), receivingLineService, productService);
                 row.put("sumWeight", (calc.getWeight()>0) ? String.valueOf(calc.getWeight()) :"0");
@@ -410,7 +410,14 @@ public class ReceivingController {
         return receivingStatuses;
     }
 
-
+    public  String getEmployName(Integer employeeID){
+        //Receiving receiving = receivingService.getByID(form.getOrderId());
+        if(employeeID < 1){
+            return "";
+        }
+        Employee employee = employeeService.getEmployeeByID(employeeID);
+        return employee.getEmployeeName();
+    }
 
 
 }

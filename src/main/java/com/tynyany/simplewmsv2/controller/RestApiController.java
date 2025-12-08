@@ -173,7 +173,7 @@ public class RestApiController {
             }
         }
 
-        return new ResponseJson(1, "Good");
+        return new ResponseJson(1, "Новая накладная: " + receivingJSONS.header.orderERP);
     }
 
 
@@ -370,21 +370,29 @@ public class RestApiController {
     }
 
     /**
-     * Добавляем категории
+     * Добавляем поставщиков
      * @param json
      * @return
      */
-    @RequestMapping(value="/add_supplier", method= RequestMethod.GET)
+    @RequestMapping(value="/add_supplier", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    @RequestMapping(value="/add_supplier", method= RequestMethod.GET)
     @ResponseBody
     public ResponseJson addSupplier(@RequestBody String json) throws JsonProcessingException {
+        int kol = 0;
+        System.out.println(json);
+
         ObjectMapper objectMapper = new ObjectMapper();
+
         for (Supplier supplier : objectMapper.readValue(json, Supplier[].class)){
             Optional<SupplierEntity> supplierEntity = supplierRepository.findTopBySupplierCode(supplier.getSupplierCode());
-            if(supplierEntity.isEmpty())
+
+            if(supplierEntity.isEmpty()) {
+                kol++;
                 supplierService.add(supplier);
+            }
         }
 
-        return new ResponseJson(1, "Good1");
+        return new ResponseJson(1, "Новых поставщиков: "+kol);
     }
 
     /**
