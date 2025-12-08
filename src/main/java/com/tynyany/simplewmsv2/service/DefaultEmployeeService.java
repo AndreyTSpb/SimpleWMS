@@ -5,6 +5,7 @@ import com.tynyany.simplewmsv2.repository.EmployeeRepository;
 import com.tynyany.simplewmsv2.entity.Employee;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class DefaultEmployeeService implements EmployeeService{
     @Override
     public List<Employee> getAllEmployee() {
 
-        Iterable<EmployeeEntity> iterable = employeeRepository.findAll();
+        Iterable<EmployeeEntity> iterable = employeeRepository.findAll(Sort.by(Sort.Direction.ASC,"employeeName"));
 
         ArrayList<Employee> employees = new ArrayList<>();
 

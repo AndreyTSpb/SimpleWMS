@@ -5,6 +5,7 @@ import com.tynyany.simplewmsv2.repository.ZoneRepository;
 import com.tynyany.simplewmsv2.entity.Zone;
 import com.tynyany.simplewmsv2.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class DefaultZoneService implements ZoneService {
 
     @Override
     public List<Zone> getAll() {
-        Iterable<ZoneEntity> zoneEntities = zoneRepository.findAll();
+        Iterable<ZoneEntity> zoneEntities = zoneRepository.findAll(Sort.by(Sort.Direction.ASC,"zoneName"));
         ArrayList<Zone> zones = new ArrayList<>();
         for (ZoneEntity zoneEntity : zoneEntities) {
             zones.add(new Zone(zoneEntity.getZoneId(),zoneEntity.getZoneName(), zoneEntity.getCode(),zoneEntity.getDescription(),zoneEntity.getDel()));

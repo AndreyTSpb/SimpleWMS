@@ -35,7 +35,7 @@ public class LocationsController {
     @GetMapping
     public String index(@RequestParam(required = false, defaultValue = "") String filter,
                         Model model,
-                        @PageableDefault(sort = { "locationID" }, direction = Sort.Direction.ASC) Pageable pageable) {
+                        @PageableDefault(sort = { "locationCode" }, direction = Sort.Direction.ASC) Pageable pageable) {
 
         List<Zone> zones = zoneService.getAll();
 
