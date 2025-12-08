@@ -1,0 +1,73 @@
+/*
+   ОЧЕНЬ ВАЖНО: Стили для печати!
+   Этот медиа-запрос активируется только при печати страницы.
+*/
+@media print {
+    /* Скрываем все, кроме нашего модального окна */
+    body > *:not(.modal) {
+        display: none !important;
+    }
+
+    /* Делаем модальное окно видимым и располагаем его как обычный документ */
+    .modal {
+        position: static !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        background: none !important; /* Убираем фоновый затемнение */
+        overflow: visible !important;
+    }
+
+    .modal-dialog {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    .modal-content {
+        border: none !important;
+        border-radius: 0 !important;
+        background-color: transparent !important; /* Убираем темный фон */
+        color: black !important; /* Делаем текст черным для печати */
+        box-shadow: none !important;
+    }
+
+    /* Скрываем элементы, которые не должны быть на печати */
+    .modal-header .close, /* Кнопка "x" */
+    .modal-footer, /* Футер с кнопками "Закрыть" и "Печать" */
+    .modal-backdrop { /* Задний фон модального окна Bootstrap */
+        display: none !important;
+    }
+
+    /* Область, которую мы хотим распечатать, делаем видимой и чистой */
+    #printableBarcodeContent_id_7 {
+        display: block !important;
+        width: 100% !important; /* Растягиваем на всю ширину */
+        margin: 10mm auto !important; /* Центрируем с отступами */
+        padding: 10mm !important; /* Отступы внутри печатаемой области */
+        background-color: white !important; /* Белый фон для штрих-кода */
+        border: 1px solid #ccc; /* Опциональная рамка */
+        box-shadow: none !important;
+    }
+
+    /* Заголовок модального окна */
+    .modal-title {
+        color: black !important;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .modal-title span { /* Если часть заголовка обновляется динамически */
+        color: black !important;
+    }
+
+    /* Текст штрих-кода (если есть) */
+    .barcode-number-text {
+        color: black !important;
+    }
+
+    #barcode_7 {
+        /* Убираем специфические стили для печати SVG, если JsBarcode их добавляет */
+        background-color: white !important; /* Фон для штрих-кода */
+    }
+}

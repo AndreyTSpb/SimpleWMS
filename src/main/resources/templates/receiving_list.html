@@ -31,7 +31,7 @@
                             <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
-                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" data-target="#addModal">
+                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" id="addReceiving" >
                                 <i class="material-icons md-18">update</i> Обновить данные
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">
@@ -93,9 +93,9 @@
                                     <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                         <a class="dropdown-item" th:href="@{~/{baseUrl}/veiw/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Просмотр</a>
                                         <a class="dropdown-item" th:href="@{~/{baseUrl}/edit/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Редактировать</a>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#listModal" >Маршрутный лист</a>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#palletModal" >Паллетный лист</a>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#korobModal" >Паллетный лист</a>
+                                        <a style="display: none" class="dropdown-item" data-toggle="modal" data-target="#listModal" >Маршрутный лист</a>
+                                        <a style="display: none" class="dropdown-item" data-toggle="modal" data-target="#palletModal" >Паллетный лист</a>
+                                        <a style="display: none" class="dropdown-item" data-toggle="modal" data-target="#korobModal" >Этикетка на короб</a>
                                     </div>
                                 </div>
                             </td>
@@ -510,38 +510,21 @@
 </span>
 
 <!-- Modal ADD -->
+<!-- Modal UPDATE -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" th:aria-labelledby="addModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content bg-darkblue text-white">
             <div class="modal-header">
-                <h5 class="modal-title" id="addModalLabel" >Добавить нового сотрудника</h5>
+                <h5 class="modal-title" id="addModalLabel" >Обновление спистка накладных</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="addForm" th:action="@{${baseUrl}+'/add'}">
-                    <div class="form-group">
-                        <label>Табельный номер</label>
-                        <input type="text" class="form-control form-control-lg" name="tabNum" value="">
-                    </div>
-                    <div class="form-group" >
-                        <label>Фамилия</label>
-                        <input type="text" class="form-control form-control-lg" name="LastName" value="">
-                        <label>Имя</label>
-                        <input type="text" class="form-control form-control-lg" name="Name" value="">
-                    </div>
-                    <div class="form-group">
-                        <label>Роль</label>
-                        <select class="form-control form-control-lg" name="roleName">
-                            <option th:each="role : ${rolesList}" th:value="${role.roleID}" th:text="${role.name}"></option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button type="submit" class="btn btn-primary" form="addForm">Сохранить</button>
+            <div class="modal-body text-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Загрузка...</span>
+                </div>
+                <div> Подождите идет обновление ...</div>
             </div>
         </div>
     </div>
@@ -910,32 +893,8 @@
 
 
 <!-- Theme style picker modal window and options ends -->
+<div th:replace="~{scripts_connect :: content}"></div>
 
-<!-- Global js mandatory -->
-<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
-<script th:src="@{/js/popper.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script><script th:src="@{/vendor/cookie/jquery.cookie.js}"></script>
-<!-- Global js ends -->
-
-<!-- Vendor or 3rd party js -->
-
-<!-- date range picker -->
-<script th:src="@{/vendor/daterangepicker-master/moment.min.js}"></script>
-<script th:src="@{/vendor/daterangepicker-master/daterangepicker.js}"></script>
-
-
-<!-- Vendor or 3rd party js ends -->
-
-<!-- Customized template js mandatory -->
-<script th:src="@{/js/main.js}"></script>
-<!-- Customized template js ends -->
-
-<!-- theme picker -->
-<script th:src="@{/js/style-picker.js}"></script>
-<!-- theme picker ends -->
-
-<!-- Generator BAR-code -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
 
 <!-- Customized page level js -->
 <script>

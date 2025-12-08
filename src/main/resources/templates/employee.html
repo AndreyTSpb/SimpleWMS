@@ -61,7 +61,7 @@
                                 <p class="mb-0 template-inverse" th:text="${employee.getEployeeName()}">this name</p>
                                 <div class="media">
                                     <figure class="mb-0 avatar avatar-40 mr-2">
-                                        <img th:src="@{img/user3.png}" alt="">
+                                        <img th:src="@{img/no_img.jpg}" alt="">
                                     </figure>
                                     <div class="media-body">
                                         <p class="mb-0 template-inverse" th:text="${employee.getEployeeName()}">this name</p>
@@ -218,8 +218,8 @@
                     <div class="form-group">
                         <label>Табельный номер</label>
                         <input type="text" class="form-control form-control-lg" name="tabNum" value="">
-                        <input type="text" class="form-control form-control-lg" name="employeeID" value="0">
-                        <input type="text" class="form-control form-control-lg" name="del" value="0">
+                        <input type="hidden" class="form-control form-control-lg" name="employeeID" value="0">
+                        <input type="hidden" class="form-control form-control-lg" name="del" value="0">
                     </div>
                     <div class="form-group" >
                         <label>Фамилия</label>

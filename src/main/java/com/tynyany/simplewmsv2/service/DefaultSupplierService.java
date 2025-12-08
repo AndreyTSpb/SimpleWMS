@@ -65,7 +65,16 @@ public class DefaultSupplierService implements SupplierService{
 
     @Override
     public void update(Supplier supplier) {
-
+        SupplierEntity supplierEntity = new SupplierEntity(
+                supplier.getSupplierID(),
+                supplier.getSupplierName(),
+                supplier.getSupplierCode(),
+                supplier.getContactPerson(),
+                supplier.getPhone(),
+                supplier.getEmail(),
+                false
+        );
+        supplierRepository.save(supplierEntity);
     }
 
     @Override

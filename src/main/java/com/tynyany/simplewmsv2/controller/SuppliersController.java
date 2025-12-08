@@ -76,6 +76,7 @@ public class SuppliersController {
         model.addAttribute("baseUrl", baseUrl);
 
         // сообщение об обновлении данных
+        assert updateMessage != null;
         model.addAttribute("updateMessage", updateMessage);
 
         // пагинация
