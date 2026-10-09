@@ -1,0 +1,27 @@
+# Окружение SimpleWMS.
+# Этап 0: только PostgreSQL для разработки. Сервис приложения добавляется на этапе 12.
+# Запуск: docker compose up -d
+# Параметры берутся из файла .env (шаблон — .env.example).
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: simplewms-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-wms}
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      TZ: Europe/Moscow
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - wms-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  wms-db-data:
