@@ -93,7 +93,7 @@
                                     <th rowspan="2">Код</th>
                                     <th colspan="2">Количество</th>
                                     <th colspan="2">Вес (кг)</th>
-                                    <th colspan="2">Объем (м^2)</th>
+                                    <th colspan="2">Объём (м³)</th>
                                 </tr>
                                 <tr class="bg-light-secondary text-center">
                                     <th>По накладной</th>
@@ -114,8 +114,8 @@
                                     <td th:text="${orderItems.qntFact}">Количество Принятое</td>
                                     <td th:text="${orderItems.weightOrder}">Вес (кг) По накладной</td>
                                     <td th:text="${orderItems.weightFact}">Вес (кг) Принятое</td>
-                                    <td th:text="${orderItems.volumeOrder}">Объем (м^2) По накладной</td>
-                                    <td th:text="${orderItems.volumeFact}">Объем (м^2)  Принятое</td>
+                                    <td th:text="${orderItems.volumeOrder}">Объём (м³) По накладной</td>
+                                    <td th:text="${orderItems.volumeFact}">Объём (м³)  Принятое</td>
                                 </tr>
                                 </tbody>
                                 <tfoot>
@@ -125,7 +125,7 @@
                                         <td colspan="2" class="text-right text-success" th:text="${orderItog.sumWeight}">100</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2">Общий объем (м^2) принятого: </td>
+                                        <td colspan="2">Общий объем (м³) принятого: </td>
                                         <td colspan="2" class="text-right text-success" th:text="${orderItog.sumVolume}">100</td>
                                     </tr>
                                     <tr class="font-weight-bold bg-light-secondary">
@@ -590,7 +590,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объем товара(м^2)</label>
+                                    <label>Объём товара(м³)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
                                 </div>
                             </div>
@@ -750,4 +750,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

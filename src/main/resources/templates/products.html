@@ -48,7 +48,7 @@
                             <th class="min-tablet">Наименование</th>
                             <th class="min-tablet">Код</th>
                             <th class="min-tablet">Вес(кг)</th>
-                            <th class="min-tablet">Обьем(м^2)</th>
+                            <th class="min-tablet">Объём(м³)</th>
                             <th class="min-tablet">Категория товара</th>
                             <th class="min-tablet">ABC</th>
                             <th class="">Статус</th>
@@ -70,7 +70,7 @@
                                 <p class="mb-0 template-inverse" th:text="${product.weight}">Вес(кг)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Обьем(м^2)</p>
+                                <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Объём(м³)</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${product.categoryName}">Категория товара</p>
@@ -237,7 +237,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объем товара(м^3)</label>
+                                    <label>Объём товара(м^3)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${#numbers.formatDecimal(product.getVolume(), 1, 6)}">
                                 </div>
                             </div>
@@ -414,4 +414,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

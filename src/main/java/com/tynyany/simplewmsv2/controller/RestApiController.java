@@ -4,11 +4,13 @@ package com.tynyany.simplewmsv2.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tynyany.simplewmsv2.dao.*;
+import com.tynyany.simplewmsv2.domain.ReceivingStatus;
 import com.tynyany.simplewmsv2.entity.*;
 import com.tynyany.simplewmsv2.models.CodeGenerator;
 import com.tynyany.simplewmsv2.repository.*;
 import com.tynyany.simplewmsv2.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +24,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.tynyany.simplewmsv2.controller.LocationsController.locationsList;
-import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
 import static com.tynyany.simplewmsv2.controller.ZonesController.zonesList;
 
+@Slf4j
 @Controller
 @RequestMapping(path = "/api", produces="application/json;charset=UTF-8")
 @RequiredArgsConstructor
@@ -55,6 +57,7 @@ public class RestApiController {
     private final ZoneRepository zoneRepository;
     private final LocationRepository locationRepository;
     private final LocationService locationService;
+    private final ReceivingProcessService receivingProcessService;
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody
@@ -112,68 +115,15 @@ public class RestApiController {
          * }
          */
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        // Deserialize the JSON string into an array of User objects
-        ReceivingJSON receivingJSONS = objectMapper.readValue(json, ReceivingJSON.class);
+        ReceivingJSON receivingJson = new ObjectMapper().readValue(json, ReceivingJSON.class);
+        ReceivingProcessService.ErpImportResult result = receivingProcessService.createFromErp(receivingJson);
 
-
-        System.out.println(receivingJSONS);
-        /*
-         * "header": {
-         *         "orderERP": "З30016546",
-         *         "supplierCode": "П000019",
-         *         "orderDate": "2025-02-27 08:30:00.0"
-         *     }
-         */
-
-
-        receivingService.add(new Receiving(
-                0,
-                Timestamp.valueOf(receivingJSONS.header.orderDate),
-                null,
-                receivingJSONS.header.orderERP,
-                0,
-                0,
-                1, false
-        ));
-
-        //идентификатор новой записи - НЕПРАВИЛЬНО ТАК НЕЛЬЗЯ
-        int receivingID = receivingRepository.findFirstByOrderByReceivingIDDesc().getReceivingID();
-
-        for (ReceivingLineERP line : receivingJSONS.body){
-            /*{
-            *             "volume": "1.0",
-            *             "code": "074519",
-            *             "ext_barcode": "46002525245",
-            *             "qnt": "160",
-            *             "weight": "3.0",
-            *             "int_barcode": "20002525245"
-            *         }
-            * */
-            Optional<ProductEntity> productT = productRepository.findOneByProductCode(line.code);
-
-            if(productT.isEmpty()) {
-                //TO DO: СДЕЛАТЬ ЗАПРОС НА ПОЛУЧЕНИЯ ДАННЫХ ПО ТОВАРУ
-            }
-            if(productT.isPresent()){
-                int productID = productT.get().getProductID();
-                receivingLineService.add(new ReceivingLine(
-                    0,
-                    Integer.parseInt(line.qnt),
-                    0,
-                    null,
-                    receivingID,
-                    0,
-                        productID,
-                        false,
-                        false,
-                        false,
-                    ""
-                ));
-            }
+        String message = "Новая накладная: " + receivingJson.header.orderERP
+                + " (id " + result.receivingId() + ", строк: " + result.linesCreated() + ")";
+        if (!result.missingProductCodes().isEmpty()) {
+            message += ". Не найдены в справочнике товаров и пропущены: " + String.join(", ", result.missingProductCodes());
         }
-
-        return new ResponseJson(1, "Новая накладная: " + receivingJSONS.header.orderERP);
+        return new ResponseJson(1, message);
     }
 
 
@@ -217,7 +167,7 @@ public class RestApiController {
 
     private  HashMap<String, String> orderHead(int orderID){
         Receiving receiving = receivingService.getByID(orderID); //Одну выбрали приходную накладную
-        Status receivingStatus = receivingStatuses()[receiving.getStatusID()];
+        String receivingStatus = ReceivingStatus.fromCode(receiving.getStatusID()).getTitle();
         Supplier supplier = SuppliersController.supplierList()[receiving.getStatusID()];
 
         Employee employee = employeeService.getAllEmployee().get(receiving.getEmployeeID());
@@ -227,7 +177,7 @@ public class RestApiController {
         orderHead.put("supplierName", supplier.getSupplierName());
         orderHead.put("supplierCode", supplier.getSupplierCode());
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
-        orderHead.put("receivingStatus", receivingStatus.getName());
+        orderHead.put("receivingStatus", receivingStatus);
         orderHead.put("receivingID", String.valueOf(receiving.getReceivingID()));
         orderHead.put("employeeName", employee.getEmployeeName());
         return orderHead;
@@ -240,7 +190,7 @@ public class RestApiController {
     public ResponseJson addProducts(@RequestBody String json) throws JsonProcessingException {
         int kol = 0;
 
-        System.out.println(json);
+        log.debug("{}", json);
 
         /*
         * {
@@ -379,7 +329,7 @@ public class RestApiController {
     @ResponseBody
     public ResponseJson addSupplier(@RequestBody String json) throws JsonProcessingException {
         int kol = 0;
-        System.out.println(json);
+        log.debug("{}", json);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -406,10 +356,10 @@ public class RestApiController {
         int kol = 0;
         ObjectMapper objectMapper = new ObjectMapper();
 
-        System.out.println(json);
+        log.debug("{}", json);
 
         for (Role role : objectMapper.readValue(json, Role[].class)){
-            System.out.println(role);
+            log.debug("{}", role);
             /* Проверка по наименованию естьли такой уже в базе */
             Optional<RoleEntity> roleEntity = roleRepository.findByRoleName(role.getRoleName());
             if(roleEntity.isEmpty()){

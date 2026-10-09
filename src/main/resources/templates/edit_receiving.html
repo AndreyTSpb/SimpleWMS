@@ -93,7 +93,7 @@
                                     <th rowspan="2">ШтрихКод</th>
                                     <th colspan="2">Количество</th>
                                     <th colspan="2">Вес (кг)</th>
-                                    <th colspan="2">Объем (м^2)</th>
+                                    <th colspan="2">Объём (м³)</th>
                                     <th colspan="2"></th>
 
                                 </tr>
@@ -117,8 +117,8 @@
                                     <td th:text="${orderItems.qntFact}">Количество Принятое</td>
                                     <td th:text="${orderItems.weightOrder}">Вес (кг) По накладной</td>
                                     <td th:text="${orderItems.weightFact}">Вес (кг) Принятое</td>
-                                    <td th:text="${orderItems.volumeOrder}">Объем (м^2) По накладной</td>
-                                    <td th:text="${orderItems.volumeFact}">Объем (м^2) Принятое</td>
+                                    <td th:text="${orderItems.volumeOrder}">Объём (м³) По накладной</td>
+                                    <td th:text="${orderItems.volumeFact}">Объём (м³) Принятое</td>
                                     <td >
                                         <div class="dropdown">
                                             <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -126,7 +126,7 @@
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                                 <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${orderItems.productID}">ШтрихКод</a>
-                                                <a th:if="${orderHead.statusID == '1'}" class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${orderItems.productID}">Редактировать</a>
+                                                <a th:if="${orderHead.statusID == '1'}" class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${orderItems.productID}" th:text="${orderItems.complete == 'true'} ? 'Просмотр (строка принята)' : 'Принять строку'">Принять строку</a>
                                             </div>
                                         </div>
                                     </td>
@@ -228,6 +228,7 @@
                                 <div class="form-group">
                                     <label>Место хранения: </label>
                                     <select class="form-control" name = "locationId" >
+                                        <option value="0">— выберите место хранения —</option>
                                         <option th:each="location : ${locationList}" th:value="${location.locationID}" th:text="${location.locationCode}" th:selected="${location.locationID.toString() == orderItems.locationId}"></option>
                                     </select>
                                 </div>
@@ -252,10 +253,10 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <span th:if="${orderItems.complete == 'true'}" class="text-success mr-auto">Строка уже принята, изменение недоступно</span>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
                     <button th:if="${orderItems.complete == 'null' || orderItems.complete == 'false'}" type="submit" class="btn btn-primary" th:form="'editForm_id_'+${orderItems.productID}">Подтвердить</button>
                 </div>
-                <div th:text="${orderItems}"></div>
             </div>
         </div>
     </div>
@@ -427,4 +428,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

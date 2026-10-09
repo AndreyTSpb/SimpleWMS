@@ -11,6 +11,7 @@ import com.tynyany.simplewmsv2.models.LocationTableString;
 import com.tynyany.simplewmsv2.service.LocationService;
 import com.tynyany.simplewmsv2.service.ZoneService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/locations")
 @RequiredArgsConstructor
@@ -71,7 +73,7 @@ public class LocationsController {
 
     @PostMapping("/add")
     public String add(@ModelAttribute LocationEntity locationEntity) {
-        System.out.println(locationEntity);
+        log.debug("{}", locationEntity);
         //Zone zone = zoneService.getByID(locationEntity.getZoneID());
 
         String row = (locationEntity.getRow().length() > 1)? locationEntity.getRow():"0" + locationEntity.getRow();
@@ -172,7 +174,7 @@ public class LocationsController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute Location location) {
-        System.out.println(location);
+        log.debug("{}", location);
         //Location(locationID=19, locationCode=null, row=888, x=1, y=3, z=3, capacity=1.0, available=null, del=null, zoneID=4)
         if(!locationRepository.existsById(location.getLocationID())){
             throw new UserNotFoundException("Location not found: id = " + location.getLocationID());

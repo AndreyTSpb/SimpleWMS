@@ -8,6 +8,7 @@ import com.tynyany.simplewmsv2.service.EmployeeService;
 import com.tynyany.simplewmsv2.service.RoleService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/employees")
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class EmployeesController {
     @GetMapping
     public String index(Model model) {
         List<Role> roles = roleService.getAllRole();
-        System.out.println(roles);
+        log.debug("{}", roles);
 
         model.addAttribute("title", "Список сотрудников");
         model.addAttribute("baseUrl", baseUrl);
@@ -67,7 +69,7 @@ public class EmployeesController {
 
     @RequestMapping("/del")
     public String delEmployee(@RequestParam(value = "employeeID", required = true) int employeeId) {
-        System.out.println(employeeId);
+        log.debug("{}", employeeId);
         if(!employeeRepository.existsById(employeeId))
             throw new UserNotFoundException("Employee not found: id = " + employeeId);
 
@@ -98,7 +100,7 @@ public class EmployeesController {
         }
 
         public void print() {
-            System.out.println(tabNum + " " + name + " " + lastName + " " + del + " " + employeeID + " " + roleID);
+            log.debug("{}", tabNum + " " + name + " " + lastName + " " + del + " " + employeeID + " " + roleID);
         }
     }
 
@@ -155,7 +157,7 @@ public class EmployeesController {
             //заполняем массив строк
             for (Employee employee : employeeList) {
                 if(employee != null) {
-                    System.out.println(employee);
+                    log.debug("{}", employee);
                     employeeTableData.add(
                             new StringTableData(
                                     employee.getEmployeeID(),

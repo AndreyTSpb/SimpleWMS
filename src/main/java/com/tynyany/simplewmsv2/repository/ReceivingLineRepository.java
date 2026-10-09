@@ -3,6 +3,7 @@ package com.tynyany.simplewmsv2.repository;
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,17 @@ public interface ReceivingLineRepository extends CrudRepository<ReceivingLineEnt
     ArrayList<ReceivingLineEntity> findAllByReceivingIDAndDel(Integer receiverId, Boolean del);
 
     /**
-     * Выборка списка зон куда требуется переместить товар
-     * @return
+     * Зоны хранения, в которые нужно разместить товар, лежащий в ячейке приёмки
+     * и ещё не включённый в маршрут размещения.
      */
-    @Query(value = "SELECT l.zoneid FROM receiving_line AS rl LEFT JOIN  location l on rl.locationid = l.locationid" +
-            " WHERE rl.receivingid IN (SELECT b.receiving_id FROM stocks AS s LEFT JOIN batches AS b on s.batch_id = b.batch_id" +
-            " WHERE s.del = false AND s.location_id = 1 AND s.quantity > 0) AND rl.del = false AND complete = true" +
-            " GROUP BY l.zoneid", nativeQuery = true)
-    List<Integer> findALLbyGroupZoneId();
+    @Query(value = "SELECT DISTINCT l.zoneid FROM receiving_line AS rl" +
+            " JOIN location AS l ON rl.locationid = l.locationid" +
+            " WHERE COALESCE(rl.del, FALSE) = FALSE" +
+            "   AND rl.complete = TRUE" +
+            "   AND COALESCE(rl.placement_route, FALSE) = FALSE" +
+            "   AND rl.receiving_lineid IN (SELECT b.receiving_id FROM stocks AS s" +
+            "        JOIN batches AS b ON s.batch_id = b.batch_id" +
+            "        WHERE COALESCE(s.del, FALSE) = FALSE AND s.location_id = :receivingLocationId AND s.quantity > 0)",
+            nativeQuery = true)
+    List<Integer> findZonesWithUnplacedStock(@Param("receivingLocationId") int receivingLocationId);
 }

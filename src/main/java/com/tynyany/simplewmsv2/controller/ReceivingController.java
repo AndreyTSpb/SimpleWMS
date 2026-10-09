@@ -2,7 +2,9 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.models.*;
-import com.tynyany.simplewmsv2.models.StockMovement;
+import com.tynyany.simplewmsv2.domain.ReceivingStatus;
+import com.tynyany.simplewmsv2.exception.NotFoundException;
+import com.tynyany.simplewmsv2.exception.WmsException;
 import com.tynyany.simplewmsv2.repository.BatchRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,8 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
+@Slf4j
 @Controller
 @RequestMapping("/receiving")
 @RequiredArgsConstructor
@@ -49,16 +54,10 @@ public class ReceivingController {
     private final SupplierService supplierService;
     private final ZoneService zoneService;
     private final LocationService locationService;
+    private final ReceivingProcessService receivingProcessService;
+    private final PlacementService placementService;
 
-    private final BatchService batchService;
-    private final StockService stockService;
-    private final StockMovementService stockMovementService;
-    private final PlacementRouteService placementRouteService;
-    private final PlacementRouteLineService placementRouteLineService;
 
-    private int sumQnt = 0;
-    private float sumWeight = 0;
-    private float sumVolume = 0;
 
 
     @GetMapping("/list")
@@ -128,9 +127,10 @@ public class ReceivingController {
         model.addAttribute("id", id);
         model.addAttribute("baseUrl", baseUrl);
 
-        model.addAttribute("orderHead", Objects.requireNonNull(orderHead(id)));
-        model.addAttribute("orderLines", Objects.requireNonNull(orderLine(id)));
-        model.addAttribute("orderItog", orderItog());
+        model.addAttribute("orderHead", requireOrderHead(id));
+        List<HashMap<String, String>> lines = Objects.requireNonNull(orderLine(id));
+        model.addAttribute("orderLines", lines);
+        model.addAttribute("orderItog", orderItog(lines));
 
         //Для селекторов
         model.addAttribute("employeeList", employeeService.getAllEmployee());
@@ -154,111 +154,97 @@ public class ReceivingController {
     @GetMapping("/view/{id}")
     public String view(@PathVariable("id") int id, Model model){
         model.addAttribute("id", id);
-        model.addAttribute("orderHead", orderHead(id));
-        model.addAttribute("orderLines", orderLine(id));
-        model.addAttribute("orderItog", orderItog());
+        model.addAttribute("orderHead", requireOrderHead(id));
+        List<HashMap<String, String>> lines = orderLine(id);
+        model.addAttribute("orderLines", lines);
+        model.addAttribute("orderItog", orderItog(lines));
         return "edit_receiving";
     }
 
     @PostMapping("/start_receiving")
-    public String startReceiving(@ModelAttribute FormStartReceiving form, HttpServletResponse response){
-
-        if(!receivingRepository.existsById(form.getOrderID())){
-            response.addCookie(new AddCookie("alertMessage", "Не_найден_приход_с_ИД:_" + form.getOrderID()).getCookie());
-            return "redirect:/" + baseUrl + "/list";
+    public String startReceiving(@ModelAttribute FormStartReceiving form, HttpServletResponse response) {
+        try {
+            receivingProcessService.start(form.getOrderID(), form.getEmployeeID(), Timestamp.valueOf(form.getDate_start()));
+            alert(response, "Приёмка начата");
+        } catch (WmsException e) {
+            log.warn("Операция по накладной отклонена: {}", e.getMessage());
+            alert(response, e.getMessage());
         }
-
-        Receiving receiving = receivingService.getByID(form.getOrderID());
-
-        receivingService.update(new Receiving(
-                receiving.getReceivingID(),
-                receiving.getReceivingDate(),
-                Timestamp.valueOf(form.getDate_start()),
-                receiving.getDocumentNumber(),
-                1,
-                form.getEmployeeID(),
-                receiving.getSupplierID(),
-                false)
-        );
-
-        response.addCookie(new AddCookie("alertMessage", "Обновлена_запись_с_ИД:_" + form.getOrderID()).getCookie());
-        return "redirect:/" + baseUrl + "/edit/"+form.getOrderID();
+        return "redirect:/" + baseUrl + "/edit/" + form.getOrderID();
     }
 
     @PostMapping("/stop_receiving")
-    public String stopReceiving(@ModelAttribute FormCloseOrDeleteReceiving form, HttpServletResponse response){
-        if(!receivingRepository.existsById(form.getOrderId())){
-            response.addCookie(new AddCookie("alertMessage", "Не_найден_приход_с_ИД:_" + form.getOrderId()).getCookie());
-            return "redirect:/" + baseUrl + "/list";
+    public String stopReceiving(@ModelAttribute FormCloseOrDeleteReceiving form, HttpServletResponse response) {
+        try {
+            receivingProcessService.complete(form.getOrderId());
+            alert(response, "Приёмка по накладной " + form.getOrderId() + " завершена");
+        } catch (WmsException e) {
+            log.warn("Операция по накладной отклонена: {}", e.getMessage());
+            alert(response, e.getMessage());
         }
-
-        Receiving receiving = receivingService.getByID(form.getOrderId());
-
-        receivingService.update(new Receiving(
-                receiving.getReceivingID(),
-                receiving.getReceivingDate(),
-                receiving.getReceivingDate(),
-                receiving.getDocumentNumber(),
-                2,
-                receiving.getEmployeeID(),
-                receiving.getSupplierID(),
-                false)
-        );
-        response.addCookie(new AddCookie("alertMessage", "Отгрузка_:_" + form.getOrderId() + "_завершина").getCookie());
-        return "redirect:/" + baseUrl + "/edit/"+form.getOrderId();
+        return "redirect:/" + baseUrl + "/edit/" + form.getOrderId();
     }
 
     /**
-     * Обновления данных по строке при приемке товара
-     * @param arr
-     * @param response
-     * @return
+     * Приёмка строки накладной: факт, партия, остаток в зоне приёмки.
      */
     @PostMapping("/update_string_product")
-    public String updateStringProduct(@ModelAttribute ReceivingLineForm arr, HttpServletResponse response){
-
-        UpdateStringReceiving updateStringReceiving = new UpdateStringReceiving(arr, batchService, receivingLineService);
-        //Обновляем строки прихода
-        updateStringReceiving.updateReceivingLine();
-        //Добавление новой партии
-        int batchId = updateStringReceiving.addBatheString();
-        //Отмечаем движение по складу и изменяем количество на остатках
-        new StockMovement(batchId,0,1,arr.getQntFact(),arr.getProductId(),arr.getEmployerId(),1,0,stockMovementService, stockService);
-
-        response.addCookie(new AddCookie("alertMessage", "Обновлена_строка_с_ИД:_" + arr.getNumLine()).getCookie());
-        //Возврашаем на страницу приемки
-        return "redirect:/" + baseUrl + "/edit/" + arr.getOrderId();
+    public String updateStringProduct(@ModelAttribute ReceivingLineForm form, HttpServletResponse response) {
+        try {
+            receivingProcessService.processLine(form);
+            alert(response, "Строка " + form.getNumLine() + " принята");
+        } catch (WmsException e) {
+            log.warn("Операция по накладной отклонена: {}", e.getMessage());
+            alert(response, e.getMessage());
+        }
+        return "redirect:/" + baseUrl + "/edit/" + form.getOrderId();
     }
 
     @GetMapping("/update_placement_route")
-    public String updatePlacementRoute(HttpServletResponse response){
-
-        GenerationProductPlacementRoutes upd = new GenerationProductPlacementRoutes(stockService, placementRouteService, placementRouteLineService, receivingLineService);
-
-        response.addCookie(new AddCookie("alertMessage", "Добавлено_" + "_записей").getCookie());
-        //Возврашаем на страницу приемки
+    public String updatePlacementRoute(HttpServletResponse response) {
+        PlacementService.GenerationResult result = placementService.generateRoutes();
+        alert(response, "Создано маршрутов: " + result.routesCreated() + ", строк: " + result.linesCreated());
         return "redirect:/product_placement";
     }
 
-    private HashMap<String, String> orderItog() {
+    private HashMap<String, String> requireOrderHead(int id) {
+        HashMap<String, String> head = orderHead(id);
+        if (head == null) {
+            throw new NotFoundException("Приходная накладная " + id + " не найдена");
+        }
+        return head;
+    }
+
+    private void alert(HttpServletResponse response, String message) {
+        response.addCookie(new AddCookie("alertMessage", message).getCookie());
+    }
+
+    private HashMap<String, String> orderItog(List<HashMap<String, String>> lines) {
+        int sumQnt = 0;
+        float sumWeight = 0;
+        float sumVolume = 0;
+        if (lines != null) {
+            for (HashMap<String, String> line : lines) {
+                sumQnt += Integer.parseInt(line.get("qntFact"));
+                sumWeight += Float.parseFloat(line.get("weightFact"));
+                sumVolume += Float.parseFloat(line.get("volumeFact"));
+            }
+        }
         HashMap<String, String> itog = new HashMap<>();
-        itog.put("sunQnt", String.valueOf(this.sumQnt));
-        itog.put("sumWeight", String.valueOf(Math.floor(this.sumWeight)));
-        itog.put("sumVolume", String.valueOf(Math.floor(this.sumVolume)));
+        itog.put("sunQnt", String.valueOf(sumQnt));
+        itog.put("sumWeight", String.valueOf(Math.floor(sumWeight)));
+        itog.put("sumVolume", String.valueOf(Math.floor(sumVolume)));
         return itog;
     }
 
     private  List<HashMap<String, String>> arrayReceivingList(Page<ReceivingEntity> page){
 
-        System.out.println(page);
         List<HashMap<String, String>> arr = new ArrayList<>();
 
-        Status[] statuses = receivingStatuses();
 
         int kol = 1;
         if (page != null ){
             for(ReceivingEntity item : page){
-                System.out.println(item);
                 HashMap<String, String> row = new HashMap<>();
                 row.put("ID", Integer.toString(item.getReceivingID()));
                 row.put("dtWaiting", (item.getReceivingDate() != null ) ? new SimpleDateFormat("yyyy-MM-dd").format(item.getReceivingDate()) : "0000-00-00");
@@ -267,12 +253,11 @@ public class ReceivingController {
                 row.put("employee", getEmployName(item.getEmployeeID()));
 
                 CalculationVolumeAndWeightUponReceipt calc = new CalculationVolumeAndWeightUponReceipt(item.getReceivingID(), receivingLineService, productService);
-                row.put("sumWeight", (calc.getWeight()>0) ? String.valueOf(calc.getWeight()) :"0");
-                row.put("sumVolume", (calc.getVolume()>0)? String.valueOf(calc.getVolume()) :"0");
+                row.put("sumWeight", String.format(Locale.ROOT, "%.2f", Math.max(calc.getWeight(), 0)));
+                row.put("sumVolume", String.format(Locale.ROOT, "%.2f", Math.max(calc.getVolume(), 0)));
                 row.put("qntRow", String.valueOf(calc.getQntProducts()));
 
-                row.put("status", statuses[item.getStatusID()].getName());
-                System.out.println(row);
+                row.put("status", ReceivingStatus.fromCode(item.getStatusID()).getTitle());
 
                 arr.add(row);
             }
@@ -302,7 +287,6 @@ public class ReceivingController {
         List<Role> roles = roleService.getAllRole();
 
         Receiving receiving = receivingService.getByID(orderID); //Одну выбрали приходную накладную
-        System.out.println(receiving);
         if(receiving == null){
             return null;
         }
@@ -326,7 +310,7 @@ public class ReceivingController {
         HashMap<String, String> orderHead = new HashMap<>();
         orderHead.put("orderId", Integer.toString(orderID));
         orderHead.put("orderERP", receiving.getDocumentNumber());
-        orderHead.put("status", receivingStatuses()[receiving.getStatusID()].getName());
+        orderHead.put("status", ReceivingStatus.fromCode(receiving.getStatusID()).getTitle());
         orderHead.put("statusID", String.valueOf(receiving.getStatusID()));
         orderHead.put("supplierId", Integer.toString(supplier.getSupplierID()));
         orderHead.put("supplierName", supplier.getSupplierName());
@@ -366,9 +350,6 @@ public class ReceivingController {
             float volumeFact  = product.getVolume() * qntFact;
 
 
-            this.sumQnt += qntFact;
-            this.sumWeight += weightFact;
-            this.sumVolume += volumeFact;
 
             strArr.put("kol", String.valueOf(kol++));
             strArr.put("rowId", String.valueOf(item.getReceivingLineID()));
@@ -383,7 +364,7 @@ public class ReceivingController {
             strArr.put("weightFact", String.valueOf(weightFact));
             strArr.put("volumeOrder", String.valueOf(volumeOrder));
             strArr.put("volumeFact", String.valueOf(volumeFact));
-            strArr.put("expirationDate", String.valueOf(item.getExpirationDate()));
+            strArr.put("expirationDate", item.getExpirationDate() == null ? "" : new SimpleDateFormat("yyyy-MM-dd").format(item.getExpirationDate()));
             strArr.put("note", item.getNote());
 
             //Предпологаемое место хранения
@@ -406,14 +387,6 @@ public class ReceivingController {
         return  arr;
     }
 
-    public static Status[] receivingStatuses(){
-        Status[] receivingStatuses = new Status[5];
-        receivingStatuses[0] = new Status(0, "В ожидании");
-        receivingStatuses[1] = new Status(1, "В процессе");
-        receivingStatuses[2] = new Status(2, "Завершена");
-        receivingStatuses[3] = new Status(3, "Отменена");
-        return receivingStatuses;
-    }
 
     public  String getEmployName(Integer employeeID){
         //Receiving receiving = receivingService.getByID(form.getOrderId());

@@ -42,60 +42,52 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table w-100 mb-0">
+                    <p th:if="${#lists.isEmpty(routes)}" class="text-template-primary-light mb-0">
+                        Маршрутов размещения нет. Примите товар по накладной (с выбором места хранения)
+                        и нажмите «Обновить данные».
+                    </p>
+                    <table th:unless="${#lists.isEmpty(routes)}" class="table w-100 mb-0">
                         <thead>
                         <tr class="text-center">
-                            <th class="all">ID</th>
-                            <th class="min-tablet">Номер<br>заказа</th>
-                            <th class="min-tablet">Дата<br>прихода</th>
-                            <th class="min-tablet">Факт.<br>дата</th>
-                            <th class="min-tablet">Сотрудник</th>
-                            <th class="min-tablet">Кол-во<br>cтрок</th>
-                            <th class="min-tablet">Вес<br>(кг)</th>
-                            <th class="min-tablet">Обьем<br>(м^2)</th>
-                            <th class="">Статус</th>
-                            <th></th>
+                            <th>Маршрут</th>
+                            <th>Создан</th>
+                            <th>Зона хранения</th>
+                            <th>Строк</th>
+                            <th>Кол-во</th>
+                            <th>Статус</th>
                         </tr>
                         </thead>
-                        <tbody th:each="receiving, iterStat : ${receivingList}">
+                        <tbody th:each="route : ${routes}">
+                        <tr class="text-center">
+                            <td th:text="${route.id()}">1</td>
+                            <td th:text="${route.created()}">01.01.2026 10:00</td>
+                            <td th:text="${route.zone()}">SC1</td>
+                            <td th:text="${#lists.size(route.lines())}">3</td>
+                            <td th:text="${route.totalQuantity()}">100</td>
+                            <td th:text="${route.status()}">Создан</td>
+                        </tr>
                         <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- 0={dtReal=2030-01-01 12:12, numOrder=Z3454354545, qntRow=5, sumWeight=1500, dtWaiting=2020-01-01 12:12, sumVolume=5, employee=Vasa Pupkin, status=Ожидает} -->
-                            <td th:text="${iterStat.count}">0001</td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.numOrder}">Наименование</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.dtWaiting}"></p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.dtReal}"></p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.employee}"></p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.qntRow}"></p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.sumWeight}">Вес(кг)</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Обьем(м^2)</p>
-                            </td>
-                            <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.status}">Обьем(м^2)</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" th:href="@{~/{baseUrl}/veiw/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Просмотр</a>
-                                        <a class="dropdown-item" th:href="@{~/{baseUrl}/edit/{id}(baseUrl = ${baseUrl},id = ${receiving.ID})}" >Редактировать</a>
-                                    </div>
-                                </div>
+                            <td colspan="6" class="pt-0">
+                                <table class="table table-sm mb-2">
+                                    <thead>
+                                    <tr class="bg-light-secondary">
+                                        <th>Код</th>
+                                        <th>Товар</th>
+                                        <th>Партия</th>
+                                        <th>Место хранения</th>
+                                        <th class="text-right">Кол-во</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="line : ${route.lines()}">
+                                        <td th:text="${line.productCode()}">029952</td>
+                                        <td th:text="${line.productName()}">Товар</td>
+                                        <td th:text="${line.batchId()}">1</td>
+                                        <td th:text="${line.locationCode()}">SC1-01-01-1-1</td>
+                                        <td class="text-right" th:text="${line.quantity()}">10</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </td>
                         </tr>
                         </tbody>
@@ -104,6 +96,9 @@
             </div>
         </div>
         <!-- Main container ends -->
+        <!-- Всплывающие сообщения -->
+        <div th:replace="~{update_record_modal :: content}"></div>
+        <!-- Всплывающие сообщения END -->
 
     </div>
 
@@ -548,7 +543,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объем товара(м^2)</label>
+                                    <label>Объём товара(м³)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
                                 </div>
                             </div>
@@ -732,4 +727,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

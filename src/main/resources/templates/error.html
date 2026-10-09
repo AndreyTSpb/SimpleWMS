@@ -32,10 +32,25 @@
                                 <img th:src="@{/img/under-construction.png}" alt="" class="vm mw-100">
                             </div>
                             <div class="col-12 col-md-8 col-lg-7 align-self-center pl-md-5">
-                                <h1>Эта страница находится в разработке</h1>
-                                <p class="text-template-primary-light">
-                                    Информация или страница, которую вы ищете, возможно, находится в стадии разработки или обновляется и находится на обслуживании. Попробуйте через некоторое время или проверьте соединение должным образом.<br><br>
-                                </p>
+                                <!-- Ошибка бизнес-правила: сообщение формирует GlobalExceptionHandler -->
+                                <th:block th:if="${errorMessage != null}">
+                                    <h1>Операция не выполнена</h1>
+                                    <p class="text-template-primary-light" th:text="${errorMessage}"></p>
+                                    <p><a href="javascript:history.back()" class="btn btn-outline-template">Вернуться назад</a></p>
+                                </th:block>
+                                <!-- Внутренняя ошибка сервера (статус от Spring Boot) -->
+                                <th:block th:if="${errorMessage == null and status != null and status >= 500}">
+                                    <h1>Внутренняя ошибка сервера</h1>
+                                    <p class="text-template-primary-light">
+                                        Не удалось выполнить запрос. Подробности записаны в журнал приложения.<br><br>
+                                    </p>
+                                </th:block>
+                                <th:block th:if="${errorMessage == null and (status == null or status < 500)}">
+                                    <h1>Эта страница находится в разработке</h1>
+                                    <p class="text-template-primary-light">
+                                        Информация или страница, которую вы ищете, возможно, находится в стадии разработки или обновляется и находится на обслуживании. Попробуйте через некоторое время или проверьте соединение должным образом.<br><br>
+                                    </p>
+                                </th:block>
                                 <div class="row">
                                 <div class="col-10 col-md-8 col-ld-7">
 

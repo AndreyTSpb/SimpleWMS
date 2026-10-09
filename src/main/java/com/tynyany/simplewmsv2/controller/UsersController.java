@@ -19,6 +19,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -137,7 +139,7 @@ public class UsersController {
     private List<UserString> userStringList(Page<UserEntity> iterable) {
         List<UserString> list = new ArrayList<>();
         for(UserEntity userEntity : iterable){
-            System.out.println(userEntity);
+            log.debug("{}", userEntity);
             //через айди получаем фио сотрудника привязанного
             int employeeID = userEntity.getEmployeeID();
             int roleId = 0;

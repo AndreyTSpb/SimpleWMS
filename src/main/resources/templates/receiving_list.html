@@ -51,7 +51,7 @@
                             <th class="min-tablet">Сотрудник</th>
                             <th class="min-tablet">Кол-во<br>cтрок</th>
                             <th class="min-tablet">Вес<br>(кг)</th>
-                            <th class="min-tablet">Обьем<br>(м^2)</th>
+                            <th class="min-tablet">Объём<br>(м³)</th>
                             <th class="">Статус</th>
                             <th></th>
                         </tr>
@@ -80,7 +80,7 @@
                                 <p class="mb-0 template-inverse" th:text="${receiving.sumWeight}">Вес(кг)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Обьем(м^2)</p>
+                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Объём(м³)</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${receiving.status}">Статус</p>
@@ -447,7 +447,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объем товара(м^2)</label>
+                                    <label>Объём товара(м³)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
                                 </div>
                             </div>
@@ -587,7 +587,7 @@
                         <td class="column14 style50 s style50" colspan="2"><span th:text="${headerList.get('status')}">status</span></td>
                     </tr>
                     <tr class="row3">
-                        <td class="column12 style49 s style49" colspan="2">Объем, м3</td>
+                        <td class="column12 style49 s style49" colspan="2">Объём, м3</td>
                         <td class="column14 style51 s style51" colspan="2">0,02</td>
                     </tr>
                     <tr class="row4">
@@ -665,7 +665,7 @@
                         <td class="column15 style8 null"></td>
                     </tr>
                     <tr class="row16">
-                        <td class="column0 style6 s">Объем</td>
+                        <td class="column0 style6 s">Объём</td>
                         <td class="column1 style5 null"></td>
                         <td class="column2 style1 s style1" colspan="3">0,02</td>
                         <td class="column5 style12 s style12" colspan="3">Оператор Волошина Г.П.</td>
@@ -952,4 +952,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

@@ -1,9 +1,9 @@
 package com.tynyany.simplewmsv2.controller;
 
-import com.tynyany.simplewmsv2.models.GenerationProductPlacementRoutes;
-import com.tynyany.simplewmsv2.service.PlacementRouteLineService;
-import com.tynyany.simplewmsv2.service.PlacementRouteService;
-import com.tynyany.simplewmsv2.service.StockService;
+import com.tynyany.simplewmsv2.models.UpdateMessageAlert;
+import com.tynyany.simplewmsv2.service.PlacementService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class ProductPlacementController {
 
-    final StockService stockService;
-    final PlacementRouteService placementRouteService;
-    final PlacementRouteLineService placementRouteLineService;
-
+    private final PlacementService placementService;
 
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("title", "Размещенеи товара на складе");
-        //GenerationProductPlacementRoutes generationProductPlacementRoutes = new GenerationProductPlacementRoutes(stockService, placementRouteService, placementRouteLineService);
+    public String index(Model model, HttpServletRequest request, HttpServletResponse response) {
+        model.addAttribute("title", "Маршруты размещения товара");
+        model.addAttribute("routes", placementService.getRoutes());
+
+        UpdateMessageAlert alert = new UpdateMessageAlert(request, response);
+        if (alert.updateMessage != null) {
+            model.addAttribute("updateMessage", alert.updateMessage);
+        }
         return "product_placement_list";
     }
 }
