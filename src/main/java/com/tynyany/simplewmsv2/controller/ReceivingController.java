@@ -2,6 +2,7 @@ package com.tynyany.simplewmsv2.controller;
 
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.models.*;
+import com.tynyany.simplewmsv2.config.WmsProperties;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
@@ -57,6 +58,7 @@ public class ReceivingController {
     private final LocationService locationService;
     private final ReceivingProcessService receivingProcessService;
     private final PlacementService placementService;
+    private final WmsProperties wmsProperties;
 
 
 
@@ -147,8 +149,23 @@ public class ReceivingController {
 
 
 
+    /**
+     * Печатная форма ТОРГ-12 по фактически принятым строкам.
+     */
     @GetMapping("/torg_12/{id}")
-    public String torg12(){
+    public String torg12(@PathVariable("id") int id, Model model) {
+        HashMap<String, String> head = requireOrderHead(id);
+        List<HashMap<String, String>> accepted = new ArrayList<>();
+        for (HashMap<String, String> line : orderLine(id)) {
+            if ("true".equals(line.get("complete")) && Integer.parseInt(line.get("qntFact")) > 0) {
+                accepted.add(line);
+            }
+        }
+        model.addAttribute("orderHead", head);
+        model.addAttribute("lines", accepted);
+        model.addAttribute("orderItog", orderItog(accepted));
+        model.addAttribute("companyName", wmsProperties.getCompany().getName());
+        model.addAttribute("printDate", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()));
         return "torg-12";
     }
 
@@ -201,6 +218,35 @@ public class ReceivingController {
         return "redirect:/" + baseUrl + "/edit/" + form.getOrderId();
     }
 
+    /**
+     * Отмена приёмки строки для исправления (см. ReceivingProcessService.revertLine).
+     */
+    @PostMapping("/revert_line")
+    public String revertLine(@RequestParam("lineId") int lineId,
+                             @RequestParam("orderId") int orderId,
+                             HttpServletResponse response) {
+        try {
+            receivingProcessService.revertLine(lineId, CurrentUser.employeeId());
+            alert(response, "Приёмка строки " + lineId + " отменена, строку можно принять заново");
+        } catch (WmsException e) {
+            log.warn("Операция по накладной отклонена: {}", e.getMessage());
+            alert(response, e.getMessage());
+        }
+        return "redirect:/" + baseUrl + "/edit/" + orderId;
+    }
+
+    @PostMapping("/del_receiving")
+    public String cancelReceiving(@ModelAttribute FormCloseOrDeleteReceiving form, HttpServletResponse response) {
+        try {
+            receivingProcessService.cancel(form.getOrderId(), CurrentUser.employeeId());
+            alert(response, "Накладная " + form.getOrderId() + " отменена");
+        } catch (WmsException e) {
+            log.warn("Операция по накладной отклонена: {}", e.getMessage());
+            alert(response, e.getMessage());
+        }
+        return "redirect:/" + baseUrl + "/edit/" + form.getOrderId();
+    }
+
     @GetMapping("/update_placement_route")
     public String updatePlacementRoute(HttpServletResponse response) {
         PlacementService.GenerationResult result = placementService.generateRoutes();
@@ -222,19 +268,34 @@ public class ReceivingController {
 
     private HashMap<String, String> orderItog(List<HashMap<String, String>> lines) {
         int sumQnt = 0;
+        int sumQntOrder = 0;
+        int notProcessed = 0;
+        int withDifference = 0;
         float sumWeight = 0;
         float sumVolume = 0;
         if (lines != null) {
             for (HashMap<String, String> line : lines) {
-                sumQnt += Integer.parseInt(line.get("qntFact"));
+                int qntFact = Integer.parseInt(line.get("qntFact"));
+                int qntOrder = Integer.parseInt(line.get("qntOrder"));
+                sumQnt += qntFact;
+                sumQntOrder += qntOrder;
                 sumWeight += Float.parseFloat(line.get("weightFact"));
                 sumVolume += Float.parseFloat(line.get("volumeFact"));
+                if (!"true".equals(line.get("complete"))) {
+                    notProcessed++;
+                } else if (qntFact != qntOrder) {
+                    withDifference++;
+                }
             }
         }
         HashMap<String, String> itog = new HashMap<>();
         itog.put("sunQnt", String.valueOf(sumQnt));
-        itog.put("sumWeight", String.valueOf(Math.floor(sumWeight)));
-        itog.put("sumVolume", String.valueOf(Math.floor(sumVolume)));
+        itog.put("sumQntOrder", String.valueOf(sumQntOrder));
+        itog.put("difference", String.valueOf(sumQnt - sumQntOrder));
+        itog.put("notProcessed", String.valueOf(notProcessed));
+        itog.put("withDifference", String.valueOf(withDifference));
+        itog.put("sumWeight", String.format(Locale.ROOT, "%.2f", sumWeight));
+        itog.put("sumVolume", String.format(Locale.ROOT, "%.2f", sumVolume));
         return itog;
     }
 
@@ -382,6 +443,8 @@ public class ReceivingController {
 
             //Обработана или нет
             strArr.put("complete", String.valueOf(item.getComplite()));
+            strArr.put("placementRoute", String.valueOf(Boolean.TRUE.equals(item.getPlacementRoute())));
+            strArr.put("difference", String.valueOf(qntFact - qntOrder));
 
             arr.add(strArr);
         }

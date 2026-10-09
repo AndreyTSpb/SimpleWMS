@@ -106,6 +106,23 @@ class DefaultInventoryServiceTest {
     }
 
     @Test
+    void writeOffDecreasesStockAndRecordsMovementToNowhere() {
+        StockEntity stock = new StockEntity(7, PRODUCT, BATCH, RECEIVING_CELL, 100, false);
+        when(stockRepository.findByBatchIdAndLocationIdAndDel(BATCH, RECEIVING_CELL, false)).thenReturn(stock);
+
+        service.writeOff(BATCH, RECEIVING_CELL, 100, 3, MovementType.ADJUSTMENT);
+
+        assertThat(stock.getQuantity()).isZero();
+        ArgumentCaptor<StockMovementEntity> movement = ArgumentCaptor.forClass(StockMovementEntity.class);
+        verify(movementRepository).save(movement.capture());
+        assertThat(movement.getValue().getMovementTypeId()).isEqualTo(MovementType.ADJUSTMENT.getCode());
+        assertThat(movement.getValue().getFromLocationId()).isEqualTo(RECEIVING_CELL);
+        assertThat(movement.getValue().getToLocationId()).isZero();
+        assertThatThrownBy(() -> service.writeOff(BATCH, RECEIVING_CELL, 1, 3, MovementType.ADJUSTMENT))
+                .isInstanceOf(WmsException.class);
+    }
+
+    @Test
     void zeroOrNegativeQuantityIsRejected() {
         assertThatThrownBy(() -> service.receive(BATCH, PRODUCT, RECEIVING_CELL, 0, 3)).isInstanceOf(WmsException.class);
         assertThatThrownBy(() -> service.move(BATCH, PRODUCT, RECEIVING_CELL, STORAGE_CELL, -5, 3, MovementType.PLACEMENT))

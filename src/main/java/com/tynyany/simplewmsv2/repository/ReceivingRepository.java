@@ -16,6 +16,9 @@ public interface ReceivingRepository extends CrudRepository<ReceivingEntity, Int
 
     ReceivingEntity findFirstByOrderByReceivingIDDesc();
 
+    /** Накладная с таким номером ERP в любом статусе, кроме указанного (используется для «не отменена»). */
+    Optional<ReceivingEntity> findFirstByDocumentNumberAndStatusIDNot(String documentNumber, int statusID);
+
     Page<ReceivingEntity> findAll(Pageable pageable);
 
     Page<ReceivingEntity> findByDocumentNumberLikeIgnoreCase(String filter, Pageable pageable);

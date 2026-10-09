@@ -21,6 +21,13 @@ public interface InventoryService {
               int quantity, int employeeId, MovementType type);
 
     /**
+     * Списание партии из ячейки (корректировка, отгрузка): остаток уменьшается, в журнале «куда» = 0.
+     *
+     * @throws com.tynyany.simplewmsv2.exception.WmsException если в ячейке недостаточно остатка
+     */
+    void writeOff(int batchId, int fromLocationId, int quantity, int employeeId, MovementType type);
+
+    /**
      * Текущий остаток партии в ячейке (0, если записи нет).
      */
     int getQuantity(int batchId, int locationId);

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="'ТОРГ-12 — ' + ${orderHead.orderERP}">ТОРГ-12</title>
   <link th:href="@{/css/blanc.css}" rel="stylesheet">
 </head>
 <body>
@@ -38,7 +38,7 @@
                 <tbody><tr>
                   <td width="770" style="z-index:100;">
                     <br>
-                    <div id="gruzootpavitel" class="editable" edtype="textarea" style="width: 750px; background-color: transparent;">Полное название продающей организации, с указанием всех реквизитов</div>
+                    <div id="gruzootpavitel" class="editable" edtype="textarea" style="width: 750px; background-color: transparent;" th:text="${orderHead.supplierName}">Полное название продающей организации, с указанием всех реквизитов</div>
                     <div id="go_name" class="editable_sys" edtype="text" style="font-size: 6.5pt; border-top: 1px solid; text-align: center; width: 750px; height: 15px; background-color: transparent;">
                       грузоотправитель, адрес, номер телефона, банковские реквизиты
                     </div>
@@ -48,19 +48,19 @@
                     <table width="100%">
                       <tbody><tr>
                         <td width="125" align="right"><div id="gruzopoluchatel_name" class="editable_sys" edtype="text" style="width: 100%; font-size: 10pt; background-color: transparent;">Грузополучатель</div></td>
-                        <td style="border-bottom:1px solid;"><div id="gruzopoluchatel" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background: transparent;">Наименование грузополучателя</div></td>
+                        <td style="border-bottom:1px solid;"><div id="gruzopoluchatel" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background: transparent;" th:text="${companyName}">Наименование грузополучателя</div></td>
                       </tr>
                       <tr>
                         <td width="125" align="right"><div id="postavshik_name" class="editable_sys" edtype="text" style="width: 100%; font-size: 10pt; background-color: transparent;">Поставщик</div></td>
-                        <td style="border-bottom:1px solid;"><div id="postavshik" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background-color: transparent;">Наименование поставщика</div></td>
+                        <td style="border-bottom:1px solid;"><div id="postavshik" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background-color: transparent;" th:text="${orderHead.supplierName} + ', код ' + ${orderHead.supplierCode}">Наименование поставщика</div></td>
                       </tr>
                       <tr>
                         <td width="125" align="right"><div id="platelshik_name" class="editable_sys" edtype="text" style="width: 100%; font-size: 10pt; background-color: transparent;">Плательщик</div></td>
-                        <td style="border-bottom:1px solid;"><div id="platelshik" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background-color: transparent;">Наименование плательщика</div></td>
+                        <td style="border-bottom:1px solid;"><div id="platelshik" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background-color: transparent;" th:text="${companyName}">Наименование плательщика</div></td>
                       </tr>
                       <tr>
                         <td width="125" align="right"><div id="osnovanie_name" class="editable_sys" edtype="text" style="width: 100%; font-size: 10pt; background-color: transparent;">Основание</div></td>
-                        <td style="border-bottom:1px solid;"><div id="osnovanie" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background: transparent;">Основание платежа</div></td>
+                        <td style="border-bottom:1px solid;"><div id="osnovanie" class="editable" edtype="textarea" style="width: 100%; font-size: 8pt; background: transparent;" th:text="'Заказ на закупку № ' + ${orderHead.orderERP}">Основание платежа</div></td>
                       </tr>
                       <tr>
                         <td width="125" align="right"></td>
@@ -144,7 +144,7 @@
                         <td align="left">
                           <table border="0" cellpadding="0" cellspacing="0">
                             <tbody><tr><td width="100" style="border:1px solid;" align="center"><div id="nomerdoc_name" class="editable_sys" edtype="text" style="font-size:6.5pt;">Номер документа</div></td><td width="100" style="border:1px solid;border-left:0px;" align="center"><div id="datesoz_name" class="editable_sys" edtype="text" style="font-size:6.5pt;">Дата составления</div></td></tr>
-                            <tr><td style="border:2px solid;" align="center"><div id="nomerdoc" class="editable" edtype="text" style="font-size:10pt;font-weight:bold;">0</div></td><td align="center" style="border:2px solid;border-left:0px;"><div id="date_soz" class="editable" edtype="text" style="font-size:10pt;font-weight:bold;">12.03.2025</div></td></tr>
+                            <tr><td style="border:2px solid;" align="center"><div id="nomerdoc" class="editable" edtype="text" style="font-size:10pt;font-weight:bold;" th:text="${orderHead.orderERP}">0</div></td><td align="center" style="border:2px solid;border-left:0px;"><div id="date_soz" class="editable" edtype="text" style="font-size:10pt;font-weight:bold;" th:text="${printDate}">12.03.2025</div></td></tr>
                             </tbody></table>
                         </td>
                       </tr>
@@ -242,6 +242,32 @@
 
                 <tbody>
                 <!-- Строки тут -->
+                  <tr th:each="line, st : ${lines}">
+                    <td align="center" style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${st.count}">1</td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${line.name}">Наименование</td>
+                    <td align="center" style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${line.code}">Код</td>
+                    <td align="center" style="border:1px solid;font-size:8pt;padding:1px 3px;">шт</td>
+                    <td align="center" style="border:1px solid;font-size:8pt;padding:1px 3px;">796</td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${line.qntFact}">0</td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${line.weightFact}">0</td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;" th:text="${line.qntFact}">0</td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="7" align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;"><b>Итого</b></td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;"><b th:text="${orderItog.sunQnt}">0</b></td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;"><b th:text="${orderItog.sumWeight}">0</b></td>
+                    <td align="right" style="border:1px solid;font-size:8pt;padding:1px 3px;"><b th:text="${orderItog.sunQnt}">0</b></td>
+                    <td colspan="5" style="border:1px solid;font-size:8pt;padding:1px 3px;"></td>
+                    <td></td>
+                  </tr>
                   <tr id="last_item">
                     <td colspan="16" style="border-bottom:1px solid;border-collapse: collapse; ">
 
@@ -395,4 +421,4 @@
   </tr>
   </tbody></table>
 </body>
-</html>
+</html>

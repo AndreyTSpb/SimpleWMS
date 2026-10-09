@@ -36,7 +36,7 @@
                                     <i class="material-icons md-18">print</i> Документы <i class="material-icons">keyboard_arrow_down</i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Накладная</a>
+                                    <a class="dropdown-item" th:href="@{/receiving/torg_12/{id}(id=${orderHead.orderId})}" target="_blank">Товарная накладная (ТОРГ-12)</a>
                                     <a class="dropdown-item" href="#">Акт приемки (ТОРГ-1)</a>
                                     <a class="dropdown-item" href="#">Акт расхождения (ТОРГ-2)</a>
                                 </div>
@@ -114,7 +114,7 @@
                                     <td th:text="${orderItems.code}">Код</td>
                                     <td th:text="${#strings.defaultString(orderItems.ext_barcode,orderItems.int_barcode)}">Код</td>
                                     <td th:text="${orderItems.qntOrder}">Количество По накладной</td>
-                                    <td th:text="${orderItems.qntFact}">Количество Принятое</td>
+                                    <td th:text="${orderItems.qntFact}" th:classappend="${orderItems.complete == 'true' and orderItems.difference != '0'} ? 'text-danger font-weight-bold' : ''" th:title="${orderItems.complete == 'true' and orderItems.difference != '0'} ? 'Расхождение: ' + ${orderItems.difference} : ''">Количество Принятое</td>
                                     <td th:text="${orderItems.weightOrder}">Вес (кг) По накладной</td>
                                     <td th:text="${orderItems.weightFact}">Вес (кг) Принятое</td>
                                     <td th:text="${orderItems.volumeOrder}">Объём (м³) По накладной</td>
@@ -127,15 +127,36 @@
                                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                                 <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#barCodeModal_id_'+${orderItems.productID}">ШтрихКод</a>
                                                 <a th:if="${orderHead.statusID == '1'}" class="dropdown-item" href="javascript:void(0)" data-toggle="modal" th:data-target="'#editModal_id_'+${orderItems.productID}" th:text="${orderItems.complete == 'true'} ? 'Просмотр (строка принята)' : 'Принять строку'">Принять строку</a>
+                                                <form th:if="${orderHead.statusID == '1' and orderItems.complete == 'true' and orderItems.placementRoute != 'true'}"
+                                                      th:action="@{/receiving/revert_line}" method="post" class="m-0"
+                                                      onsubmit="return confirm('Отменить приёмку строки? Остаток будет списан из зоны приёмки, строку можно будет принять заново.')">
+                                                    <input type="hidden" name="lineId" th:value="${orderItems.rowId}">
+                                                    <input type="hidden" name="orderId" th:value="${orderHead.orderId}">
+                                                    <button type="submit" class="dropdown-item text-danger">Отменить приёмку строки</button>
+                                                </form>
+                                                <span th:if="${orderItems.placementRoute == 'true'}" class="dropdown-item text-mute">В маршруте размещения</span>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
-                            <br>
-                            <p></p>
-                            <br>
+                            <div class="row mt-4">
+                                <div class="col-12 col-md-6">
+                                    <p class="mb-1">По накладной: <b th:text="${orderItog.sumQntOrder}">0</b> шт.,
+                                        принято: <b th:text="${orderItog.sunQnt}">0</b> шт.,
+                                        расхождение: <b th:text="${orderItog.difference}"
+                                                        th:classappend="${orderItog.difference != '0'} ? 'text-danger' : ''">0</b> шт.</p>
+                                    <p class="mb-1">Принято: вес <b th:text="${orderItog.sumWeight}">0</b> кг,
+                                        объём <b th:text="${orderItog.sumVolume}">0</b> м³</p>
+                                </div>
+                                <div class="col-12 col-md-6 text-md-right">
+                                    <p class="mb-1" th:if="${orderItog.notProcessed != '0'}">Не обработано строк:
+                                        <b class="text-warning" th:text="${orderItog.notProcessed}">0</b></p>
+                                    <p class="mb-1" th:if="${orderItog.withDifference != '0'}">Строк с расхождением:
+                                        <b class="text-danger" th:text="${orderItog.withDifference}">0</b></p>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-footer border-top">
                             <form id="form_close_receiving" method="post" th:action="@{/receiving/stop_receiving}">
@@ -146,7 +167,8 @@
                             </form>
                             <a href="/receiving/list" class="btn btn-outline-secondary">Назад</a>
                             <button type="submit" th:if="${orderHead.statusID == '1'}" form="form_close_receiving"  class="btn btn-outline-success float-right">Завершить приемку</button>
-                            <button type="submit" th:if="${orderHead.statusID == '1'}" form="form_del_receiving"  class="btn btn-outline-danger float-right pr-1">Отменить приемку</button>
+                            <button type="submit" th:if="${orderHead.statusID == '0' or orderHead.statusID == '1'}" form="form_del_receiving" class="btn btn-outline-danger float-right mr-2"
+                                    onclick="return confirm('Отменить накладную? Принятые строки будут откатаны.')">Отменить накладную</button>
                             <button th:if="${orderHead.statusID == '0'}" class="btn btn-outline-template float-right" data-toggle="modal" data-target="#startReceiving">Начать приемку</button>
                         </div>
                     </div>

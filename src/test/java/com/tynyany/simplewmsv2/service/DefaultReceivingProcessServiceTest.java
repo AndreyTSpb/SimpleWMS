@@ -7,6 +7,7 @@ import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import com.tynyany.simplewmsv2.dao.SupplierEntity;
+import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
 import com.tynyany.simplewmsv2.entity.ReceivingERP;
 import com.tynyany.simplewmsv2.entity.ReceivingJSON;
@@ -216,7 +217,101 @@ class DefaultReceivingProcessServiceTest {
         assertThat(receiving.getStatusID()).isEqualTo(ReceivingStatus.COMPLETED.getCode());
     }
 
+    @Test
+    void completeRequiresAllLinesProcessed() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity done = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, false, false, "");
+        ReceivingLineEntity open = new ReceivingLineEntity(12, 10, 0, null, RECEIVING_ID, 0, PRODUCT_ID, false, false, false, "");
+        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(done, open)));
+
+        assertThatThrownBy(() -> service.complete(RECEIVING_ID))
+                .isInstanceOf(WmsException.class)
+                .hasMessageContaining("не обработано строк — 1");
+    }
+
+    // ---------- отмена строки и накладной ----------
+
+    @Test
+    void revertLineWritesOffStockAndReopensLine() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity line = givenLine(true);
+        line.setQuantityReceived(100);
+        BatchEntity batch = new BatchEntity(77, PRODUCT_ID, SUPPLIER_ID, null, 100, null, LINE_ID, false);
+        when(batchRepository.findActiveByReceivingLine(LINE_ID)).thenReturn(List.of(batch));
+        when(inventoryService.getQuantity(77, 1)).thenReturn(100);
+
+        service.revertLine(LINE_ID, 4);
+
+        verify(inventoryService).writeOff(77, 1, 100, 4, MovementType.ADJUSTMENT);
+        assertThat(batch.getDel()).isTrue();
+        assertThat(line.getComplete()).isFalse();
+        assertThat(line.getQuantityReceived()).isZero();
+    }
+
+    @Test
+    void revertLineIsForbiddenWhenRoutedOrMoved() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity line = givenLine(true);
+        line.setPlacementRoute(true);
+        assertThatThrownBy(() -> service.revertLine(LINE_ID, 0)).hasMessageContaining("маршрут");
+
+        line.setPlacementRoute(false);
+        BatchEntity batch = new BatchEntity(77, PRODUCT_ID, SUPPLIER_ID, null, 100, null, LINE_ID, false);
+        when(batchRepository.findActiveByReceivingLine(LINE_ID)).thenReturn(List.of(batch));
+        when(inventoryService.getQuantity(77, 1)).thenReturn(60);
+        assertThatThrownBy(() -> service.revertLine(LINE_ID, 0)).hasMessageContaining("перемещена");
+        verify(inventoryService, never()).writeOff(anyInt(), anyInt(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    void revertLineRequiresAcceptedLine() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        givenLine(false);
+        assertThatThrownBy(() -> service.revertLine(LINE_ID, 0)).hasMessageContaining("ещё не принята");
+    }
+
+    @Test
+    void cancelRevertsAcceptedLinesAndSetsStatus() {
+        ReceivingEntity receiving = givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity accepted = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, false, false, "");
+        ReceivingLineEntity open = new ReceivingLineEntity(12, 10, 0, null, RECEIVING_ID, 0, PRODUCT_ID, false, false, false, "");
+        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(accepted, open)));
+        BatchEntity batch = new BatchEntity(77, PRODUCT_ID, SUPPLIER_ID, null, 10, null, 11, false);
+        when(batchRepository.findActiveByReceivingLine(11)).thenReturn(List.of(batch));
+        when(inventoryService.getQuantity(77, 1)).thenReturn(10);
+
+        service.cancel(RECEIVING_ID, 0);
+
+        verify(inventoryService).writeOff(77, 1, 10, STOREKEEPER_ID, MovementType.ADJUSTMENT);
+        assertThat(accepted.getComplete()).isFalse();
+        assertThat(receiving.getStatusID()).isEqualTo(ReceivingStatus.CANCELLED.getCode());
+    }
+
+    @Test
+    void cancelIsForbiddenWhenRoutedOrCompleted() {
+        ReceivingEntity receiving = givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity routed = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, true, false, "");
+        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(routed)));
+        assertThatThrownBy(() -> service.cancel(RECEIVING_ID, 0)).hasMessageContaining("маршрут");
+
+        receiving.setStatusID(ReceivingStatus.COMPLETED.getCode());
+        assertThatThrownBy(() -> service.cancel(RECEIVING_ID, 0)).hasMessageContaining("Завершена");
+        assertThat(receiving.getStatusID()).isEqualTo(ReceivingStatus.COMPLETED.getCode());
+    }
+
     // ---------- загрузка из ERP ----------
+
+    @Test
+    void createFromErpRejectsDuplicateDocument() {
+        when(receivingRepository.findFirstByDocumentNumberAndStatusIDNot("З30016546", ReceivingStatus.CANCELLED.getCode()))
+                .thenReturn(Optional.of(new ReceivingEntity(5, null, null, "З30016546", 0, 0, 1, false)));
+
+        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", "1"))))
+                .isInstanceOf(WmsException.class)
+                .hasMessageContaining("уже загружена (id 5)");
+        verify(receivingRepository, never()).save(any());
+    }
+
 
     @Test
     void createFromErpUsesSavedIdAndSkipsUnknownProducts() {

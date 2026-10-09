@@ -7,6 +7,7 @@ import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingEntity;
 import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import com.tynyany.simplewmsv2.dao.SupplierEntity;
+import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
 import com.tynyany.simplewmsv2.entity.ReceivingJSON;
 import com.tynyany.simplewmsv2.entity.ReceivingLineERP;
@@ -58,6 +59,13 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
             throw new WmsException("В накладной нет строк (body)");
         }
 
+        receivingRepository.findFirstByDocumentNumberAndStatusIDNot(
+                        json.header.orderERP.trim(), ReceivingStatus.CANCELLED.getCode())
+                .ifPresent(existing -> {
+                    throw new WmsException("Накладная " + json.header.orderERP + " уже загружена (id "
+                            + existing.getReceivingID() + "). Повторная загрузка возможна после её отмены");
+                });
+
         SupplierEntity supplier = supplierRepository.findTopBySupplierCode(json.header.supplierCode)
                 .orElseThrow(() -> new NotFoundException("Поставщик с кодом " + json.header.supplierCode + " не найден"));
 
@@ -86,7 +94,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         }
 
         ReceivingEntity receiving = receivingRepository.save(new ReceivingEntity(
-                0, orderDate, null, json.header.orderERP,
+                0, orderDate, null, json.header.orderERP.trim(),
                 ReceivingStatus.WAITING.getCode(), 0, supplier.getSupplierID(), false));
 
         for (ReceivingLineEntity line : lines) {
@@ -121,12 +129,88 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
     public void complete(int receivingId) {
         ReceivingEntity receiving = getReceiving(receivingId);
         requireStatus(receiving, ReceivingStatus.IN_PROGRESS, "Завершить приёмку");
+        long notProcessed = activeLines(receivingId).stream()
+                .filter(line -> !Boolean.TRUE.equals(line.getComplete()))
+                .count();
+        if (notProcessed > 0) {
+            throw new WmsException("Нельзя завершить приёмку: не обработано строк — " + notProcessed);
+        }
         receiving.setStatusID(ReceivingStatus.COMPLETED.getCode());
         if (receiving.getGetReceivingDate() == null) {
             receiving.setGetReceivingDate(now());
         }
         receivingRepository.save(receiving);
         log.info("Завершена приёмка накладной id={}", receivingId);
+    }
+
+    @Override
+    @Transactional
+    public void cancel(int receivingId, int executorEmployeeId) {
+        ReceivingEntity receiving = getReceiving(receivingId);
+        ReceivingStatus status = ReceivingStatus.fromCode(receiving.getStatusID());
+        if (status != ReceivingStatus.WAITING && status != ReceivingStatus.IN_PROGRESS) {
+            throw new WmsException("Отменить можно только накладную в статусе «" + ReceivingStatus.WAITING.getTitle()
+                    + "» или «" + ReceivingStatus.IN_PROGRESS.getTitle() + "», текущий статус: «" + status.getTitle() + "»");
+        }
+        List<ReceivingLineEntity> lines = activeLines(receivingId);
+        for (ReceivingLineEntity line : lines) {
+            if (Boolean.TRUE.equals(line.getPlacementRoute())) {
+                throw new WmsException("Нельзя отменить накладную: строка " + line.getReceivingLineID()
+                        + " уже включена в маршрут размещения");
+            }
+        }
+        int employeeId = executorEmployeeId > 0 ? executorEmployeeId : receiving.getEmployeeID();
+        for (ReceivingLineEntity line : lines) {
+            if (Boolean.TRUE.equals(line.getComplete())) {
+                undoLine(line, employeeId);
+            }
+        }
+        receiving.setStatusID(ReceivingStatus.CANCELLED.getCode());
+        receivingRepository.save(receiving);
+        log.info("Отменена накладная id={} ({})", receivingId, receiving.getDocumentNumber());
+    }
+
+    @Override
+    @Transactional
+    public void revertLine(int receivingLineId, int executorEmployeeId) {
+        ReceivingLineEntity line = receivingLineRepository.findById(receivingLineId)
+                .orElseThrow(() -> new NotFoundException("Строка прихода " + receivingLineId + " не найдена"));
+        ReceivingEntity receiving = getReceiving(line.getReceivingID());
+        requireStatus(receiving, ReceivingStatus.IN_PROGRESS, "Отменить приёмку строки");
+        if (!Boolean.TRUE.equals(line.getComplete())) {
+            throw new WmsException("Строка " + receivingLineId + " ещё не принята");
+        }
+        if (Boolean.TRUE.equals(line.getPlacementRoute())) {
+            throw new WmsException("Строка " + receivingLineId + " уже включена в маршрут размещения, отмена невозможна");
+        }
+        undoLine(line, executorEmployeeId > 0 ? executorEmployeeId : receiving.getEmployeeID());
+        log.info("Отменена приёмка строки {} накладной {}", receivingLineId, receiving.getReceivingID());
+    }
+
+    /** Откат принятой строки: списание остатка из ячейки приёмки, удаление партии, сброс факта. */
+    private void undoLine(ReceivingLineEntity line, int employeeId) {
+        int receivingLocationId = wmsProperties.getLocations().getReceivingId();
+        for (BatchEntity batch : batchRepository.findActiveByReceivingLine(line.getReceivingLineID())) {
+            int inReceiving = inventoryService.getQuantity(batch.getBatch_id(), receivingLocationId);
+            if (inReceiving < batch.getQuantity_received()) {
+                throw new WmsException("Строка " + line.getReceivingLineID() + ": часть товара партии "
+                        + batch.getBatch_id() + " уже перемещена из зоны приёмки, отмена невозможна");
+            }
+            if (inReceiving > 0) {
+                inventoryService.writeOff(batch.getBatch_id(), receivingLocationId, inReceiving,
+                        employeeId, MovementType.ADJUSTMENT);
+            }
+            batch.setDel(true);
+            batchRepository.save(batch);
+        }
+        line.setComplete(false);
+        line.setQuantityReceived(0);
+        line.setExpirationDate(null);
+        receivingLineRepository.save(line);
+    }
+
+    private List<ReceivingLineEntity> activeLines(int receivingId) {
+        return receivingLineRepository.findAllByReceivingIDAndDel(receivingId, false);
     }
 
     @Override

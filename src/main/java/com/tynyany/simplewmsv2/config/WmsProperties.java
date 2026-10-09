@@ -14,6 +14,7 @@ public class WmsProperties {
 
     private Locations locations = new Locations();
     private Api api = new Api();
+    private Company company = new Company();
 
     /**
      * Системные ячейки. Создаются скриптом SQL/migrations/V001__seed_reference_data.sql.
@@ -33,5 +34,14 @@ public class WmsProperties {
     public static class Api {
         /** Ключ для заголовка X-API-Key. Пустой — доступ по ключу отключён. */
         private String key = "";
+    }
+
+    /**
+     * Реквизиты склада для печатных форм.
+     */
+    @Data
+    public static class Company {
+        /** Наименование грузополучателя в ТОРГ-12. */
+        private String name = "Склад SimpleWMS";
     }
 }

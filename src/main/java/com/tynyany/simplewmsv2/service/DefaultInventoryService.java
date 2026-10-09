@@ -48,6 +48,15 @@ public class DefaultInventoryService implements InventoryService {
     }
 
     @Override
+    @Transactional
+    public void writeOff(int batchId, int fromLocationId, int quantity, int employeeId, MovementType type) {
+        checkQuantity(quantity);
+        decrease(batchId, fromLocationId, quantity);
+        writeMovement(batchId, fromLocationId, NO_LOCATION, quantity, employeeId, type);
+        log.debug("{}: списание партии {} из ячейки {}, кол-во {}", type.getTitle(), batchId, fromLocationId, quantity);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public int getQuantity(int batchId, int locationId) {
         StockEntity stock = stockRepository.findByBatchIdAndLocationIdAndDel(batchId, locationId, false);
