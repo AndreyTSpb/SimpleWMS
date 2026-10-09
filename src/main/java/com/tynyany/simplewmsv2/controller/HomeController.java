@@ -1,5 +1,6 @@
 package com.tynyany.simplewmsv2.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +18,13 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/403")
-    public String error403() {
-        return "error.html";
+    // Любой метод: сюда перенаправляется отказ в доступе, в т.ч. для POST-запросов
+    @RequestMapping("/403")
+    public String error403(Model model, HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        model.addAttribute("errorMessage", "Недостаточно прав для этого раздела. Обратитесь к администратору.");
+        model.addAttribute("status", 403);
+        return "error";
     }
 
     @GetMapping("/404")

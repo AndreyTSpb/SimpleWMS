@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class WmsProperties {
 
     private Locations locations = new Locations();
+    private Api api = new Api();
 
     /**
      * Системные ячейки. Создаются скриптом SQL/migrations/V001__seed_reference_data.sql.
@@ -23,5 +24,14 @@ public class WmsProperties {
         private int receivingId = 1;
         /** Ячейка зоны отгрузки: сюда перемещаются собранные заказы. */
         private int shippingId = 2;
+    }
+
+    /**
+     * Доступ внешних систем к REST API.
+     */
+    @Data
+    public static class Api {
+        /** Ключ для заголовка X-API-Key. Пустой — доступ по ключу отключён. */
+        private String key = "";
     }
 }

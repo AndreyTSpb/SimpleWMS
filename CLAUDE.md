@@ -21,7 +21,7 @@
 - Начальные данные: `SQL/migrations/V001…` (справочные) и `V002…` (демо, только dev) выполняются
   при каждом старте через `spring.sql.init` после создания схемы; скрипты идемпотентны
 - Приложение запускать из корня проекта (пути к SQL-скриптам относительные)
-- Spring Security (сейчас всё открыто: `permitAll`, CSRF выключен)
+- Spring Security: вход по таблице `users` (BCrypt), роли ADMIN / MANAGER / STOREKEEPER по роли сотрудника, CSRF включён; REST API — ключ `X-API-Key` (`WMS_API_KEY`) или сессия ADMIN/MANAGER
 - Thymeleaf + Bootstrap-шаблон (`src/main/resources/templates`, `static`)
 - Lombok, MapStruct 1.4.2
 - Порт: 8080
@@ -49,7 +49,7 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 | `entity` | Доменные модели и DTO для форм/JSON |
 | `entity_mappers` | MapStruct-мапперы |
 | `models` | Вспомогательные классы UI (cookie-уведомления, генерация кодов, расчёт веса/объёма) |
-| `security` | Конфигурация Spring Security |
+| `security` | Spring Security: `WebSecurityConfig`, вход по БД (`DbUserDetailsService`), роли (`UserRole`), API-ключ, `CurrentUser` |
 
 ## Основной бизнес-процесс (реализован)
 
@@ -74,6 +74,9 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 - Id системных ячеек — из `WmsProperties` (`wms.locations.*`), не хардкодом.
 - Логирование — SLF4J (`@Slf4j`), не `System.out`.
 - Новый сервис с бизнес-логикой — с unit-тестами (Mockito) в `src/test/.../service`.
+- Исполнитель операции — `CurrentUser.employeeId()` (передаётся в сервис из контроллера, сервисы не зависят от веб-слоя).
+- Формы с POST — только через `th:action` (Thymeleaf добавляет CSRF-токен); AJAX — через jQuery (`$.ajaxSetup` подставляет токен).
+- Новый раздел — добавить правило доступа в `WebSecurityConfig` и `sec:authorize` в `sidebar.html`.
 - Изменения в коде делать в отдельной git-ветке, коммит — только по согласованию.
 - После каждой сессии — запись в журнал ниже.
 
@@ -101,7 +104,8 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 
 ## Известные проблемы (бэклог)
 
-- [ ] Безопасность: включить аутентификацию, вход через таблицу `users`, убрать захардкоженные пароли
+- [x] Безопасность: вход через таблицу `users`, роли, CSRF, API-ключ — этап 2
+- [ ] Изменение данных GET-запросами (`/users/del`, `/locations/del`, `/employees/del`, `/customers/update`, `/receiving/update_placement_route`) — перевести на POST, иначе CSRF-защита их не покрывает
 - [x] Нет `@Transactional` в приёмке (строка + партия + движение + остаток) — этап 1
 - [ ] `/api/new_receiving`: нет защиты от повторной отправки — одна и та же накладная создаётся дважды (проверять номер документа ERP)
 - [x] `/api/new_receiving`: id новой накладной берётся как MAX(id) — брать из результата `save()` — этап 1
@@ -177,3 +181,20 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
   - отказ операции пишется в лог (WARN «Операция по накладной отклонена»);
   - 21 unit-тест.
   - Этап 1 завершён: сценарий проверен Andrew в интерфейсе, `gradlew.bat build` проходит.
+
+### 2026-10-09 (этап 2 — безопасность)
+- Вход по таблице `users` (`DbUserDetailsService`), пароли BCrypt; права по роли сотрудника (`UserRole`: 1 — ADMIN, 2 — MANAGER, 3 — STOREKEEPER).
+  Удалённый пользователь или сотрудник не может войти. Зашитые в коде пользователи `admin@mail.ru`/`user@mail.ru` удалены.
+- Правила доступа к разделам в `WebSecurityConfig`; меню скрывается по роли; отказ — страница «Недостаточно прав» (403).
+- CSRF включён: формы приёмки переведены на `th:action`, в `header.html` meta-токен, в `scripts.js` — `$.ajaxSetup`.
+- REST API: заголовок `X-API-Key` (`wms.api.key` / `WMS_API_KEY`, в dev — `dev-api-key`) или сессия ADMIN/MANAGER с CSRF-токеном; ошибка ключа — 401 JSON.
+- Шапка: имя, роль и логин вошедшего пользователя, кнопка «Выйти»; на странице входа — логин вместо e-mail, сообщения об ошибке и выходе.
+- Пользователи: пароль при создании хешируется, логин уникален; редактирование больше не стирает пароль (раньше форма без поля пароля записывала null);
+  реализована смена пароля (`/users/new_pass`, форма уже была в шаблоне, обработчика не было).
+- Пароли, сохранённые ранее открытым текстом, переводятся в BCrypt при старте (`PasswordMigration`).
+- Исполнитель приёмки строки в журнале движений — вошедший пользователь.
+- Демо-пользователи в V002: `manager/manager`, `storekeeper/storekeeper`.
+- Тесты: 31 unit-тест (добавлены `DbUserDetailsService`, `ApiKeyAuthenticationFilter`, `PasswordMigration`).
+- Проверено в среде Claude через HTTP: вход/выход, ошибки входа, доступ ролей к разделам, API с ключом/без/с неверным,
+  API из сессии с CSRF и без, отказ POST без токена, миграция старого пароля, создание пользователя, смена пароля.
+  - `gradlew.bat build` у Andrew проходит (31 тест).

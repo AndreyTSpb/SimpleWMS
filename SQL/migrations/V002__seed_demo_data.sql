@@ -1,7 +1,7 @@
 -- V002. Демо-данные для разработки и демонстрации (только профиль dev).
 --
 -- Что делает: заполняет справочники тестовыми записями — категории,
--- поставщик, клиент, сотрудники, зоны хранения с ячейками, товары.
+-- поставщик, клиент, сотрудники и их учётные записи, зоны хранения с ячейками, товары.
 -- Зачем: чтобы на чистой БД можно было сразу пройти сценарий приёмки.
 -- Коды товаров и поставщика совпадают с примером запроса POST /api/new_receiving.
 --
@@ -31,6 +31,12 @@ INSERT INTO employee (employeeid, employee_name, tab_num, del, roleid) VALUES
     (3, 'Иванов И. И.',  '0003', 0, 3),
     (4, 'Смирнов П. К.', '0004', 0, 3)
 ON CONFLICT (employeeid) DO NOTHING;
+
+-- Демо-пользователи (пароль совпадает с логином). Администратор admin/admin создаётся в V001.
+INSERT INTO users (userid, login, pass, del, employeeid) VALUES
+    (2, 'manager',     '$2a$10$eSSFhyToC9TIWEW/ex677eIQHnxqb2XPhmzy21tPvC3h.2qBollk.', false, 2),
+    (3, 'storekeeper', '$2a$10$NcILvllQg9Dcg1ewX46s8O4YfWWx2sHpbqC7EssG/Ks2x0miQy/aS', false, 3)
+ON CONFLICT (userid) DO NOTHING;
 
 -- Зоны хранения
 INSERT INTO zones (zone_id, zone_name, description, code, del) VALUES
@@ -90,11 +96,16 @@ DECLARE
     mx bigint;
 BEGIN
     FOR s IN
-        SELECT c.relname AS seq
+        SELECT c.relname AS seq, t.tbl, t.col
         FROM pg_class c
-        WHERE c.relkind = ''S'' AND c.relname IN (''zones_seq'', ''zone_entity_seq'')
+        JOIN (VALUES (''zones_seq'',       ''zones'', ''zone_id''),
+                     (''zone_entity_seq'', ''zones'', ''zone_id''),
+                     (''users_seq'',       ''users'', ''userid''),
+                     (''user_entity_seq'', ''users'', ''userid'')) AS t(seqname, tbl, col)
+          ON c.relname = t.seqname
+        WHERE c.relkind = ''S''
     LOOP
-        SELECT COALESCE(MAX(zone_id), 0) INTO mx FROM zones;
+        EXECUTE format(''SELECT COALESCE(MAX(%I), 0) FROM %I'', s.col, s.tbl) INTO mx;
         PERFORM setval(quote_ident(s.seq),
                        GREATEST(mx + 50,
                                 COALESCE((SELECT last_value FROM pg_sequences WHERE sequencename = s.seq), 1)));

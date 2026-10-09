@@ -210,7 +210,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:id="'resetForm_id_'+${user.userID}" th:object="${user}" th:action="@{${baseUrl}+'/new_pass'}">
+                    <form th:id="'resetForm_id_'+${user.userID}" th:object="${user}" th:action="@{${baseUrl}+'/new_pass'}" method="post">
                         <input type="hidden" name="userID" th:value="${user.userID}">
                         <div class="form-group">
                                 <label>Новый пароль</label>
@@ -340,4 +340,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

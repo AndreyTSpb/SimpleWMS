@@ -19,6 +19,9 @@ public interface  UserService {
 
     void updateUser(User user);
 
+    /** Смена пароля (хранится BCrypt-хеш). */
+    void changePassword(int userId, String newPassword, String confirmation);
+
     void delUser(User user);
     Page<UserEntity> getAllUserPageable(Pageable pageable);
     Page<UserEntity> getAllUserPageableWithFilter(Pageable pageable, String filter);

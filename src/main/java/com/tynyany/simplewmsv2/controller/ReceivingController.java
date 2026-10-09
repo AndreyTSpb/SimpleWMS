@@ -5,6 +5,7 @@ import com.tynyany.simplewmsv2.models.*;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
+import com.tynyany.simplewmsv2.security.CurrentUser;
 import com.tynyany.simplewmsv2.repository.BatchRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.ReceivingLineRepository;
@@ -191,7 +192,7 @@ public class ReceivingController {
     @PostMapping("/update_string_product")
     public String updateStringProduct(@ModelAttribute ReceivingLineForm form, HttpServletResponse response) {
         try {
-            receivingProcessService.processLine(form);
+            receivingProcessService.processLine(form, CurrentUser.employeeId());
             alert(response, "Строка " + form.getNumLine() + " принята");
         } catch (WmsException e) {
             log.warn("Операция по накладной отклонена: {}", e.getMessage());

@@ -1,77 +1,83 @@
 package com.tynyany.simplewmsv2.security;
 
+import com.tynyany.simplewmsv2.config.WmsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Безопасность (см. Project_Docs/Архитектура.md, раздел «Безопасность»):
+ * - интерфейс: вход по таблице users, права по роли сотрудника;
+ * - REST API: заголовок X-API-Key (ERP) или сессия пользователя ADMIN/MANAGER (запросы со страниц).
+ */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    @Bean
-    public UserDetailsService userDetailsService() throws Exception {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User
-                .withUsername("user@mail.ru")
-                .password(encoder().encode("password"))
-                .roles("USER")
-                .build());
-
-        manager.createUser(User
-                .withUsername("admin@mail.ru")
-                .password(encoder().encode("password"))
-                .roles("ADMIN")
-                .build());
-
-        return manager;
-    }
+    private static final String ADMIN = UserRole.ADMIN.name();
+    private static final String MANAGER = UserRole.MANAGER.name();
+    private static final String STOREKEEPER = UserRole.STOREKEEPER.name();
 
     @Bean
-    public static PasswordEncoder encoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
-//                        .permitAll())
-//                .csrf(AbstractHttpConfigurer::disable);
-//        return http.build();
-//    }
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(HttpSecurity http, WmsProperties properties) throws Exception {
+        http.securityMatcher("/api/**")
+                .addFilterBefore(new ApiKeyAuthenticationFilter(properties.getApi().getKey()),
+                        UsernamePasswordAuthenticationFilter.class)
+                // CSRF-токен обязателен для запросов из браузера с сессией пользователя;
+                // ERP передаёт ключ и токен не использует, запрос без сессии подделать нечем
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        request -> request.getHeader(ApiKeyAuthenticationFilter.HEADER) != null
+                                || request.getSession(false) == null))
+                .authorizeHttpRequests(auth -> auth.anyRequest().hasAnyRole("API", ADMIN, MANAGER))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .requestCache(cache -> cache.disable());
+        return http.build();
+    }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
-
-        return http.authorizeHttpRequests((auth) -> auth.anyRequest().permitAll()).csrf(AbstractHttpConfigurer::disable).build();
-
-        //http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-//        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-//        http.formLogin(
-//                form -> form
-//                        .loginPage("/login")
-//                        .permitAll()
-//        );
-//        http.httpBasic(Customizer.withDefaults());
-//        return http.build();
+    @Order(2)
+    public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/error", "/403", "/404").permitAll()
+                        // администрирование
+                        .requestMatchers("/users/**", "/roles/**", "/employees/**", "/options/**").hasRole(ADMIN)
+                        // справочники, заказы и отчёты
+                        .requestMatchers("/products/**", "/suppliers/**", "/customers/**", "/locations/**",
+                                "/zones/**", "/order_list/**", "/warehouse_status/**", "/shipment_report/**",
+                                "/income_report/**", "/report_pickers/**", "/product_report/**")
+                        .hasAnyRole(ADMIN, MANAGER)
+                        // складские операции: приёмка, размещение, перемещение, комплектация, отгрузка
+                        .anyRequest().hasAnyRole(ADMIN, MANAGER, STOREKEEPER))
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", false)
+                        .failureUrl("/login?error")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll())
+                .exceptionHandling(ex -> ex.accessDeniedPage("/403"));
+        return http.build();
     }
 
     @Bean
     public WebSecurityCustomizer configureWebSecurity() {
-        return (web) -> web.ignoring().requestMatchers("/img/**", "/js/**", "/css/**", "/vendor/**");
+        return web -> web.ignoring().requestMatchers("/img/**", "/js/**", "/css/**", "/vendor/**", "/favicon.ico");
     }
 }

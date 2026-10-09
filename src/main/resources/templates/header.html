@@ -7,6 +7,9 @@
             <meta content="width=device-width, initial-scale=1" name="viewport" />
             <meta content="Worlds Best Admin UX Dashbaoard PRO version for bootstrap template, Select, Calandar, Report, Charts, Tables etc." name="description" />
             <meta content="" name="author" />
+            <!-- CSRF-токен для AJAX-запросов (см. js/scripts.js) -->
+            <meta name="_csrf" th:content="${_csrf?.token}" />
+            <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
 
 
             <link rel="shortcut icon" th:href="@{/img/logoicon.png}">
@@ -31,4 +34,4 @@
             <!-- Customized template style ends -->
         </head>
     </body>
-</html>
+</html>

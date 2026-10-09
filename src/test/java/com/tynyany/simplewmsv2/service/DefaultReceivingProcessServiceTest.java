@@ -92,7 +92,7 @@ class DefaultReceivingProcessServiceTest {
         ReceivingLineEntity line = givenLine(false);
         givenProduct(false);
 
-        service.processLine(form(100, ""));
+        service.processLine(form(100, ""), 0);
 
         assertThat(line.getComplete()).isTrue();
         assertThat(line.getQuantityReceived()).isEqualTo(100);
@@ -105,12 +105,23 @@ class DefaultReceivingProcessServiceTest {
     }
 
     @Test
+    void processLineRecordsExecutorWhenGiven() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        givenLine(false);
+        givenProduct(false);
+
+        service.processLine(form(5, ""), 4);
+
+        verify(inventoryService).receive(77, PRODUCT_ID, 1, 5, 4);
+    }
+
+    @Test
     void processLineRequiresReceivingInProgress() {
         givenReceiving(ReceivingStatus.WAITING);
         givenLine(false);
         givenProduct(false);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "")))
+        assertThatThrownBy(() -> service.processLine(form(10, ""), 0))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("В процессе");
         verify(inventoryService, never()).receive(anyInt(), anyInt(), anyInt(), anyInt(), anyInt());
@@ -122,7 +133,7 @@ class DefaultReceivingProcessServiceTest {
         givenLine(true);
         givenProduct(false);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "")))
+        assertThatThrownBy(() -> service.processLine(form(10, ""), 0))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("уже принята");
         verify(batchRepository, never()).save(any());
@@ -134,11 +145,11 @@ class DefaultReceivingProcessServiceTest {
         givenLine(false);
         givenProduct(true);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "")))
+        assertThatThrownBy(() -> service.processLine(form(10, ""), 0))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("срок годности");
 
-        service.processLine(form(10, "2027-05-31"));
+        service.processLine(form(10, "2027-05-31"), 0);
         ArgumentCaptor<BatchEntity> batch = ArgumentCaptor.forClass(BatchEntity.class);
         verify(batchRepository).save(batch.capture());
         assertThat(batch.getValue().getExpiry_date().toLocalDateTime().toLocalDate().toString()).isEqualTo("2027-05-31");
@@ -150,7 +161,7 @@ class DefaultReceivingProcessServiceTest {
         ReceivingLineEntity line = givenLine(false);
         givenProduct(false);
 
-        service.processLine(form(0, ""));
+        service.processLine(form(0, ""), 0);
 
         assertThat(line.getComplete()).isTrue();
         verify(batchRepository, never()).save(any());
@@ -163,12 +174,12 @@ class DefaultReceivingProcessServiceTest {
         givenLine(false);
         givenProduct(false);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "", 0)))
+        assertThatThrownBy(() -> service.processLine(form(10, "", 0), 0))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("место хранения");
-        assertThatThrownBy(() -> service.processLine(form(10, "", 1)))      // ячейка приёмки
+        assertThatThrownBy(() -> service.processLine(form(10, "", 1), 0))      // ячейка приёмки
                 .isInstanceOf(WmsException.class);
-        assertThatThrownBy(() -> service.processLine(form(10, "", 999)))
+        assertThatThrownBy(() -> service.processLine(form(10, "", 999), 0))
                 .isInstanceOf(NotFoundException.class);
         verify(batchRepository, never()).save(any());
     }
@@ -179,7 +190,7 @@ class DefaultReceivingProcessServiceTest {
         givenLine(false);
         givenProduct(false);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "31.05.2027")))
+        assertThatThrownBy(() -> service.processLine(form(10, "31.05.2027"), 0))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("формат даты");
     }

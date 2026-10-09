@@ -18,6 +18,8 @@ import com.tynyany.simplewmsv2.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.tynyany.simplewmsv2.exception.WmsException;
+import com.tynyany.simplewmsv2.models.AddCookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -104,8 +106,15 @@ public class UsersController {
     }
 
     @PostMapping("/add")
-    public String addUser(@ModelAttribute User user) {
-        userService.addUser(user);
+    public String addUser(@ModelAttribute User user, HttpServletResponse response) {
+        String message;
+        try {
+            userService.addUser(user);
+            message = "Пользователь " + user.getLogin() + " добавлен";
+        } catch (WmsException e) {
+            message = e.getMessage();
+        }
+        response.addCookie(new AddCookie("alertMessage", message).getCookie());
         return "redirect:/" + baseUrl;
     }
 
@@ -115,6 +124,22 @@ public class UsersController {
             throw new UserNotFoundException("User not found: id = " + user.getUserID());
         userService.updateUser(user);
         return "redirect:/"+baseUrl;
+    }
+
+    @PostMapping("/new_pass")
+    public String newPassword(@RequestParam("userID") int userID,
+                              @RequestParam("pass1") String pass1,
+                              @RequestParam("pass2") String pass2,
+                              HttpServletResponse response) {
+        String message;
+        try {
+            userService.changePassword(userID, pass1, pass2);
+            message = "Пароль изменён";
+        } catch (WmsException e) {
+            message = e.getMessage();
+        }
+        response.addCookie(new AddCookie("alertMessage", message).getCookie());
+        return "redirect:/" + baseUrl;
     }
 
     /**

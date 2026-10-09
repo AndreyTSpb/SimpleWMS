@@ -32,6 +32,9 @@ public interface ReceivingProcessService {
     /**
      * Приёмка строки накладной: фиксируется фактическое количество, создаётся партия,
      * товар поступает на остаток в ячейку зоны приёмки. Выполняется атомарно.
+     *
+     * @param executorEmployeeId сотрудник, выполнивший приёмку (записывается в журнал движений);
+     *                           0 — кладовщик, назначенный на накладную
      */
-    void processLine(ReceivingLineForm form);
+    void processLine(ReceivingLineForm form, int executorEmployeeId);
 }

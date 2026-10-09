@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="content" class="sidebar">
     <!-- Logo sidebar -->
@@ -16,11 +16,11 @@
                 <div class="nav-item"><a class="nav-link" href="/moving_product"><span>Перемещение товара</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/picking_route_list"><span>Комплектация заказа</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/shipping_list"><span>Отгрузка заказа</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/order_list"><span>Заказы</span></a></div>
+                <div class="nav-item" sec:authorize="hasAnyRole('ADMIN','MANAGER')"><a class="nav-link" href="/order_list"><span>Заказы</span></a></div>
             </div>
         </li>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav flex-column" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">event_note</i><span>Отчеты</span> <i class="material-icons arrow">expand_more</i></a>
             <div class="nav flex-column">
@@ -32,7 +32,7 @@
             </div>
         </li>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav flex-column" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">library_books</i><span>Инструкции</span> <i class="material-icons arrow">expand_more</i></a>
             <div class="nav flex-column">
@@ -44,8 +44,8 @@
             </div>
         </li>
     </ul>
-    <h6 class="subtitle fs11">Сервисные функции</h6>
-    <ul class="nav flex-column">
+    <h6 class="subtitle fs11" sec:authorize="hasAnyRole('ADMIN','MANAGER')">Сервисные функции</h6>
+    <ul class="nav flex-column" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">storage</i><span>Справочники</span> <i class="material-icons arrow">expand_more</i></a>
             <div class="nav flex-column">
@@ -59,13 +59,12 @@
     </ul>
     <!-- Navigation menu sidebar ends -->
     <!-- Setting link -->
-    <ul class="nav flex-column">
+    <ul class="nav flex-column" sec:authorize="hasRole('ADMIN')">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">settings_applications</i><span>Администрирование</span> <i class="material-icons arrow">expand_more</i></a>
             <div class="nav flex-column">
                 <div class="nav-item"><a class="nav-link" href="/employees"><span>Сотрудники</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/users"><span>Пользователи</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/options"><span>Настройка системы</span></a></div>
             </div>
         </li>
     </ul>
@@ -85,4 +84,4 @@
     <!-- Upgrade notification ends -->
 </div>
 </body>
-</html>
+</html>

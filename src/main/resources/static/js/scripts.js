@@ -1,3 +1,16 @@
+// CSRF-токен Spring Security для AJAX-запросов (значения берутся из <meta> в header.html)
+(function () {
+    const token = $("meta[name='_csrf']").attr("content");
+    const header = $("meta[name='_csrf_header']").attr("content");
+    if (token && header) {
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    }
+})();
+
 $(document).ready(function () {
 
     let product_1 = {
@@ -498,4 +511,4 @@ $(document).ready(function () {
     //         });
     //     });
     // }
-});
+});

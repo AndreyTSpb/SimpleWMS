@@ -131,7 +131,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
 
     @Override
     @Transactional
-    public void processLine(ReceivingLineForm form) {
+    public void processLine(ReceivingLineForm form, int executorEmployeeId) {
         ReceivingLineEntity line = receivingLineRepository.findById(form.getNumLine())
                 .orElseThrow(() -> new NotFoundException("Строка прихода " + form.getNumLine() + " не найдена"));
         ReceivingEntity receiving = getReceiving(line.getReceivingID());
@@ -178,7 +178,8 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
                 expirationDate, line.getReceivingLineID(), false));
 
         inventoryService.receive(batch.getBatch_id(), product.getProductID(),
-                wmsProperties.getLocations().getReceivingId(), qntFact, receiving.getEmployeeID());
+                wmsProperties.getLocations().getReceivingId(), qntFact,
+                executorEmployeeId > 0 ? executorEmployeeId : receiving.getEmployeeID());
 
         log.info("Принята строка {} накладной {}: товар {}, кол-во {}, партия {}",
                 line.getReceivingLineID(), receiving.getReceivingID(), product.getProductID(), qntFact, batch.getBatch_id());
