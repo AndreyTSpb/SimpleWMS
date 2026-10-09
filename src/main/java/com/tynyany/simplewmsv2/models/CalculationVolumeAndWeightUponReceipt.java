@@ -36,8 +36,10 @@ public class CalculationVolumeAndWeightUponReceipt {
             for(ReceivingLine receivingLine : receivingLineList){
 
                 this.qntProducts ++;
-                this.volume += receivingLine.getQuantityProduct()*this.product(receivingLine.getReceivingLineID()).getVolume();
-                this.weight += receivingLine.getQuantityProduct()*this.product(receivingLine.getReceivingLineID()).getWeight();
+                Product product = this.product(receivingLine.getProductID());
+                if (product == null) continue;
+                this.volume += receivingLine.getQuantityProduct() * (product.getVolume() != null ? product.getVolume() : 0);
+                this.weight += receivingLine.getQuantityProduct() * (product.getWeight() != null ? product.getWeight() : 0);
             }
         }
     }

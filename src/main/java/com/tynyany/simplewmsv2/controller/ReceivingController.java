@@ -322,6 +322,7 @@ public class ReceivingController {
             );
         }
 
+        final int employeeRoleId = employee.getRoleID();
         HashMap<String, String> orderHead = new HashMap<>();
         orderHead.put("orderId", Integer.toString(orderID));
         orderHead.put("orderERP", receiving.getDocumentNumber());
@@ -333,7 +334,11 @@ public class ReceivingController {
         orderHead.put("employerId", Integer.toString(employee.getEmployeeID()));
         orderHead.put("employeeTabNum", employee.getTabNum());
         orderHead.put("employeeName", employee.getEmployeeName());
-        orderHead.put("employeeRole", (employee.getRoleID() > 0) ? roles.get(employee.getRoleID()).getRoleName() : "");
+        orderHead.put("employeeRole", roles.stream()
+                .filter(r -> r.getRoleID() == employeeRoleId)
+                .map(Role::getRoleName)
+                .findFirst()
+                .orElse(""));
         orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
         orderHead.put("factOrderDate", String.valueOf(receiving.getGetReceivingDate()));
         return orderHead;

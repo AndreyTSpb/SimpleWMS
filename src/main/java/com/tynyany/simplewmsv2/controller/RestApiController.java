@@ -26,7 +26,7 @@ import static com.tynyany.simplewmsv2.controller.ReceivingController.*;
 import static com.tynyany.simplewmsv2.controller.ZonesController.zonesList;
 
 @Controller
-@RequestMapping(path = "/api", produces="application/json")
+@RequestMapping(path = "/api", produces="application/json;charset=UTF-8")
 @RequiredArgsConstructor
 public class RestApiController {
 
