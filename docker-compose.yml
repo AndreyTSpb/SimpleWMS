@@ -1,7 +1,8 @@
-# Окружение SimpleWMS.
-# Этап 0: только PostgreSQL для разработки. Сервис приложения добавляется на этапе 12.
-# Запуск: docker compose up -d
+# Окружение SimpleWMS (см. Project_Docs/Развёртывание.md).
 # Параметры берутся из файла .env (шаблон — .env.example).
+#
+#   docker compose up -d                          — только PostgreSQL (разработка: приложение через gradlew bootRun)
+#   docker compose --profile app up -d --build    — PostgreSQL + приложение в контейнере
 
 services:
   db:
@@ -22,6 +23,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  app:
+    profiles: ["app"]
+    build: .
+    image: simplewms:latest
+    container_name: simplewms-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # prod — только справочные данные; prod,demo — плюс демо-данные для показа
+      SPRING_PROFILES_ACTIVE: ${APP_PROFILES:-prod}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-wms}
+      DB_USER: ${DB_USER:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      WMS_API_KEY: ${WMS_API_KEY:-}
+      WMS_COMPANY_NAME: ${WMS_COMPANY_NAME:-Склад SimpleWMS}
+      JAVA_OPTS: ${JAVA_OPTS:--Xms256m -Xmx512m}
+      TZ: Europe/Moscow
+    ports:
+      - "${APP_PORT:-8080}:8080"
 
 volumes:
   wms-db-data:

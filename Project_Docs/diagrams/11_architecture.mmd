@@ -1,0 +1,31 @@
+flowchart TB
+    Browser["Браузер<br/>(Thymeleaf + Bootstrap)"]
+    ERP["ERP"]
+    subgraph APP["Spring Boot приложение"]
+        direction TB
+        SEC["security — Spring Security:<br/>вход по БД, роли, CSRF, X-API-Key"]
+        subgraph WEB["controller"]
+            MVC["MVC-контроллеры страниц"]
+            API["ErpApiController /api/v1<br/>+ Swagger (springdoc)"]
+        end
+        subgraph SRV["service — бизнес-логика, транзакции"]
+            INV["InventoryService<br/>(остатки + журнал)"]
+            PROC["ReceivingProcess · Placement · Transfer<br/>Order · Picking · Shipping"]
+            REP["ReportService · ErpService"]
+        end
+        REPO["repository — Spring Data JPA,<br/>native SQL, NamedParameterJdbcTemplate"]
+        DAO["dao — JPA-сущности · dto · domain (статусы)"]
+    end
+    DB[("PostgreSQL 16")]
+    Browser --> SEC --> MVC
+    ERP --> SEC --> API
+    MVC --> PROC
+    MVC --> REP
+    API --> REP
+    API --> PROC
+    PROC --> INV
+    PROC --> REPO
+    INV --> REPO
+    REP --> REPO
+    REPO --> DAO
+    REPO --> DB

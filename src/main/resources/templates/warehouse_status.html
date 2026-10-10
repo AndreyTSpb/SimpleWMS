@@ -24,6 +24,10 @@
 
         <!-- Main container starts -->
         <div class="container main-containe" id="main-container">
+            <style>
+                /* Подсветка сроков годности читаема в тёмной и светлой темах */
+                tr.text-dark td, tr.text-dark td a, span.text-dark { color: #212529 !important; }
+            </style>
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header border-0 bg-none">
                     <p class="fs15" th:text="${title}">Состояние склада</p>
@@ -54,7 +58,7 @@
                         <a th:href="@{/warehouse_status(view=${view})}" class="btn btn-sm btn-link mb-2">Сбросить</a>
                     </form>
                     <small class="text-mute" th:unless="${view == 'cells'}">
-                        Срок годности: <span class="px-1 table-danger">истёк</span> <span class="px-1 table-warning">истекает скоро</span>
+                        Срок годности: <span class="px-1 table-danger text-dark">истёк</span> <span class="px-1 table-warning text-dark">истекает скоро</span>
                     </small>
                 </div>
                 <div class="card-body">
@@ -75,7 +79,7 @@
                             </thead>
                             <tbody>
                             <tr th:each="p : ${products}"
-                                th:classappend="${p.worstExpiry().name() == 'EXPIRED' ? 'table-danger' : (p.worstExpiry().name() == 'SOON' ? 'table-warning' : '')}">
+                                th:classappend="${p.worstExpiry().name() == 'EXPIRED' ? 'table-danger text-dark' : (p.worstExpiry().name() == 'SOON' ? 'table-warning text-dark' : '')}">
                                 <td th:text="${p.productCode()}">029952</td>
                                 <td><a th:href="@{/warehouse_status(view='batch',product=${p.productCode()})}" th:text="${p.productName()}">Товар</a></td>
                                 <td class="text-right font-weight-bold" th:text="${p.total()}">0</td>
@@ -113,7 +117,7 @@
                             </thead>
                             <tbody>
                             <tr th:each="b : ${batches}"
-                                th:classappend="${b.expiryState().name() == 'EXPIRED' ? 'table-danger' : (b.expiryState().name() == 'SOON' ? 'table-warning' : '')}">
+                                th:classappend="${b.expiryState().name() == 'EXPIRED' ? 'table-danger text-dark' : (b.expiryState().name() == 'SOON' ? 'table-warning text-dark' : '')}">
                                 <td th:text="${b.productCode()}">029952</td>
                                 <td th:text="${b.productName()}">Товар</td>
                                 <td><a th:href="@{/movement_journal(batch=${b.batchId()})}" th:text="${b.batchId()}">1</a></td>

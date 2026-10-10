@@ -27,7 +27,7 @@
             <p class="fs15 mb-3">Сводка по складу</p>
             <div class="row" th:with="d=${dashboard}">
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
-                    <a th:href="@{/receiving/list}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/receiving/list}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.receivingsWaiting() + d.receivingsInProgress()}">0</h3>
                             <p class="mb-0">Приходы к приёмке</p>
@@ -36,7 +36,7 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
-                    <a th:href="@{/product_placement}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/product_placement}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.unplacedLines()}">0</h3>
                             <p class="mb-0">Партий ждут размещения</p>
@@ -45,7 +45,7 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
-                    <a th:href="@{/order_list}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/order_list}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.ordersToReserve()}">0</h3>
                             <p class="mb-0">Заказы к резервированию</p>
@@ -54,7 +54,7 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
-                    <a th:href="@{/order_list(status=2)}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/order_list(status=2)}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.ordersToPick()}">0</h3>
                             <p class="mb-0">Заказы к передаче в сборку</p>
@@ -63,7 +63,7 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
-                    <a th:href="@{/picking_route_list}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/picking_route_list}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.openPickingRoutes()}">0</h3>
                             <p class="mb-0">Маршруты сборки в работе</p>
@@ -72,7 +72,7 @@
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
-                    <a th:href="@{/shipping_list}" class="card border-0 shadow-sm h-100 text-body">
+                    <a th:href="@{/shipping_list}" class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body">
                             <h3 class="mb-1" th:text="${d.ordersToShip()}">0</h3>
                             <p class="mb-0">Заказы к отгрузке</p>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="col-6 col-md-4 col-lg-3 mb-4">
                     <a sec:authorize="hasAnyRole('ADMIN','MANAGER')" th:href="@{/warehouse_status(view='batch',expiring=true)}"
-                       class="card border-0 shadow-sm h-100 text-body">
+                       class="card border-0 shadow-sm h-100" style="text-decoration: none">
                         <div class="card-body" th:classappend="${d.expiredBatches() > 0 ? 'bg-light-danger' : (d.expiringBatches() > 0 ? 'bg-light-warning' : '')}">
                             <h3 class="mb-1" th:text="${d.expiredBatches() + d.expiringBatches()}">0</h3>
                             <p class="mb-0">Партии с истекающим сроком</p>

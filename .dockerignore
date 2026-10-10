@@ -1,0 +1,12 @@
+# Не передавать в контекст сборки образа
+.git
+.gradle
+.idea
+.vscode
+build
+out
+backups
+Project_Docs
+*.md
+.env
+**/*.iml

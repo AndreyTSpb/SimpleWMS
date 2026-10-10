@@ -383,8 +383,9 @@ public class ReceivingController {
                 .map(Role::getRoleName)
                 .findFirst()
                 .orElse(""));
-        orderHead.put("orderDate", String.valueOf(receiving.getReceivingDate()));
-        orderHead.put("factOrderDate", String.valueOf(receiving.getGetReceivingDate()));
+        SimpleDateFormat dateTime = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        orderHead.put("orderDate", receiving.getReceivingDate() != null ? dateTime.format(receiving.getReceivingDate()) : "—");
+        orderHead.put("factOrderDate", receiving.getGetReceivingDate() != null ? dateTime.format(receiving.getGetReceivingDate()) : "—");
         return orderHead;
     }
 
@@ -420,10 +421,10 @@ public class ReceivingController {
             strArr.put("int_barcode", product.getIntBarcode());
             strArr.put("qntOrder", String.valueOf(qntOrder));
             strArr.put("qntFact", String.valueOf(qntFact));
-            strArr.put("weightOrder", String.valueOf(weightOrder));
-            strArr.put("weightFact", String.valueOf(weightFact));
-            strArr.put("volumeOrder", String.valueOf(volumeOrder));
-            strArr.put("volumeFact", String.valueOf(volumeFact));
+            strArr.put("weightOrder", String.format(Locale.ROOT, "%.2f", weightOrder));
+            strArr.put("weightFact", String.format(Locale.ROOT, "%.2f", weightFact));
+            strArr.put("volumeOrder", String.format(Locale.ROOT, "%.2f", volumeOrder));
+            strArr.put("volumeFact", String.format(Locale.ROOT, "%.2f", volumeFact));
             strArr.put("expirationDate", item.getExpirationDate() == null ? "" : new SimpleDateFormat("yyyy-MM-dd").format(item.getExpirationDate()));
             strArr.put("note", item.getNote());
 

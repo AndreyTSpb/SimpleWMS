@@ -23,6 +23,7 @@ public interface StockReservationRepository extends CrudRepository<StockReservat
     /**
      * Свободные остатки товара в ячейках хранения в порядке FEFO:
      * ближайший срок годности первым, партии без срока — последними, затем более ранний приход.
+     * Партии с истёкшим сроком не резервируются.
      */
     @Query(value = "SELECT s.batch_id AS \"batchId\", s.location_id AS \"locationId\"," +
             " s.quantity - COALESCE((SELECT SUM(r.quantity) FROM stock_reservation AS r" +
@@ -34,6 +35,7 @@ public interface StockReservationRepository extends CrudRepository<StockReservat
             " WHERE s.product_id = :productId AND s.quantity > 0 AND COALESCE(s.del, FALSE) = FALSE" +
             "   AND COALESCE(b.del, FALSE) = FALSE AND l.del = 0" +
             "   AND s.location_id NOT IN (:excludedLocations)" +
+            "   AND (b.expiry_date IS NULL OR b.expiry_date >= CURRENT_DATE)" +
             " ORDER BY b.expiry_date ASC NULLS LAST, b.date_received ASC, s.batch_id, s.location_id",
             nativeQuery = true)
     List<AvailableStockRow> findAvailableFefo(@Param("productId") int productId,

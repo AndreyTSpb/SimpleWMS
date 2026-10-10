@@ -1,0 +1,57 @@
+erDiagram
+    supplier ||--o{ product : "поставляет"
+    categoryes ||--o{ product : ""
+    abc ||--o{ product : "ABC-класс"
+    supplier ||--o{ receiving : ""
+    receiving ||--|{ receiving_line : "строки"
+    product ||--o{ receiving_line : ""
+    receiving_line ||--o| batches : "партия"
+    product ||--o{ batches : ""
+    zones ||--o{ location : "ячейки"
+    batches ||--o{ stocks : "остаток"
+    location ||--o{ stocks : ""
+    batches ||--o{ stock_movements : "журнал"
+    location ||--o{ stock_movements : "откуда / куда"
+    placement_route ||--|{ placement_route_line : ""
+    customers ||--o{ customer_order : ""
+    customer_order ||--|{ customer_order_line : ""
+    customer_order_line ||--o{ stock_reservation : "резерв"
+    stocks ||--o{ stock_reservation : ""
+    customer_order ||--o{ picking_route : ""
+    picking_route ||--|{ picking_route_line : ""
+    customer_order ||--o| shipment : ""
+    shipment ||--|{ shipment_line : ""
+    roles ||--o{ employee : ""
+    employee ||--o| users : "учётная запись"
+
+    product { int productid PK
+        string product_code
+        string product_name
+        real weight
+        real volume
+        bool expiration_date_required }
+    batches { int batch_id PK
+        int product_id
+        timestamp expiry_date
+        int receiving_id }
+    stocks { int stock_id PK
+        int batch_id
+        int location_id
+        int quantity }
+    location { int locationid PK
+        string location_code
+        real capacity
+        int zoneid }
+    stock_movements { int movement_id PK
+        int movement_type_id
+        int from_location_id
+        int to_location_id
+        int quantity }
+    customer_order { int order_id PK
+        string document_number
+        int status_id }
+    stock_reservation { int reservation_id PK
+        int order_line_id
+        int batch_id
+        int location_id
+        int quantity }

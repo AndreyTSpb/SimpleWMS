@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant ERP
+    participant API as SimpleWMS API /api/v1
+    participant WMS as Склад (интерфейс)
+    ERP->>API: PUT /products, /suppliers, /customers
+    API-->>ERP: 200 {created, updated}
+    ERP->>API: POST /receivings (накладная)
+    API-->>ERP: 201 {id, status: «В ожидании»}
+    WMS->>WMS: приёмка, размещение
+    ERP->>API: GET /receivings?from=…
+    API-->>ERP: принятые количества, сроки годности
+    ERP->>API: POST /orders (заказ клиента)
+    API-->>ERP: 201 {status, shortage}
+    WMS->>WMS: сборка, отгрузка
+    ERP->>API: GET /orders/{номер}
+    API-->>ERP: статус, отгружено по строкам
+    ERP->>API: GET /shipments?from=…
+    API-->>ERP: отгрузки (код товара — количество)
+    ERP->>API: POST /shipments/{id}/confirm
+    API-->>ERP: 200 подтверждено

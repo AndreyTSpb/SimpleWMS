@@ -1,0 +1,14 @@
+flowchart LR
+    U["Пользователи<br/>(браузер)"] -- "HTTP :8080" --> APP
+    E["ERP"] -- "REST + X-API-Key :8080" --> APP
+    subgraph HOST["Сервер / ПК с Docker"]
+        subgraph COMPOSE["docker compose (профиль app)"]
+            APP["simplewms-app<br/>eclipse-temurin:17-jre-alpine<br/>app.jar + SQL/migrations"]
+            DB[("simplewms-db<br/>postgres:16-alpine")]
+        end
+        VOL[["том wms-db-data"]]
+        BK[["backups/*.sql"]]
+    end
+    APP -- "JDBC :5432" --> DB
+    DB --- VOL
+    DB -. "scripts/backup.ps1<br/>pg_dump" .-> BK
