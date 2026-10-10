@@ -14,6 +14,7 @@ import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.StockMovementRepository;
 import com.tynyany.simplewmsv2.repository.StockRepository;
+import com.tynyany.simplewmsv2.repository.StockReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class DefaultTransferService implements TransferService {
     private final BatchRepository batchRepository;
     private final ProductRepository productRepository;
     private final EmployeeRepository employeeRepository;
+    private final StockReservationRepository reservationRepository;
     private final WmsProperties wmsProperties;
 
     @Override
@@ -49,6 +51,15 @@ public class DefaultTransferService implements TransferService {
         BatchEntity batch = batchRepository.findById(batchId)
                 .orElseThrow(() -> new NotFoundException("Партия " + batchId + " не найдена"));
 
+        // Зарезервированное под заказы не перемещается: сборщик будет искать товар в этой ячейке
+        int reserved = reservationRepository.sumReserved(batchId, fromLocationId);
+        if (reserved > 0) {
+            int free = inventoryService.getQuantity(batchId, fromLocationId) - reserved;
+            if (quantity > free) {
+                throw new WmsException("В ячейке " + from.getLocationCode() + " свободно " + Math.max(free, 0)
+                        + " шт. партии " + batchId + ", ещё " + reserved + " шт. зарезервировано под заказы");
+            }
+        }
         // Проверка количества и остатка — в InventoryService.move (откат всей операции при ошибке)
         inventoryService.move(batchId, batch.getProduct_id(), fromLocationId, toLocationId,
                 quantity, employeeId, MovementType.MOVE);

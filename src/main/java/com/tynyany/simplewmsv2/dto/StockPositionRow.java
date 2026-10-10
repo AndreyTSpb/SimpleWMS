@@ -15,4 +15,10 @@ public interface StockPositionRow {
     Integer getQuantity();
     Integer getLocationId();
     String getLocationCode();
+    /** Зарезервировано под заказы. */
+    Integer getReserved();
+
+    default int getFree() {
+        return Math.max(getQuantity() - (getReserved() == null ? 0 : getReserved()), 0);
+    }
 }

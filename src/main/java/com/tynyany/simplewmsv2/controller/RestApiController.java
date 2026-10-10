@@ -58,6 +58,26 @@ public class RestApiController {
     private final LocationRepository locationRepository;
     private final LocationService locationService;
     private final ReceivingProcessService receivingProcessService;
+    private final OrderService orderService;
+
+    /**
+     * Заказ клиента из ERP: создаётся и сразу резервируется по FEFO (формат — {@link OrderJSON}).
+     */
+    @RequestMapping(value = "/new_order", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseJson addOrder(@RequestBody String json) throws JsonProcessingException {
+        OrderJSON order = new ObjectMapper().readValue(json, OrderJSON.class);
+        OrderService.ErpOrderResult result = orderService.createFromErp(order);
+        String message = "Новый заказ: " + order.header.orderERP + " (id " + result.orderId()
+                + ", строк: " + result.linesCreated() + "). Резерв: " + result.reserve().status();
+        if (result.reserve().shortage() > 0) {
+            message += ", не хватает " + result.reserve().shortage() + " шт.";
+        }
+        if (!result.missingProductCodes().isEmpty()) {
+            message += ". Не найдены в справочнике товаров и пропущены: " + String.join(", ", result.missingProductCodes());
+        }
+        return new ResponseJson(1, message);
+    }
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)
     @ResponseBody

@@ -22,7 +22,11 @@ ON CONFLICT (supplierid) DO NOTHING;
 -- Клиент
 INSERT INTO customers (customer_id, customer_code, customer_name, phone, email, address, working_time_str, working_time_end, del) VALUES
     (1, 'К000001', 'ООО «Демо-Клиент»', '+7 812 000-00-02', 'client@example.com',
-     '190000, г. Санкт-Петербург, ул. Примерная, д. 1', '09:00', '18:00', false)
+     '190000, г. Санкт-Петербург, ул. Примерная, д. 1', '09:00', '18:00', false),
+    (2, 'К000002', 'ИП Демо-Магазин', '+7 812 000-00-03', 'shop@example.com',
+     '190000, г. Санкт-Петербург, пр. Тестовый, д. 5', '10:00', '20:00', false),
+    (3, 'К000003', 'ООО «Демо-Офис»', '+7 812 000-00-04', 'office@example.com',
+     '190000, г. Санкт-Петербург, наб. Образцовая, д. 12', '09:00', '17:00', false)
 ON CONFLICT (customer_id) DO NOTHING;
 
 -- Сотрудники

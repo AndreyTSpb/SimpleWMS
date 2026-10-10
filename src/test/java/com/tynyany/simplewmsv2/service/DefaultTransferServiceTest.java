@@ -11,6 +11,7 @@ import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.repository.StockMovementRepository;
 import com.tynyany.simplewmsv2.repository.StockRepository;
+import com.tynyany.simplewmsv2.repository.StockReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,19 +31,22 @@ class DefaultTransferServiceTest {
 
     private InventoryService inventoryService;
     private StockRepository stockRepository;
+    private StockReservationRepository reservationRepository;
     private DefaultTransferService service;
 
     @BeforeEach
     void setUp() {
         inventoryService = mock(InventoryService.class);
         stockRepository = mock(StockRepository.class);
+        reservationRepository = mock(StockReservationRepository.class);
         LocationRepository locationRepository = mock(LocationRepository.class);
         BatchRepository batchRepository = mock(BatchRepository.class);
         WmsProperties properties = new WmsProperties();
         properties.getLocations().setReceivingId(1);
         properties.getLocations().setShippingId(2);
         service = new DefaultTransferService(inventoryService, stockRepository, mock(StockMovementRepository.class),
-                locationRepository, batchRepository, mock(ProductRepository.class), mock(EmployeeRepository.class), properties);
+                locationRepository, batchRepository, mock(ProductRepository.class), mock(EmployeeRepository.class),
+                reservationRepository, properties);
 
         for (LocationEntity l : new LocationEntity[]{
                 new LocationEntity(1, "PRM-01-01-1-1", "01", 1, 1, 1, 1000, 1, 0, 1),
@@ -87,6 +91,20 @@ class DefaultTransferServiceTest {
         doThrow(new WmsException("Недостаточно остатка")).when(inventoryService)
                 .move(77, 5, 101, 102, 500, 3, MovementType.MOVE);
         assertThatThrownBy(() -> service.transfer(77, 101, 102, 500, 3)).hasMessageContaining("Недостаточно остатка");
+    }
+
+    @Test
+    void reservedQuantityCannotBeMoved() {
+        when(reservationRepository.sumReserved(77, 101)).thenReturn(60);
+        when(inventoryService.getQuantity(77, 101)).thenReturn(100);
+
+        assertThatThrownBy(() -> service.transfer(77, 101, 102, 41, 3))
+                .hasMessageContaining("свободно 40 шт.")
+                .hasMessageContaining("60 шт. зарезервировано");
+        verify(inventoryService, never()).move(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), any());
+
+        service.transfer(77, 101, 102, 40, 3);
+        verify(inventoryService).move(77, 5, 101, 102, 40, 3, MovementType.MOVE);
     }
 
     @Test

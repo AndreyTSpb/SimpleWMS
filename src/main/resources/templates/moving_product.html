@@ -59,13 +59,13 @@
                             <td th:text="${row.productName}">Товар</td>
                             <td th:text="${row.batchId}">1</td>
                             <td th:text="${row.expiryDate != null} ? ${#dates.format(row.expiryDate, 'dd.MM.yyyy')} : '—'">—</td>
-                            <td class="text-right" th:text="${row.quantity}">10</td>
+                            <td class="text-right"><span th:text="${row.quantity}">10</span><br th:if="${row.reserved > 0}"><small th:if="${row.reserved > 0}" class="text-warning" th:text="'резерв ' + ${row.reserved}">резерв</small></td>
                             <td>
                                 <form th:action="@{/moving_product/transfer}" method="post" class="form-inline m-0">
                                         <input type="hidden" name="batchId" th:value="${row.batchId}">
                                         <input type="hidden" name="fromLocationId" th:value="${row.locationId}">
                                         <input type="hidden" name="q" th:value="${q}">
-                                        <input type="number" name="quantity" min="1" th:max="${row.quantity}" th:value="${row.quantity}"
+                                        <input type="number" name="quantity" min="1" th:max="${row.free}" th:value="${row.free}"
                                                class="form-control form-control-sm mr-1" style="width: 90px" required>
                                         <select name="toLocationId" class="form-control form-control-sm mr-1" style="max-width: 170px" required>
                                             <option value="">— куда —</option>
@@ -112,7 +112,7 @@
                             <td th:text="${row.productName}">Товар</td>
                             <td th:text="${row.batchId}">1</td>
                             <td th:text="${row.expiryDate != null} ? ${#dates.format(row.expiryDate, 'dd.MM.yyyy')} : '—'">—</td>
-                            <td class="text-right" th:text="${row.quantity}">10</td>
+                            <td class="text-right"><span th:text="${row.quantity}">10</span><br th:if="${row.reserved > 0}"><small th:if="${row.reserved > 0}" class="text-warning" th:text="'резерв ' + ${row.reserved}">резерв</small></td>
                             <td>
                                 <span th:unless="${#lists.contains(cellIds, row.locationId)}" class="text-mute">системная ячейка</span>
                                 <th:block th:if="${#lists.contains(cellIds, row.locationId)}">
@@ -120,7 +120,7 @@
                                         <input type="hidden" name="batchId" th:value="${row.batchId}">
                                         <input type="hidden" name="fromLocationId" th:value="${row.locationId}">
                                         <input type="hidden" name="q" th:value="${q}">
-                                        <input type="number" name="quantity" min="1" th:max="${row.quantity}" th:value="${row.quantity}"
+                                        <input type="number" name="quantity" min="1" th:max="${row.free}" th:value="${row.free}"
                                                class="form-control form-control-sm mr-1" style="width: 90px" required>
                                         <select name="toLocationId" class="form-control form-control-sm mr-1" style="max-width: 170px" required>
                                             <option value="">— куда —</option>

@@ -56,7 +56,9 @@ public interface StockRepository extends CrudRepository<StockEntity, Integer> {
     /** Содержимое ячейки: партии с остатком. */
     @Query(value = "SELECT s.stock_id AS \"stockId\", s.batch_id AS \"batchId\", s.product_id AS \"productId\"," +
             " p.product_code AS \"productCode\", p.product_name AS \"productName\", b.expiry_date AS \"expiryDate\"," +
-            " s.quantity AS \"quantity\", s.location_id AS \"locationId\", l.location_code AS \"locationCode\"" +
+            " s.quantity AS \"quantity\", s.location_id AS \"locationId\", l.location_code AS \"locationCode\"," +
+            " COALESCE((SELECT SUM(r.quantity) FROM stock_reservation AS r" +
+            "     WHERE r.batch_id = s.batch_id AND r.location_id = s.location_id), 0) AS \"reserved\"" +
             " FROM stocks AS s" +
             " JOIN product AS p ON p.productid = s.product_id" +
             " JOIN location AS l ON l.locationid = s.location_id" +
@@ -68,7 +70,9 @@ public interface StockRepository extends CrudRepository<StockEntity, Integer> {
     /** Где лежит товар: поиск по коду или наименованию (подстрока) либо по штрихкоду (точно). */
     @Query(value = "SELECT s.stock_id AS \"stockId\", s.batch_id AS \"batchId\", s.product_id AS \"productId\"," +
             " p.product_code AS \"productCode\", p.product_name AS \"productName\", b.expiry_date AS \"expiryDate\"," +
-            " s.quantity AS \"quantity\", s.location_id AS \"locationId\", l.location_code AS \"locationCode\"" +
+            " s.quantity AS \"quantity\", s.location_id AS \"locationId\", l.location_code AS \"locationCode\"," +
+            " COALESCE((SELECT SUM(r.quantity) FROM stock_reservation AS r" +
+            "     WHERE r.batch_id = s.batch_id AND r.location_id = s.location_id), 0) AS \"reserved\"" +
             " FROM stocks AS s" +
             " JOIN product AS p ON p.productid = s.product_id" +
             " JOIN location AS l ON l.locationid = s.location_id" +
