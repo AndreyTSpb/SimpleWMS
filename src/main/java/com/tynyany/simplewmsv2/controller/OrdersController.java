@@ -7,6 +7,7 @@ import com.tynyany.simplewmsv2.models.UpdateMessageAlert;
 import com.tynyany.simplewmsv2.repository.CustomerRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.service.OrderService;
+import com.tynyany.simplewmsv2.service.PickingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 /**
- * Заказы клиентов: список, создание, карточка, резервирование, отмена.
+ * Заказы клиентов: список, создание, карточка, резервирование, передача в сборку, отмена.
  */
 @Slf4j
 @Controller
@@ -34,6 +35,7 @@ import java.util.stream.StreamSupport;
 public class OrdersController {
 
     private final OrderService orderService;
+    private final PickingService pickingService;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
 
@@ -73,6 +75,7 @@ public class OrdersController {
         OrderService.OrderView order = orderService.getOrder(id);
         model.addAttribute("title", "Заказ " + order.documentNumber());
         model.addAttribute("order", order);
+        model.addAttribute("pickingRouteId", pickingService.findRouteIdByOrder(id).orElse(0));
         List<com.tynyany.simplewmsv2.dao.ProductEntity> products = new ArrayList<>();
         productRepository.findAll().forEach(p -> {
             if (!Boolean.TRUE.equals(p.getDel())) products.add(p);
@@ -107,6 +110,18 @@ public class OrdersController {
             alert(response, message);
         } catch (WmsException e) {
             log.warn("Резервирование отклонено: {}", e.getMessage());
+            alert(response, e.getMessage());
+        }
+        return "redirect:/order_list/view/" + id;
+    }
+
+    @PostMapping("/{id}/to_picking")
+    public String toPicking(@PathVariable("id") int id, HttpServletResponse response) {
+        try {
+            int routeId = pickingService.createRoute(id);
+            alert(response, "Заказ передан в сборку - маршрут № " + routeId);
+        } catch (WmsException e) {
+            log.warn("Передача в сборку отклонена: {}", e.getMessage());
             alert(response, e.getMessage());
         }
         return "redirect:/order_list/view/" + id;

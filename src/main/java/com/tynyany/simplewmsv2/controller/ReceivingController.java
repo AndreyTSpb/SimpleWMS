@@ -83,8 +83,6 @@ public class ReceivingController {
         model.addAttribute("title", "Список приходных накладных");
         model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("receivingList", arrayReceivingList(page));
-        model.addAttribute("headerList", PickingRouteController.listHeader());
-        model.addAttribute("stringList", PickingRouteController.stringsListPicking());
 
         int currentPage = pageable.getPageNumber();
 
