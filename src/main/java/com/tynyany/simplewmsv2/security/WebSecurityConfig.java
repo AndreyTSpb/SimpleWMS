@@ -1,6 +1,7 @@
 package com.tynyany.simplewmsv2.security;
 
 import com.tynyany.simplewmsv2.config.WmsProperties;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,8 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.io.IOException;
 
 /**
  * Безопасность (см. Project_Docs/Архитектура.md, раздел «Безопасность»):
@@ -44,7 +46,14 @@ public class WebSecurityConfig {
                         request -> request.getHeader(ApiKeyAuthenticationFilter.HEADER) != null
                                 || request.getSession(false) == null))
                 .authorizeHttpRequests(auth -> auth.anyRequest().hasAnyRole("API", ADMIN, MANAGER))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, e) -> writeJson(response, HttpStatus.UNAUTHORIZED,
+                                "Требуется ключ доступа в заголовке " + ApiKeyAuthenticationFilter.HEADER))
+                        .accessDeniedHandler((request, response, e) -> writeJson(response, HttpStatus.FORBIDDEN,
+                                e instanceof org.springframework.security.web.csrf.CsrfException
+                                        ? "Запрос из браузера без CSRF-токена: передайте токен страницы или заголовок "
+                                                + ApiKeyAuthenticationFilter.HEADER
+                                        : "Недостаточно прав для доступа к API")))
                 .requestCache(cache -> cache.disable());
         return http.build();
     }
@@ -59,7 +68,9 @@ public class WebSecurityConfig {
                         // справочники, заказы и отчёты
                         .requestMatchers("/products/**", "/suppliers/**", "/customers/**", "/locations/**",
                                 "/zones/**", "/order_list/**", "/warehouse_status/**", "/shipment_report/**",
-                                "/income_report/**", "/report_pickers/**", "/movement_journal/**")
+                                "/income_report/**", "/report_pickers/**", "/movement_journal/**",
+                                // описание API и имитация ERP
+                                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/erp_simulator/**")
                         .hasAnyRole(ADMIN, MANAGER)
                         // складские операции: приёмка, размещение, перемещение, комплектация, отгрузка
                         .anyRequest().hasAnyRole(ADMIN, MANAGER, STOREKEEPER))
@@ -74,6 +85,13 @@ public class WebSecurityConfig {
                         .permitAll())
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"));
         return http.build();
+    }
+
+    /** Ответ API об ошибке доступа в формате {success, message}. */
+    private static void writeJson(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"success\":false,\"message\":\"" + message.replace("\"", "\\\"") + "\"}");
     }
 
     @Bean

@@ -1,0 +1,27 @@
+[
+  {
+    "code": "029952",
+    "name": "Карандаш чернографитный HB",
+    "supplierCode": "П000019",
+    "category": "Письменные принадлежности",
+    "abc": "B",
+    "weight": 0.01,
+    "volume": 0.01,
+    "expirationRequired": false,
+    "extBarcode": "4600000029952",
+    "intBarcode": "2000000029952"
+  },
+  {
+    "code": "215530",
+    "name": "Маркер текстовыделитель жёлтый 1-5 мм",
+    "description": "Скошенный наконечник",
+    "supplierCode": "П000020",
+    "category": "Письменные принадлежности",
+    "abc": "A",
+    "weight": 0.02,
+    "volume": 0.03,
+    "expirationRequired": false,
+    "extBarcode": "4600000215530",
+    "intBarcode": "2000000215530"
+  }
+]

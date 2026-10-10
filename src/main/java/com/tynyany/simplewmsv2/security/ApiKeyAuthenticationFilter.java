@@ -46,7 +46,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             log.warn("API: неверный ключ доступа, {} {}", request.getMethod(), request.getRequestURI());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"success\":0,\"message\":\"Неверный API-ключ\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Неверный API-ключ\"}");
             return;
         }
         SecurityContext context = SecurityContextHolder.createEmptyContext();

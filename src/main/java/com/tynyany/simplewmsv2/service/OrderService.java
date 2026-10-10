@@ -1,6 +1,6 @@
 package com.tynyany.simplewmsv2.service;
 
-import com.tynyany.simplewmsv2.entity.OrderJSON;
+import com.tynyany.simplewmsv2.dto.erp.ErpOrder;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface OrderService {
     record ReserveResult(int reservedNow, int shortage, String status) {}
 
     /** Загрузка заказа из ERP с немедленным резервированием. */
-    ErpOrderResult createFromErp(OrderJSON json);
+    ErpOrderResult createFromErp(ErpOrder request);
 
     /** Ручное создание заказа (статус «Новый», строки добавляются отдельно). Пустой номер — присваивается автоматически. */
     int create(int customerId, String documentNumber, String shipDate, String note);

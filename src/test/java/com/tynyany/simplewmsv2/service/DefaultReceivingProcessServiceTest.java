@@ -9,9 +9,8 @@ import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import com.tynyany.simplewmsv2.dao.SupplierEntity;
 import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
-import com.tynyany.simplewmsv2.entity.ReceivingERP;
-import com.tynyany.simplewmsv2.entity.ReceivingJSON;
-import com.tynyany.simplewmsv2.entity.ReceivingLineERP;
+import com.tynyany.simplewmsv2.dto.erp.ErpLine;
+import com.tynyany.simplewmsv2.dto.erp.ErpReceiving;
 import com.tynyany.simplewmsv2.entity.ReceivingLineForm;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
@@ -330,7 +329,7 @@ class DefaultReceivingProcessServiceTest {
         when(receivingRepository.findFirstByDocumentNumberAndStatusIDNot("З30016546", ReceivingStatus.CANCELLED.getCode()))
                 .thenReturn(Optional.of(new ReceivingEntity(5, null, null, "З30016546", 0, 0, 1, false)));
 
-        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", "1"))))
+        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", 1))))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("уже загружена (id 5)");
         verify(receivingRepository, never()).save(any());
@@ -344,7 +343,7 @@ class DefaultReceivingProcessServiceTest {
         when(productRepository.findOneByProductCode("999999")).thenReturn(Optional.empty());
 
         ReceivingProcessService.ErpImportResult result = service.createFromErp(json(
-                erpLine("029952", "200"), erpLine("999999", "5")));
+                erpLine("029952", 200), erpLine("999999", 5)));
 
         assertThat(result.receivingId()).isEqualTo(RECEIVING_ID);
         assertThat(result.linesCreated()).isEqualTo(1);
@@ -359,7 +358,7 @@ class DefaultReceivingProcessServiceTest {
     @Test
     void createFromErpFailsForUnknownSupplier() {
         when(supplierRepository.findTopBySupplierCode(any())).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", "1"))))
+        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", 1))))
                 .isInstanceOf(NotFoundException.class);
         verify(receivingRepository, never()).save(any());
     }
@@ -367,7 +366,7 @@ class DefaultReceivingProcessServiceTest {
     @Test
     void createFromErpRejectsBadQuantity() {
         when(supplierRepository.findTopBySupplierCode(any())).thenReturn(Optional.of(supplier()));
-        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", "abc"))))
+        assertThatThrownBy(() -> service.createFromErp(json(erpLine("029952", 0))))
                 .isInstanceOf(WmsException.class)
                 .hasMessageContaining("количество");
         verify(receivingRepository, never()).save(any());
@@ -424,18 +423,11 @@ class DefaultReceivingProcessServiceTest {
                 .build();
     }
 
-    private static ReceivingLineERP erpLine(String code, String qnt) {
-        ReceivingLineERP l = new ReceivingLineERP();
-        l.code = code;
-        l.qnt = qnt;
-        return l;
+    private static ErpLine erpLine(String code, int quantity) {
+        return new ErpLine(code, quantity);
     }
 
-    private static ReceivingJSON json(ReceivingLineERP... lines) {
-        ReceivingERP header = new ReceivingERP();
-        header.orderERP = "З30016546";
-        header.supplierCode = "П000019";
-        header.orderDate = "2026-10-09 08:30:00.0";
-        return new ReceivingJSON(header, new ArrayList<>(List.of(lines)));
+    private static ErpReceiving json(ErpLine... lines) {
+        return new ErpReceiving("З30016546", "П000019", java.time.LocalDateTime.of(2026, 10, 9, 8, 30), List.of(lines));
     }
 }

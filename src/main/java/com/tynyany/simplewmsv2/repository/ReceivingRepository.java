@@ -23,4 +23,13 @@ public interface ReceivingRepository extends CrudRepository<ReceivingEntity, Int
 
     Page<ReceivingEntity> findByDocumentNumberLikeIgnoreCase(String filter, Pageable pageable);
 
+
+    /** Последняя накладная с таким номером (в т.ч. отменённая) — для запроса статуса из ERP. */
+    Optional<ReceivingEntity> findFirstByDocumentNumberOrderByReceivingIDDesc(String documentNumber);
+
+    /** Накладные в статусе statusId, приёмка которых начата не раньше from. */
+    @Query("select r from ReceivingEntity r where r.statusID = :statusId and (r.del = false or r.del is null)"
+            + " and r.getReceivingDate >= :from order by r.receivingID")
+    java.util.List<ReceivingEntity> findByStatusSince(@org.springframework.data.repository.query.Param("statusId") int statusId,
+                                                      @org.springframework.data.repository.query.Param("from") java.sql.Timestamp from);
 }

@@ -9,8 +9,8 @@ import com.tynyany.simplewmsv2.dao.ReceivingLineEntity;
 import com.tynyany.simplewmsv2.dao.SupplierEntity;
 import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.domain.ReceivingStatus;
-import com.tynyany.simplewmsv2.entity.ReceivingJSON;
-import com.tynyany.simplewmsv2.entity.ReceivingLineERP;
+import com.tynyany.simplewmsv2.dto.erp.ErpLine;
+import com.tynyany.simplewmsv2.dto.erp.ErpReceiving;
 import com.tynyany.simplewmsv2.entity.ReceivingLineForm;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
@@ -48,42 +48,35 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
 
     @Override
     @Transactional
-    public ErpImportResult createFromErp(ReceivingJSON json) {
-        if (json == null || json.header == null) {
-            throw new WmsException("В накладной нет заголовка (header)");
+    public ErpImportResult createFromErp(ErpReceiving request) {
+        if (request == null || isBlank(request.number())) {
+            throw new WmsException("Не указан номер накладной");
         }
-        if (isBlank(json.header.orderERP)) {
-            throw new WmsException("Не указан номер накладной (header.orderERP)");
+        if (request.lines() == null || request.lines().isEmpty()) {
+            throw new WmsException("В накладной нет строк");
         }
-        if (json.body == null || json.body.isEmpty()) {
-            throw new WmsException("В накладной нет строк (body)");
-        }
-
-        receivingRepository.findFirstByDocumentNumberAndStatusIDNot(
-                        json.header.orderERP.trim(), ReceivingStatus.CANCELLED.getCode())
+        String number = request.number().trim();
+        receivingRepository.findFirstByDocumentNumberAndStatusIDNot(number, ReceivingStatus.CANCELLED.getCode())
                 .ifPresent(existing -> {
-                    throw new WmsException("Накладная " + json.header.orderERP + " уже загружена (id "
+                    throw new WmsException("Накладная " + number + " уже загружена (id "
                             + existing.getReceivingID() + "). Повторная загрузка возможна после её отмены");
                 });
 
-        SupplierEntity supplier = supplierRepository.findTopBySupplierCode(json.header.supplierCode)
-                .orElseThrow(() -> new NotFoundException("Поставщик с кодом " + json.header.supplierCode + " не найден"));
-
-        Timestamp orderDate;
-        try {
-            orderDate = Timestamp.valueOf(json.header.orderDate);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new WmsException("Неверная дата накладной (ожидается yyyy-MM-dd HH:mm:ss): " + json.header.orderDate);
-        }
+        SupplierEntity supplier = supplierRepository.findTopBySupplierCode(request.supplierCode())
+                .orElseThrow(() -> new NotFoundException("Поставщик с кодом " + request.supplierCode() + " не найден"));
+        Timestamp orderDate = request.date() != null ? Timestamp.valueOf(request.date()) : now();
 
         // Сначала проверяем все строки, затем сохраняем: накладная создаётся только целиком
         List<ReceivingLineEntity> lines = new ArrayList<>();
         List<String> missing = new ArrayList<>();
-        for (ReceivingLineERP line : json.body) {
-            int qnt = parseQuantity(line);
-            Optional<ProductEntity> product = productRepository.findOneByProductCode(line.code);
+        for (ErpLine line : request.lines()) {
+            if (line.quantity() <= 0) {
+                throw new WmsException("Неверное количество для товара " + line.code() + ": " + line.quantity());
+            }
+            int qnt = line.quantity();
+            Optional<ProductEntity> product = productRepository.findOneByProductCode(line.code());
             if (product.isEmpty()) {
-                missing.add(line.code);
+                missing.add(line.code());
                 continue;
             }
             lines.add(new ReceivingLineEntity(0, qnt, 0, null, 0, 0,
@@ -94,7 +87,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         }
 
         ReceivingEntity receiving = receivingRepository.save(new ReceivingEntity(
-                0, orderDate, null, json.header.orderERP.trim(),
+                0, orderDate, null, number,
                 ReceivingStatus.WAITING.getCode(), 0, supplier.getSupplierID(), false));
 
         for (ReceivingLineEntity line : lines) {
@@ -103,9 +96,9 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         }
 
         if (!missing.isEmpty()) {
-            log.warn("Накладная {}: товары не найдены в справочнике и пропущены: {}", json.header.orderERP, missing);
+            log.warn("Накладная {}: товары не найдены в справочнике и пропущены: {}", number, missing);
         }
-        log.info("Создана накладная id={} ({}), строк: {}", receiving.getReceivingID(), json.header.orderERP, lines.size());
+        log.info("Создана накладная id={} ({}), строк: {}", receiving.getReceivingID(), number, lines.size());
         return new ErpImportResult(receiving.getReceivingID(), lines.size(), missing);
     }
 
@@ -320,16 +313,6 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         if (actual != expected) {
             throw new WmsException(action + " можно только для накладной в статусе «" + expected.getTitle()
                     + "», текущий статус: «" + actual.getTitle() + "»");
-        }
-    }
-
-    private int parseQuantity(ReceivingLineERP line) {
-        try {
-            int qnt = Integer.parseInt(line.qnt.trim());
-            if (qnt <= 0) throw new NumberFormatException();
-            return qnt;
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new WmsException("Неверное количество для товара " + line.code + ": " + line.qnt);
         }
     }
 

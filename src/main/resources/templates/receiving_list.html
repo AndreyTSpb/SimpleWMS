@@ -31,9 +31,9 @@
                             <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
-                            <button class="btn btn-sm btn-outline-template ml-2" data-toggle="modal" id="addReceiving" >
-                                <i class="material-icons md-18">update</i> Обновить данные
-                            </button>
+                            <a sec:authorize="hasAnyRole('ADMIN','MANAGER')" th:href="@{/erp_simulator}" class="btn btn-sm btn-outline-template ml-2">
+                                <i class="material-icons md-18">sync</i> Загрузить из ERP
+                            </a>
                             <button class="btn btn-sm btn-outline-template ml-2">
                                 <i class="material-icons md-18">cloud_download</i> Выгрузить
                             </button>

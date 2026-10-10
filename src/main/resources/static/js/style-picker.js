@@ -158,13 +158,13 @@ $(document).ready(function () {
     /* style selected color scheme */
     if ($.type($.cookie("styleselected")) != 'undefined' && $.cookie("styleselected") != '') {
         var currentstyle = $('#stylelink');
-        $('head').append('<link href="../assets/css/' + $.cookie("styleselected") + '.css" rel="stylesheet" id="stylelink">');
+        $('head').append('<link href="/css/' + $.cookie("styleselected") + '.css" rel="stylesheet" id="stylelink">');
         setTimeout(function () {
             currentstyle.remove();
         }, 200);
 
     } else {
-        $('head').append('<link href="../assets/css/style-darkblue-dark.css" rel="stylesheet" id="stylelink">');
+        $('head').append('<link href="/css/style-darkblue-dark.css" rel="stylesheet" id="stylelink">');
     }
 
 
@@ -424,7 +424,7 @@ $(document).ready(function () {
         $(this).addClass('active')
         var currentstyle = $('#stylelink');
         var applystyle = $(this).attr('data-target');
-        $('head').append('<link href="../assets/css/' + applystyle + '.css" rel="stylesheet" id="stylelink">');
+        $('head').append('<link href="/css/' + applystyle + '.css" rel="stylesheet" id="stylelink">');
         setTimeout(function () {
             currentstyle.remove();
             $('.loader').fadeOut('slow');

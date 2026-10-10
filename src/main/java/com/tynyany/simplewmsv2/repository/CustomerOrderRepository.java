@@ -12,4 +12,7 @@ public interface CustomerOrderRepository extends CrudRepository<CustomerOrderEnt
 
     /** Заказ с таким номером в любом статусе, кроме указанного (используется для «не отменён»). */
     Optional<CustomerOrderEntity> findFirstByDocumentNumberAndStatusIdNot(String documentNumber, int statusId);
+
+    /** Последний заказ с таким номером (в т.ч. отменённый) — для запроса статуса из ERP. */
+    Optional<CustomerOrderEntity> findFirstByDocumentNumberOrderByOrderIdDesc(String documentNumber);
 }

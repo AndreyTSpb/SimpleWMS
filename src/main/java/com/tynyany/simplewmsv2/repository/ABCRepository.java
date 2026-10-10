@@ -6,4 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ABCRepository extends CrudRepository<ABCEntity, Integer> {
     ABC findByCode(String code);
+
+    java.util.Optional<ABCEntity> findFirstByCodeIgnoreCase(String code);
 }

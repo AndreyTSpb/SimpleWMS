@@ -43,8 +43,8 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 
 | Пакет | Назначение |
 |---|---|
-| `controller` | MVC-контроллеры страниц и `RestApiController` (`/api/*`). Только приём запроса и подготовка модели, без бизнес-логики |
-| `service` | Интерфейсы `XxxService` + реализации `DefaultXxxService`. Бизнес-процессы: `InventoryService` (остатки и журнал движений), `ReceivingProcessService` (приёмка), `PlacementService` (маршруты размещения), `TransferService` (перемещения), `OrderService` (заказы и резерв), `PickingService` (комплектация), `ShippingService` (отгрузка, выгрузка в ERP), `ReportService` (отчёты и сводка на главной, SQL через `NamedParameterJdbcTemplate`) |
+| `controller` | MVC-контроллеры страниц и `ErpApiController` (REST API `/api/v1`, Swagger `/swagger-ui.html`). Только приём запроса и подготовка модели, без бизнес-логики |
+| `service` | Интерфейсы `XxxService` + реализации `DefaultXxxService`. Бизнес-процессы: `InventoryService` (остатки и журнал движений), `ReceivingProcessService` (приёмка), `PlacementService` (маршруты размещения), `TransferService` (перемещения), `OrderService` (заказы и резерв), `PickingService` (комплектация), `ShippingService` (отгрузка, выгрузка в ERP), `ReportService` (отчёты и сводка на главной, SQL через `NamedParameterJdbcTemplate`), `ErpService` (обмен с ERP) |
 | `domain` | Перечисления: `ReceivingStatus`, `MovementType`, `PlacementRouteStatus` (код хранится в БД как int) |
 | `config` | `WmsProperties` — настройки `wms.*` (системные ячейки приёмки/отгрузки) |
 | `exception` | `WmsException` / `NotFoundException` и обработчики: `GlobalExceptionHandler` (страница error), `ApiExceptionHandler` (JSON) |
@@ -58,7 +58,7 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 
 ## Основной бизнес-процесс (реализован)
 
-1. ERP → `POST /api/new_receiving` (JSON-накладная) → `receiving` + `receiving_line`
+1. ERP → `POST /api/v1/receivings` (JSON-накладная) → `receiving` + `receiving_line`
 2. Старт приёмки (статус «В процессе») → ввод факта по строке
 3. По строке: партия (`batches`) + движение (`stock_movements`, тип «Приемка») + остаток (`stocks`) в зоне приёмки (location 1)
 4. Генерация маршрутов размещения по зонам (`placement_route`, `placement_route_line`)
@@ -314,3 +314,25 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 - Тесты: 77 unit-тестов сервисов (+ `DefaultReportServiceTest`: сроки годности, свод по товарам, экранирование LIKE).
   Проверено в среде Claude через HTTP: все виды и фильтры состояния склада (в т.ч. поиск по кириллице и штрихкоду,
   истекающая партия), журнал с фильтрами, три отчёта за период, главная, доступ кладовщика (403 на отчёты).
+  - Этап 9 проверен Andrew.
+
+### 2026-10-10 (этап 10 — API для ERP)
+- Зависимости: `spring-boot-starter-validation`, `springdoc-openapi-starter-webmvc-ui:2.7.0` (jar-файлы в среду Claude
+  взяты из кэша Gradle Andrew).
+- REST API `/api/v1` (`ErpApiController`): справочники PUT по коду (товары, поставщики, клиенты), приходы (загрузка,
+  статус, выгрузка завершённых), заказы (загрузка с резервом, статус, отмена), отгрузки (выгрузка, подтверждение).
+  DTO — `dto/erp` (records с `@Valid` и описанием для Swagger), обмен — `ErpService`.
+- Единый ответ `ApiResponse` `{success, message, data, errors}`; `ApiExceptionHandler`: 400 / 404 / 409 / 500,
+  понятные сообщения о неверном JSON (поле и значение); 401/403 от Spring Security тоже в JSON.
+  Сообщения проверки на русском: `spring.web.locale=ru`, `spring.web.locale-resolver=fixed`.
+- Удалены старый `RestApiController` (в т.ч. GET-методы, менявшие данные) и классы старого формата JSON
+  (`ReceivingJSON`, `OrderJSON`, `*ERP`, `ResponseJson`); сервисы принимают `ErpReceiving` / `ErpOrder`.
+- Swagger UI `/swagger-ui.html` со схемой авторизации `X-API-Key`; доступ — администратор и менеджер.
+- Имитация ERP: страница `/erp_simulator` (меню «Интеграция с ERP»), примеры в `resources/erp-samples`;
+  `Project_Docs/api/` — `erp.http`, `samples/*.json`, `erp-demo.ps1` (скрипт сохранён в UTF-8 с BOM для PowerShell 5.1).
+  Демо-кнопки «Обновить» с JSON в `scripts.js` на страницах товаров, поставщиков и приходов заменены ссылкой «Загрузить из ERP».
+- Исправлено: `style-picker.js` подключал тему из несуществующего `../assets/css/` — запрос к закрытому адресу
+  со страницы входа мог перенаправить после входа на CSS-файл; теперь `/css/`.
+- Тесты: 82 unit-теста сервисов (+ `DefaultErpServiceTest`). Проверено в среде Claude: все методы API через curl
+  (успех, 400 с полями, 401, 403 CSRF, 404, 409), Swagger UI и `/v3/api-docs`, страница имитации в браузере (Playwright),
+  `erp-demo.ps1` в PowerShell 7.

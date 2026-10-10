@@ -1,0 +1,16 @@
+[
+  {
+    "code": "П000019",
+    "name": "ООО «Демо-Поставщик»",
+    "contactPerson": "Сидоров С. С.",
+    "phone": "+7 812 000-00-01",
+    "email": "supply@example.com"
+  },
+  {
+    "code": "П000020",
+    "name": "АО «Канцмир»",
+    "contactPerson": "Орлова Е. П.",
+    "phone": "+7 495 000-00-20",
+    "email": "orders@kancmir.example"
+  }
+]

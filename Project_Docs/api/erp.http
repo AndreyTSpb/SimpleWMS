@@ -1,0 +1,73 @@
+### SimpleWMS — запросы ERP к REST API (IntelliJ IDEA HTTP Client / VS Code REST Client)
+### Описание всех методов: http://localhost:8080/swagger-ui.html
+@base = http://localhost:8080/api/v1
+@key = dev-api-key
+
+### 1. Поставщики (создание или обновление по коду)
+PUT {{base}}/suppliers
+X-API-Key: {{key}}
+Content-Type: application/json
+
+< ./samples/suppliers.json
+
+### 2. Клиенты
+PUT {{base}}/customers
+X-API-Key: {{key}}
+Content-Type: application/json
+
+< ./samples/customers.json
+
+### 3. Товары
+PUT {{base}}/products
+X-API-Key: {{key}}
+Content-Type: application/json
+
+< ./samples/products.json
+
+### 4. Приходная накладная (повторная загрузка того же номера — 409)
+POST {{base}}/receivings
+X-API-Key: {{key}}
+Content-Type: application/json
+
+< ./samples/receiving.json
+
+### 5. Статус накладной и результаты приёмки
+GET {{base}}/receivings/З-ДЕМО-1
+X-API-Key: {{key}}
+
+### 6. Выгрузка завершённых приёмок
+GET {{base}}/receivings?from=2026-10-01
+X-API-Key: {{key}}
+
+### 7. Заказ клиента (сразу резервируется)
+POST {{base}}/orders
+X-API-Key: {{key}}
+Content-Type: application/json
+
+< ./samples/order.json
+
+### 8. Статус заказа
+GET {{base}}/orders/ПР-ДЕМО-1
+X-API-Key: {{key}}
+
+### 9. Отмена заказа (до передачи в сборку)
+POST {{base}}/orders/ПР-ДЕМО-1/cancel
+X-API-Key: {{key}}
+
+### 10. Выгрузка отгрузок
+GET {{base}}/shipments?from=2026-10-01
+X-API-Key: {{key}}
+
+### 11. Подтверждение получения отгрузки
+POST {{base}}/shipments/1/confirm
+X-API-Key: {{key}}
+
+### 12. Ошибка проверки данных (400): нет строк и отрицательное количество
+POST {{base}}/orders
+X-API-Key: {{key}}
+Content-Type: application/json
+
+{"number": "", "customerCode": "К000001", "lines": [{"code": "029952", "quantity": -5}]}
+
+### 13. Без ключа (401)
+GET {{base}}/shipments

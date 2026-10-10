@@ -10,7 +10,8 @@ import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.StockReservationEntity;
 import com.tynyany.simplewmsv2.domain.OrderStatus;
 import com.tynyany.simplewmsv2.dto.AvailableStockRow;
-import com.tynyany.simplewmsv2.entity.OrderJSON;
+import com.tynyany.simplewmsv2.dto.erp.ErpLine;
+import com.tynyany.simplewmsv2.dto.erp.ErpOrder;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
 import com.tynyany.simplewmsv2.repository.BatchRepository;
@@ -53,38 +54,32 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     @Transactional
-    public ErpOrderResult createFromErp(OrderJSON json) {
-        if (json == null || json.header == null) {
-            throw new WmsException("В заказе нет заголовка (header)");
+    public ErpOrderResult createFromErp(ErpOrder request) {
+        if (request == null || isBlank(request.number())) {
+            throw new WmsException("Не указан номер заказа");
         }
-        if (isBlank(json.header.orderERP)) {
-            throw new WmsException("Не указан номер заказа (header.orderERP)");
+        if (request.lines() == null || request.lines().isEmpty()) {
+            throw new WmsException("В заказе нет строк");
         }
-        if (json.body == null || json.body.isEmpty()) {
-            throw new WmsException("В заказе нет строк (body)");
-        }
-        String number = json.header.orderERP.trim();
+        String number = request.number().trim();
         checkUniqueNumber(number);
 
-        CustomerEntity customer = customerRepository.findByCustomerCode(json.header.customerCode)
-                .orElseThrow(() -> new NotFoundException("Клиент с кодом " + json.header.customerCode + " не найден"));
-
-        Timestamp orderDate;
-        try {
-            orderDate = isBlank(json.header.orderDate) ? now() : Timestamp.valueOf(json.header.orderDate.trim());
-        } catch (IllegalArgumentException e) {
-            throw new WmsException("Неверная дата заказа (ожидается yyyy-MM-dd HH:mm:ss): " + json.header.orderDate);
-        }
-        Timestamp shipDate = parseDate(json.header.shipDate);
+        CustomerEntity customer = customerRepository.findByCustomerCode(request.customerCode())
+                .orElseThrow(() -> new NotFoundException("Клиент с кодом " + request.customerCode() + " не найден"));
+        Timestamp orderDate = request.date() != null ? Timestamp.valueOf(request.date()) : now();
+        Timestamp shipDate = request.shipDate() != null ? Timestamp.valueOf(request.shipDate().atStartOfDay()) : null;
 
         // Строки проверяются до сохранения: заказ создаётся целиком
         Map<Integer, Integer> quantities = new LinkedHashMap<>();
         List<String> missing = new ArrayList<>();
-        for (OrderJSON.Line line : json.body) {
-            int qnt = parseQuantity(line);
-            Optional<ProductEntity> product = productRepository.findOneByProductCode(line.code);
+        for (ErpLine line : request.lines()) {
+            if (line.quantity() <= 0) {
+                throw new WmsException("Неверное количество для товара " + line.code() + ": " + line.quantity());
+            }
+            int qnt = line.quantity();
+            Optional<ProductEntity> product = productRepository.findOneByProductCode(line.code());
             if (product.isEmpty()) {
-                missing.add(line.code);
+                missing.add(line.code());
                 continue;
             }
             quantities.merge(product.get().getProductID(), qnt, Integer::sum);
@@ -95,7 +90,7 @@ public class DefaultOrderService implements OrderService {
 
         CustomerOrderEntity order = orderRepository.save(new CustomerOrderEntity(
                 0, number, customer.getCustomerId(), orderDate, shipDate,
-                OrderStatus.NEW.getCode(), json.header.note, now(), false));
+                OrderStatus.NEW.getCode(), request.note(), now(), false));
         quantities.forEach((productId, qnt) ->
                 lineRepository.save(new CustomerOrderLineEntity(0, order.getOrderId(), productId, qnt, 0, 0, 0)));
 
@@ -303,16 +298,6 @@ public class DefaultOrderService implements OrderService {
         if (actual != expected) {
             throw new WmsException(action + " можно только в заказе со статусом «" + expected.getTitle()
                     + "», текущий статус: «" + actual.getTitle() + "»");
-        }
-    }
-
-    private static int parseQuantity(OrderJSON.Line line) {
-        try {
-            int qnt = Integer.parseInt(line.qnt.trim());
-            if (qnt <= 0) throw new NumberFormatException();
-            return qnt;
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new WmsException("Неверное количество для товара " + line.code + ": " + line.qnt);
         }
     }
 

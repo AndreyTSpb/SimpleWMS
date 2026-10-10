@@ -8,7 +8,8 @@ import com.tynyany.simplewmsv2.dao.ProductEntity;
 import com.tynyany.simplewmsv2.dao.StockReservationEntity;
 import com.tynyany.simplewmsv2.domain.OrderStatus;
 import com.tynyany.simplewmsv2.dto.AvailableStockRow;
-import com.tynyany.simplewmsv2.entity.OrderJSON;
+import com.tynyany.simplewmsv2.dto.erp.ErpLine;
+import com.tynyany.simplewmsv2.dto.erp.ErpOrder;
 import com.tynyany.simplewmsv2.exception.NotFoundException;
 import com.tynyany.simplewmsv2.exception.WmsException;
 import com.tynyany.simplewmsv2.repository.BatchRepository;
@@ -102,7 +103,7 @@ class DefaultOrderServiceTest {
                 stock(78, 102, 100, "2027-06-30")));
         when(reservationRepository.findAvailableFefo(eq(6), any())).thenReturn(List.of(stock(80, 103, 10, null)));
 
-        OrderService.ErpOrderResult result = service.createFromErp(json("ПР-1", line("029952", "50"), line("074519", "10")));
+        OrderService.ErpOrderResult result = service.createFromErp(json("ПР-1", line("029952", 50), line("074519", 10)));
 
         assertThat(result.orderId()).isEqualTo(10);
         assertThat(result.linesCreated()).isEqualTo(2);
@@ -116,7 +117,7 @@ class DefaultOrderServiceTest {
     @Test
     void shortageGivesPartialReservationAndRepeatTakesTheRest() {
         when(reservationRepository.findAvailableFefo(eq(5), any())).thenReturn(List.of(stock(77, 101, 30, null)));
-        OrderService.ErpOrderResult result = service.createFromErp(json("ПР-2", line("029952", "50")));
+        OrderService.ErpOrderResult result = service.createFromErp(json("ПР-2", line("029952", 50)));
 
         assertThat(result.reserve().shortage()).isEqualTo(20);
         assertThat(result.reserve().status()).isEqualTo(OrderStatus.PARTIALLY_RESERVED.getTitle());
@@ -133,7 +134,7 @@ class DefaultOrderServiceTest {
     @Test
     void systemCellsAreExcludedFromReservation() {
         when(reservationRepository.findAvailableFefo(eq(5), any())).thenReturn(List.of());
-        service.createFromErp(json("ПР-3", line("029952", "1")));
+        service.createFromErp(json("ПР-3", line("029952", 1)));
         @SuppressWarnings("unchecked")
         ArgumentCaptor<java.util.Collection<Integer>> excluded = ArgumentCaptor.forClass(java.util.Collection.class);
         verify(reservationRepository).findAvailableFefo(eq(5), excluded.capture());
@@ -144,11 +145,10 @@ class DefaultOrderServiceTest {
     void duplicateNumberAndUnknownCustomerAreRejected() {
         when(orderRepository.findFirstByDocumentNumberAndStatusIdNot("ПР-1", OrderStatus.CANCELLED.getCode()))
                 .thenReturn(Optional.of(new CustomerOrderEntity(5, "ПР-1", 1, null, null, 0, null, null, false)));
-        assertThatThrownBy(() -> service.createFromErp(json("ПР-1", line("029952", "1"))))
+        assertThatThrownBy(() -> service.createFromErp(json("ПР-1", line("029952", 1))))
                 .hasMessageContaining("уже существует (id 5)");
 
-        OrderJSON unknown = json("ПР-9", line("029952", "1"));
-        unknown.header.customerCode = "НЕТ";
+        ErpOrder unknown = new ErpOrder("ПР-9", "НЕТ", null, null, null, List.of(line("029952", 1)));
         assertThatThrownBy(() -> service.createFromErp(unknown)).isInstanceOf(NotFoundException.class);
         verify(orderRepository, never()).save(any());
     }
@@ -156,7 +156,7 @@ class DefaultOrderServiceTest {
     @Test
     void cancelReleasesReservations() {
         when(reservationRepository.findAvailableFefo(eq(5), any())).thenReturn(List.of(stock(77, 101, 100, null)));
-        service.createFromErp(json("ПР-4", line("029952", "10")));
+        service.createFromErp(json("ПР-4", line("029952", 10)));
         CustomerOrderEntity order = orderRepository.findById(10).orElseThrow();
 
         service.cancel(10);
@@ -211,21 +211,12 @@ class DefaultOrderServiceTest {
         };
     }
 
-    private static OrderJSON.Line line(String code, String qnt) {
-        OrderJSON.Line l = new OrderJSON.Line();
-        l.code = code;
-        l.qnt = qnt;
-        return l;
+    private static ErpLine line(String code, int quantity) {
+        return new ErpLine(code, quantity);
     }
 
-    private static OrderJSON json(String number, OrderJSON.Line... body) {
-        OrderJSON json = new OrderJSON();
-        json.header = new OrderJSON.Header();
-        json.header.orderERP = number;
-        json.header.customerCode = "К000001";
-        json.header.orderDate = "2026-10-10 09:00:00";
-        json.header.shipDate = "2026-10-11";
-        json.body = new ArrayList<>(List.of(body));
-        return json;
+    private static ErpOrder json(String number, ErpLine... lines) {
+        return new ErpOrder(number, "К000001", java.time.LocalDateTime.of(2026, 10, 10, 9, 0),
+                java.time.LocalDate.of(2026, 10, 11), null, List.of(lines));
     }
 }

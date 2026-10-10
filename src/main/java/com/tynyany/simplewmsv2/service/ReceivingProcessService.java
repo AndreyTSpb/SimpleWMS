@@ -1,6 +1,5 @@
 package com.tynyany.simplewmsv2.service;
 
-import com.tynyany.simplewmsv2.entity.ReceivingJSON;
 import com.tynyany.simplewmsv2.entity.ReceivingLineForm;
 
 import java.sql.Timestamp;
@@ -21,7 +20,7 @@ public interface ReceivingProcessService {
     record ErpImportResult(int receivingId, int linesCreated, List<String> missingProductCodes) {}
 
     /** Создание приходной накладной по данным ERP (статус «В ожидании»). */
-    ErpImportResult createFromErp(ReceivingJSON json);
+    ErpImportResult createFromErp(com.tynyany.simplewmsv2.dto.erp.ErpReceiving request);
 
     /** Начало приёмки: накладная переходит в статус «В процессе», назначается кладовщик. */
     void start(int receivingId, int employeeId, Timestamp startDate);

@@ -1,0 +1,10 @@
+{
+  "number": "З-ДЕМО-1",
+  "supplierCode": "П000019",
+  "date": "2026-10-10 08:30:00",
+  "lines": [
+    { "code": "029952", "quantity": 200 },
+    { "code": "074519", "quantity": 80 },
+    { "code": "109216", "quantity": 120 }
+  ]
+}

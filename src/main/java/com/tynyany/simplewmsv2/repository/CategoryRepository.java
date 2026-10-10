@@ -12,4 +12,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CategoryRepository extends CrudRepository<CategoryEntity, Integer> {
     Category findByCategoryName(String categoryName);
+
+    java.util.Optional<CategoryEntity> findFirstByCategoryNameIgnoreCase(String categoryName);
 }
