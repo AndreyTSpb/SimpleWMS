@@ -1,5 +1,6 @@
 package com.tynyany.simplewmsv2.controller;
 
+import com.tynyany.simplewmsv2.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class HomeController {
 
+    private final ReportService reportService;
+
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("title", "Система управления складом");
+        model.addAttribute("dashboard", reportService.dashboard());
         return "home";
     }
 

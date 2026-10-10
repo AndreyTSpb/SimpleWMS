@@ -1,4 +1,4 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- Head tag -->
 <div th:replace="~{header :: content}"></div>
@@ -24,383 +24,78 @@
 
         <!-- Main container starts -->
         <div class="container main-containe" id="main-container">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header border-0 bg-none">
-                    <div class="row">
-                        <div class="col-12 col-md">
-                            <p class="fs15">Статистика за: Июнь 2025</p>
+            <p class="fs15 mb-3">Сводка по складу</p>
+            <div class="row" th:with="d=${dashboard}">
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <a th:href="@{/receiving/list}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.receivingsWaiting() + d.receivingsInProgress()}">0</h3>
+                            <p class="mb-0">Приходы к приёмке</p>
+                            <small class="text-mute" th:text="'ожидают ' + ${d.receivingsWaiting()} + ', в работе ' + ${d.receivingsInProgress()}">ожидают 0</small>
                         </div>
-                        <div class="col-auto align-self-center">
-                            <div class="row ">
-                                <form class="form-inline">
-                                    <div class="row ">
-                                        <div class="col-4">
-                                            <div class="form-group ">
-                                                <select class="form-control">
-                                                    <option>Январь</option>
-                                                    <option>Февраль</option>
-                                                    <option>Март</option>
-                                                    <option>Апрель</option>
-                                                    <option>Май</option>
-                                                    <option selected>Июнь</option>
-                                                    <option>Июль</option>
-                                                    <option>Август</option>
-                                                    <option>Сентябрь</option>
-                                                    <option>Октябрь</option>
-                                                    <option>Ноябрь</option>
-                                                    <option>Декабрь</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group ">
-                                                <select class="form-control form-control-auto">
-                                                    <option selected>2025</option>
-                                                    <option>2026</option>
-                                                    <option>2027</option>
-                                                    <option>2028</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group ">
-                                                <button class="btn btn-outline-template" style="height: 35px; width: 170px;">
-                                                    <i class="material-icons md-18">update</i> Обновить
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </form>
-                            </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <a th:href="@{/product_placement}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.unplacedLines()}">0</h3>
+                            <p class="mb-0">Партий ждут размещения</p>
+                            <small class="text-mute" th:text="'открытых маршрутов размещения: ' + ${d.openPlacementRoutes()}">маршрутов 0</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                    <a th:href="@{/order_list}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.ordersToReserve()}">0</h3>
+                            <p class="mb-0">Заказы к резервированию</p>
+                            <small class="text-mute">новые и частично зарезервированные</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                    <a th:href="@{/order_list(status=2)}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.ordersToPick()}">0</h3>
+                            <p class="mb-0">Заказы к передаче в сборку</p>
+                            <small class="text-mute">полностью зарезервированы</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <a th:href="@{/picking_route_list}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.openPickingRoutes()}">0</h3>
+                            <p class="mb-0">Маршруты сборки в работе</p>
+                            <small class="text-mute" th:text="'заказов в сборке: ' + ${d.ordersPicking()}">заказов 0</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <a th:href="@{/shipping_list}" class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body">
+                            <h3 class="mb-1" th:text="${d.ordersToShip()}">0</h3>
+                            <p class="mb-0">Заказы к отгрузке</p>
+                            <small class="text-mute">собраны и лежат в зоне отгрузки</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <a sec:authorize="hasAnyRole('ADMIN','MANAGER')" th:href="@{/warehouse_status(view='batch',expiring=true)}"
+                       class="card border-0 shadow-sm h-100 text-body">
+                        <div class="card-body" th:classappend="${d.expiredBatches() > 0 ? 'bg-light-danger' : (d.expiringBatches() > 0 ? 'bg-light-warning' : '')}">
+                            <h3 class="mb-1" th:text="${d.expiredBatches() + d.expiringBatches()}">0</h3>
+                            <p class="mb-0">Партии с истекающим сроком</p>
+                            <small class="text-mute" th:text="'истёк: ' + ${d.expiredBatches()} + ', истекает: ' + ${d.expiringBatches()}">истёк 0</small>
+                        </div>
+                    </a>
+                    <div sec:authorize="hasRole('STOREKEEPER')" class="card border-0 shadow-sm h-100">
+                        <div class="card-body" th:classappend="${d.expiredBatches() > 0 ? 'bg-light-danger' : (d.expiringBatches() > 0 ? 'bg-light-warning' : '')}">
+                            <h3 class="mb-1" th:text="${d.expiredBatches() + d.expiringBatches()}">0</h3>
+                            <p class="mb-0">Партии с истекающим сроком</p>
+                            <small class="text-mute" th:text="'истёк: ' + ${d.expiredBatches()} + ', истекает: ' + ${d.expiringBatches()}">истёк 0</small>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <table class="table w-100 mb-0">
-                        <thead>
-                            <tr>
-                                <th class="min-tablet">#</th>
-                                <th class="min-tablet">Норма сборки</th>
-                                <th class="min-tablet">Всего</th>
-                                <th class="min-tablet">В день (поз)</th>
-                                <th class="min-tablet" style="text-align: center">Раб. дней</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            <tr>
-                                <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                                <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                                <td>1</td>
-                                <td>
-                                    <p>Норма премиальная</p>
-                                </td>
-                                <td>
-                                    <p>6 120</p>
-                                </td>
-                                <td>
-                                    <p>360</p>
-                                </td>
-                                <td rowspan="2" style="text-align: center">
-                                    <p>17</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                                <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                                <td>2</td>
-                                <td>
-                                    <p>Норма минимально расчетная</p>
-                                </td>
-                                <td>
-                                    <p>3 579</p>
-                                </td>
-                                <td>
-                                    <p>211</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header border-0 bg-none">
-
-                </div>
-                <div class="card-body">
-                    <table class="table w-100 mb-0">
-                        <thead>
-                        <tr>
-                            <th class="all">ID</th>
-                            <th class="all">Таб.№</th>
-                            <th class="min-tablet">Комплектовщик</th>
-                            <th class="min-tablet">Всего</th>
-                            <th class="min-tablet">В день (поз)</th>
-                            <th class="">Вес (кг)</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0001</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100521</p>
-                            </td>
-                            <td>
-                                <p>Валдаева Надежда</p>
-                            </td>
-                            <td>
-                                <p>8 023</p>
-                            </td>
-                            <td>
-                                <p>401,2</p>
-                            </td>
-                            <td>
-                                <p>12 577</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0002</td>
-                            <td>
-                                <p class="mb-0 template-inverse">102103</p>
-                            </td>
-                            <td>
-                                <p>Виноградова Светлана</p>
-                            </td>
-                            <td>
-                                <p>6 261</p>
-                            </td>
-                            <td>
-                                <p>313,1</p>
-                            </td>
-                            <td>
-                                <p>9 028</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0003</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100194</p>
-                            </td>
-                            <td>
-                                <p>Орлова Виктория</p>
-                            </td>
-                            <td>
-                                <p>6 849</p>
-                            </td>
-                            <td>
-                                <p>342,5</p>
-                            </td>
-                            <td>
-                                <p>8 365</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0004</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100301</p>
-                            </td>
-                            <td>
-                                <p>Россейкина Надежда</p>
-                            </td>
-                            <td>
-                                <p>555</p>
-                            </td>
-                            <td>
-                                <p>27,8</p>
-                            </td>
-                            <td>
-                                <p>772</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0005</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100545</p>
-                            </td>
-                            <td>
-                                <p>Романова Виктория</p>
-                            </td>
-                            <td>
-                                <p>7601</p>
-                            </td>
-                            <td>
-                                <p>349,4</p>
-                            </td>
-                            <td>
-                                <p>11603</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0006</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100205</p>
-                            </td>
-                            <td>
-                                <p>Проценюк Юлия</p>
-                            </td>
-                            <td>
-                                <p>5 532</p>
-                            </td>
-                            <td>
-                                <p>179,1</p>
-                            </td>
-                            <td>
-                                <p>5 007</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0007</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100441</p>
-                            </td>
-                            <td>
-                                <p>Телепнев Николай</p>
-                            </td>
-                            <td>
-                                <p>0</p>
-                            </td>
-                            <td>
-                                <p>0</p>
-                            </td>
-                            <td>
-                                <p>0</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <!-- {index = 1, count = 2, size = 7, current = Antarctica} -->
-                            <!-- Role(id=0, name=Доступ запрещен, del=0) -->
-                            <td>0008</td>
-                            <td>
-                                <p class="mb-0 template-inverse">100105</p>
-                            </td>
-                            <td>
-                                <p>Федорова Юлия</p>
-                            </td>
-                            <td>
-                                <p>3765</p>
-                            </td>
-                            <td>
-                                <p>149</p>
-                            </td>
-                            <td>
-                                <p>7918</p>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_horiz</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Редактировать</a>
-                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" >Удалить</a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -705,4 +400,4 @@
 
 <!-- Body ends -->
 
-</html>
+</html>

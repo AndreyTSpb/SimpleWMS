@@ -16,6 +16,7 @@ public class WmsProperties {
     private Api api = new Api();
     private Company company = new Company();
     private Placement placement = new Placement();
+    private Expiry expiry = new Expiry();
 
     /**
      * Системные ячейки. Создаются скриптом SQL/migrations/V001__seed_reference_data.sql.
@@ -56,5 +57,14 @@ public class WmsProperties {
          * например wms.placement.abc-zones.A=SC1. Без настройки подходят все зоны хранения.
          */
         private java.util.Map<String, String> abcZones = new java.util.HashMap<>();
+    }
+
+    /**
+     * Контроль сроков годности в отчётах.
+     */
+    @Data
+    public static class Expiry {
+        /** За сколько дней до окончания срока партия подсвечивается как «истекает». */
+        private int warningDays = 30;
     }
 }

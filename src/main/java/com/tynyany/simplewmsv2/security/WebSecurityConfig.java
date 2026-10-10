@@ -59,7 +59,7 @@ public class WebSecurityConfig {
                         // справочники, заказы и отчёты
                         .requestMatchers("/products/**", "/suppliers/**", "/customers/**", "/locations/**",
                                 "/zones/**", "/order_list/**", "/warehouse_status/**", "/shipment_report/**",
-                                "/income_report/**", "/report_pickers/**", "/product_report/**")
+                                "/income_report/**", "/report_pickers/**", "/movement_journal/**")
                         .hasAnyRole(ADMIN, MANAGER)
                         // складские операции: приёмка, размещение, перемещение, комплектация, отгрузка
                         .anyRequest().hasAnyRole(ADMIN, MANAGER, STOREKEEPER))

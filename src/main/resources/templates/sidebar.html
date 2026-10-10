@@ -11,6 +11,7 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">dashboard</i><span>Главная</span> <i class="material-icons arrow">expand_more</i></a>
             <div class="nav flex-column">
+                <div class="nav-item"><a class="nav-link" href="/"><span>Сводка по складу</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/receiving/list"><span>Приход товара</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/product_placement"><span>Размещение товара</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/moving_product"><span>Перемещение товара</span></a></div>
@@ -28,19 +29,7 @@
                 <div class="nav-item"><a class="nav-link" href="/shipment_report"><span>Отчет по отгрузкам</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/income_report"><span>Отчет по поставке</span></a></div>
                 <div class="nav-item"><a class="nav-link" href="/report_pickers"><span>Отчет по комплектовщикам</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/product_report"><span>Отчет по товарам</span></a></div>
-            </div>
-        </li>
-    </ul>
-    <ul class="nav flex-column" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="javascript:void(0)"><i class="material-icons icon">library_books</i><span>Инструкции</span> <i class="material-icons arrow">expand_more</i></a>
-            <div class="nav flex-column">
-                <div class="nav-item"><a class="nav-link" href="/warehouse_status"><span>Состояние склада</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/shipment_report"><span>Отчет по отгрузкам</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/income_report"><span>Отчет по поставке</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/report_pickers"><span>Отчет по комплектовщикам</span></a></div>
-                <div class="nav-item"><a class="nav-link" href="/product_report"><span>Отчет по товарам</span></a></div>
+                <div class="nav-item"><a class="nav-link" href="/movement_journal"><span>Журнал движений</span></a></div>
             </div>
         </li>
     </ul>
