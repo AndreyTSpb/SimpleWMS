@@ -59,6 +59,7 @@ public class RestApiController {
     private final LocationService locationService;
     private final ReceivingProcessService receivingProcessService;
     private final OrderService orderService;
+    private final ShippingService shippingService;
 
     /**
      * Заказ клиента из ERP: создаётся и сразу резервируется по FEFO (формат — {@link OrderJSON}).
@@ -77,6 +78,32 @@ public class RestApiController {
             message += ". Не найдены в справочнике товаров и пропущены: " + String.join(", ", result.missingProductCodes());
         }
         return new ResponseJson(1, message);
+    }
+
+    /**
+     * Отгрузки для ERP начиная с даты from (ГГГГ-ММ-ДД, по умолчанию — последние 30 дней).
+     */
+    @RequestMapping(value = "/shipments", method = RequestMethod.GET)
+    @ResponseBody
+    public java.util.List<ShippingService.ErpShipment> shipments(
+            @org.springframework.web.bind.annotation.RequestParam(value = "from", required = false) String from) {
+        java.time.LocalDate date;
+        try {
+            date = from == null || from.isBlank() ? java.time.LocalDate.now().minusDays(30) : java.time.LocalDate.parse(from.trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new com.tynyany.simplewmsv2.exception.WmsException("Неверный формат даты (ожидается ГГГГ-ММ-ДД): " + from);
+        }
+        return shippingService.getForErp(date);
+    }
+
+    /**
+     * ERP подтверждает получение отгрузки.
+     */
+    @RequestMapping(value = "/shipments/{id}/confirm", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseJson confirmShipment(@org.springframework.web.bind.annotation.PathVariable("id") int id) {
+        shippingService.confirmExport(id);
+        return new ResponseJson(1, "Получение отгрузки " + shippingService.getShipment(id).number() + " подтверждено");
     }
 
     @RequestMapping(value="/new_receiving", method= RequestMethod.POST)

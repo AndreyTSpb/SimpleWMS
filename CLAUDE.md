@@ -44,7 +44,7 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 | Пакет | Назначение |
 |---|---|
 | `controller` | MVC-контроллеры страниц и `RestApiController` (`/api/*`). Только приём запроса и подготовка модели, без бизнес-логики |
-| `service` | Интерфейсы `XxxService` + реализации `DefaultXxxService`. Бизнес-процессы: `InventoryService` (остатки и журнал движений), `ReceivingProcessService` (приёмка), `PlacementService` (маршруты размещения), `TransferService` (перемещения), `OrderService` (заказы и резерв), `PickingService` (комплектация) |
+| `service` | Интерфейсы `XxxService` + реализации `DefaultXxxService`. Бизнес-процессы: `InventoryService` (остатки и журнал движений), `ReceivingProcessService` (приёмка), `PlacementService` (маршруты размещения), `TransferService` (перемещения), `OrderService` (заказы и резерв), `PickingService` (комплектация), `ShippingService` (отгрузка, выгрузка в ERP) |
 | `domain` | Перечисления: `ReceivingStatus`, `MovementType`, `PlacementRouteStatus` (код хранится в БД как int) |
 | `config` | `WmsProperties` — настройки `wms.*` (системные ячейки приёмки/отгрузки) |
 | `exception` | `WmsException` / `NotFoundException` и обработчики: `GlobalExceptionHandler` (страница error), `ApiExceptionHandler` (JSON) |
@@ -285,3 +285,17 @@ Hibernate/Spring переводит camelCase в snake_case, но аббреви
 - Тесты: 67 unit-тестов сервисов (+ `DefaultPickingServiceTest`). Проверено в среде Claude через HTTP: передача в сборку,
   повторная передача, подтверждение до начала, количество больше плана, недостача, запрет отмены после сборки,
   перенос остатков в ячейку отгрузки, сборочный лист, карточка заказа.
+  - Этап 7 проверен Andrew.
+
+### 2026-10-10 (этап 8 — отгрузка)
+- Новые таблицы (Hibernate): `shipment`, `shipment_line`.
+- `ShippingService`: отгрузка собранного заказа одним действием (списание собранного из ячейки отгрузки движением
+  «Отгрузка», «отгружено» в строках заказа, заказ «Отгружен», документ `ОТГ-<id>`), защита от повторной отгрузки,
+  выгрузка для ERP и подтверждение получения.
+- Страница «Отгрузка заказа» (`/shipping_list`, была заглушкой с чужими шаблонами): заказы к отгрузке и журнал отгрузок
+  с отметкой о передаче в ERP. В карточке заказа — «Отгрузить», колонка «Отгружено», ссылка на ТОРГ-12.
+- ТОРГ-12 стал общим для прихода и отгрузки: шапка передаётся в модели `doc`.
+- API: `GET /api/shipments?from=ГГГГ-ММ-ДД`, `POST /api/shipments/{id}/confirm`.
+- Тесты: 74 unit-теста сервисов (+ `DefaultShippingServiceTest`). Проверено в среде Claude через HTTP: отгрузка
+  кладовщиком, повторная отгрузка, отгрузка несобранного заказа, остатки ячейки отгрузки и журнал движений,
+  ТОРГ-12 отгрузки и прихода, карточка заказа, API (выгрузка, подтверждение, неверная дата — 400, нет отгрузки — 404).

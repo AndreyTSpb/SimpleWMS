@@ -44,7 +44,7 @@
                     <table class="table table-sm table-bordered mb-0">
                         <thead>
                         <tr class="bg-light-secondary text-center">
-                            <th>№</th><th>Код</th><th>Товар</th><th>Заказано</th><th>В резерве</th><th>Не хватает</th><th>Собрано</th>
+                            <th>№</th><th>Код</th><th>Товар</th><th>Заказано</th><th>В резерве</th><th>Не хватает</th><th>Собрано</th><th>Отгружено</th>
                             <th>Резерв: ячейка · партия · срок годности · кол-во</th><th></th>
                         </tr>
                         </thead>
@@ -56,7 +56,8 @@
                             <td class="text-right" th:text="${line.ordered()}">10</td>
                             <td class="text-right" th:text="${line.reserved()}">10</td>
                             <td class="text-right"><span th:if="${line.shortage() > 0}" class="text-danger font-weight-bold" th:text="${line.shortage()}">0</span></td>
-                            <td class="text-right"><span th:if="${order.statusCode() >= 3}" th:text="${line.picked()}">0</span></td>
+                            <td class="text-right"><span th:if="${order.statusCode() >= 3 and order.statusCode() != 6}" th:text="${line.picked()}">0</span></td>
+                            <td class="text-right"><span th:if="${order.statusCode() == 5}" th:text="${line.shipped()}">0</span></td>
                             <td>
                                 <div th:each="r : ${line.reservations()}">
                                     <b th:text="${r.locationCode()}">SC1</b> · <span th:text="${r.batchId()}">1</span> ·
@@ -71,7 +72,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(order.lines())}">
-                            <td colspan="9" class="text-center text-mute">Строк нет</td>
+                            <td colspan="10" class="text-center text-mute">Строк нет</td>
                         </tr>
                         </tbody>
                         <tfoot>
@@ -79,7 +80,7 @@
                             <td colspan="3" class="text-right"><b>Итого</b></td>
                             <td class="text-right"><b th:text="${order.totalOrdered()}">0</b></td>
                             <td class="text-right"><b th:text="${order.totalReserved()}">0</b></td>
-                            <td colspan="4"></td>
+                            <td colspan="5"></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -100,6 +101,13 @@
                        th:text="'Маршрут сборки № ' + ${pickingRouteId}">Маршрут сборки</a>
                     <a th:if="${pickingRouteId > 0}" th:href="@{/picking_route_list/print/{id}(id=${pickingRouteId})}" target="_blank"
                        class="btn btn-outline-template ml-1"><i class="material-icons md-18">print</i> Сборочный лист</a>
+                    <a th:if="${shipmentId > 0}" th:href="@{/shipping_list/torg_12/{id}(id=${shipmentId})}" target="_blank"
+                       class="btn btn-outline-template ml-1"><i class="material-icons md-18">print</i> ТОРГ-12</a>
+                    <form th:if="${order.statusCode() == 4}" th:action="@{/shipping_list/ship/{id}(id=${order.id()})}"
+                          method="post" class="d-inline float-right ml-2"
+                          onsubmit="return confirm('Отгрузить заказ? Собранный товар будет списан из зоны отгрузки.')">
+                        <button type="submit" class="btn btn-success">Отгрузить</button>
+                    </form>
                     <form th:if="${order.statusCode() == 2}" th:action="@{/order_list/{id}/to_picking(id=${order.id()})}"
                           method="post" class="d-inline float-right ml-2">
                         <button type="submit" class="btn btn-success">Передать в сборку</button>

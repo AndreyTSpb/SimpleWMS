@@ -159,10 +159,17 @@ public class ReceivingController {
                 accepted.add(line);
             }
         }
-        model.addAttribute("orderHead", head);
+        String company = wmsProperties.getCompany().getName();
+        HashMap<String, String> doc = new HashMap<>();
+        doc.put("number", head.get("orderERP"));
+        doc.put("shipper", head.get("supplierName"));
+        doc.put("supplier", head.get("supplierName") + ", код " + head.get("supplierCode"));
+        doc.put("consignee", company);
+        doc.put("payer", company);
+        doc.put("basis", "Заказ на закупку № " + head.get("orderERP"));
+        model.addAttribute("doc", doc);
         model.addAttribute("lines", accepted);
         model.addAttribute("orderItog", orderItog(accepted));
-        model.addAttribute("companyName", wmsProperties.getCompany().getName());
         model.addAttribute("printDate", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()));
         return "torg-12";
     }

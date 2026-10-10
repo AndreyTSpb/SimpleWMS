@@ -8,6 +8,7 @@ import com.tynyany.simplewmsv2.repository.CustomerRepository;
 import com.tynyany.simplewmsv2.repository.ProductRepository;
 import com.tynyany.simplewmsv2.service.OrderService;
 import com.tynyany.simplewmsv2.service.PickingService;
+import com.tynyany.simplewmsv2.service.ShippingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class OrdersController {
 
     private final OrderService orderService;
     private final PickingService pickingService;
+    private final ShippingService shippingService;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
 
@@ -76,6 +78,7 @@ public class OrdersController {
         model.addAttribute("title", "Заказ " + order.documentNumber());
         model.addAttribute("order", order);
         model.addAttribute("pickingRouteId", pickingService.findRouteIdByOrder(id).orElse(0));
+        model.addAttribute("shipmentId", shippingService.findShipmentIdByOrder(id).orElse(0));
         List<com.tynyany.simplewmsv2.dao.ProductEntity> products = new ArrayList<>();
         productRepository.findAll().forEach(p -> {
             if (!Boolean.TRUE.equals(p.getDel())) products.add(p);
