@@ -99,7 +99,10 @@ public class DefaultInventoryService implements InventoryService {
         StockEntity stock = stockRepository.findByBatchIdAndLocationIdAndDel(batchId, locationId, false);
         int available = stock == null ? 0 : stock.getQuantity();
         if (available < quantity) {
-            throw new WmsException("Недостаточно остатка партии " + batchId + " в ячейке " + locationId
+            String cell = locationRepository.findById(locationId)
+                    .map(l -> l.getLocationCode())
+                    .orElse(String.valueOf(locationId));
+            throw new WmsException("Недостаточно остатка партии " + batchId + " в ячейке " + cell
                     + ": доступно " + available + ", требуется " + quantity);
         }
         stock.setQuantity(available - quantity);

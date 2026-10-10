@@ -14,7 +14,8 @@ public enum MovementType {
     PICKING(3, "Сборка"),
     SHIPPING(4, "Отгрузка"),
     ADJUSTMENT(5, "Корректирование"),
-    CYCLE_COUNT(6, "Инвентаризация");
+    CYCLE_COUNT(6, "Инвентаризация"),
+    MOVE(7, "Перемещение");
 
     private final int code;
     private final String title;
