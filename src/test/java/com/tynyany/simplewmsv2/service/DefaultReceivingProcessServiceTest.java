@@ -106,6 +106,20 @@ class DefaultReceivingProcessServiceTest {
     }
 
     @Test
+    void messagesUsePositionInDocumentNotInternalId() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity line = givenLine(false);
+        givenProduct(false);
+        ReceivingLineEntity first = new ReceivingLineEntity(5, 1, 0, null, RECEIVING_ID, 0, PRODUCT_ID, false, false, false, "");
+        when(lineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(RECEIVING_ID, false))
+                .thenReturn(new ArrayList<>(List.of(first, line)));
+
+        assertThat(service.processLine(form(10, ""), 0)).isEqualTo("строка 2 «Товар 5»");
+        assertThatThrownBy(() -> service.processLine(form(10, ""), 0))
+                .hasMessage("Строка 2 «Товар 5» уже принята, повторная приёмка не допускается");
+    }
+
+    @Test
     void processLineRecordsExecutorWhenGiven() {
         givenReceiving(ReceivingStatus.IN_PROGRESS);
         givenLine(false);
@@ -170,19 +184,29 @@ class DefaultReceivingProcessServiceTest {
     }
 
     @Test
-    void processLineRequiresStorageLocation() {
+    void processLineChecksStorageLocationWhenGiven() {
         givenReceiving(ReceivingStatus.IN_PROGRESS);
         givenLine(false);
         givenProduct(false);
 
-        assertThatThrownBy(() -> service.processLine(form(10, "", 0), 0))
-                .isInstanceOf(WmsException.class)
-                .hasMessageContaining("место хранения");
         assertThatThrownBy(() -> service.processLine(form(10, "", 1), 0))      // ячейка приёмки
-                .isInstanceOf(WmsException.class);
+                .isInstanceOf(WmsException.class)
+                .hasMessageContaining("не являются местом хранения");
         assertThatThrownBy(() -> service.processLine(form(10, "", 999), 0))
                 .isInstanceOf(NotFoundException.class);
         verify(batchRepository, never()).save(any());
+    }
+
+    @Test
+    void processLineWithoutLocationLeavesItForAutoPlacement() {
+        givenReceiving(ReceivingStatus.IN_PROGRESS);
+        ReceivingLineEntity line = givenLine(false);
+        givenProduct(false);
+
+        service.processLine(form(10, "", 0), 0);
+
+        assertThat(line.getLocationID()).isZero();
+        verify(inventoryService).receive(77, PRODUCT_ID, 1, 10, STOREKEEPER_ID);
     }
 
     @Test
@@ -222,7 +246,7 @@ class DefaultReceivingProcessServiceTest {
         givenReceiving(ReceivingStatus.IN_PROGRESS);
         ReceivingLineEntity done = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, false, false, "");
         ReceivingLineEntity open = new ReceivingLineEntity(12, 10, 0, null, RECEIVING_ID, 0, PRODUCT_ID, false, false, false, "");
-        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(done, open)));
+        when(lineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(done, open)));
 
         assertThatThrownBy(() -> service.complete(RECEIVING_ID))
                 .isInstanceOf(WmsException.class)
@@ -275,7 +299,7 @@ class DefaultReceivingProcessServiceTest {
         ReceivingEntity receiving = givenReceiving(ReceivingStatus.IN_PROGRESS);
         ReceivingLineEntity accepted = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, false, false, "");
         ReceivingLineEntity open = new ReceivingLineEntity(12, 10, 0, null, RECEIVING_ID, 0, PRODUCT_ID, false, false, false, "");
-        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(accepted, open)));
+        when(lineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(accepted, open)));
         BatchEntity batch = new BatchEntity(77, PRODUCT_ID, SUPPLIER_ID, null, 10, null, 11, false);
         when(batchRepository.findActiveByReceivingLine(11)).thenReturn(List.of(batch));
         when(inventoryService.getQuantity(77, 1)).thenReturn(10);
@@ -291,7 +315,7 @@ class DefaultReceivingProcessServiceTest {
     void cancelIsForbiddenWhenRoutedOrCompleted() {
         ReceivingEntity receiving = givenReceiving(ReceivingStatus.IN_PROGRESS);
         ReceivingLineEntity routed = new ReceivingLineEntity(11, 10, 10, null, RECEIVING_ID, 101, PRODUCT_ID, true, true, false, "");
-        when(lineRepository.findAllByReceivingIDAndDel(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(routed)));
+        when(lineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(RECEIVING_ID, false)).thenReturn(new ArrayList<>(List.of(routed)));
         assertThatThrownBy(() -> service.cancel(RECEIVING_ID, 0)).hasMessageContaining("маршрут");
 
         receiving.setStatusID(ReceivingStatus.COMPLETED.getCode());

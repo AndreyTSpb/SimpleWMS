@@ -1,9 +1,11 @@
 package com.tynyany.simplewmsv2.service;
 
+import com.tynyany.simplewmsv2.config.WmsProperties;
 import com.tynyany.simplewmsv2.dao.StockEntity;
 import com.tynyany.simplewmsv2.dao.StockMovementEntity;
 import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.exception.WmsException;
+import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.repository.StockMovementRepository;
 import com.tynyany.simplewmsv2.repository.StockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +38,8 @@ class DefaultInventoryServiceTest {
     void setUp() {
         stockRepository = mock(StockRepository.class);
         movementRepository = mock(StockMovementRepository.class);
-        service = new DefaultInventoryService(stockRepository, movementRepository);
+        service = new DefaultInventoryService(stockRepository, movementRepository,
+                mock(LocationRepository.class), new WmsProperties());
     }
 
     @Test

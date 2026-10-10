@@ -19,7 +19,7 @@ public class LocationEntity {
     private int x; // координаты в горизонтальной плоскости
     private int y; // координаты в вертикальной плоскости
     private int z; // порядковый номер полки при разделении места
-    private float capacity = 1.0F;
+    private float capacity = 1000.0F; // вместимость, л
     private int available = 1;
     private int del = 0;
     private int zoneID;

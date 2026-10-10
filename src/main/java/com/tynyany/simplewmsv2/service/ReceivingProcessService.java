@@ -39,8 +39,10 @@ public interface ReceivingProcessService {
      * Отмена приёмки строки для исправления: остаток списывается из ячейки приёмки движением
      * «Корректирование», партия помечается удалённой, строку можно принять заново.
      * Возможна, пока строка не включена в маршрут размещения и товар целиком лежит в ячейке приёмки.
+     *
+     * @return обозначение строки для сообщения пользователю (см. {@link #processLine})
      */
-    void revertLine(int receivingLineId, int executorEmployeeId);
+    String revertLine(int receivingLineId, int executorEmployeeId);
 
     /**
      * Приёмка строки накладной: фиксируется фактическое количество, создаётся партия,
@@ -48,6 +50,8 @@ public interface ReceivingProcessService {
      *
      * @param executorEmployeeId сотрудник, выполнивший приёмку (записывается в журнал движений);
      *                           0 — кладовщик, назначенный на накладную
+     * @return обозначение строки для сообщения пользователю: порядковый номер в накладной и товар,
+     *         например «строка 3 «Карандаш чернографитный HB»»
      */
-    void processLine(ReceivingLineForm form, int executorEmployeeId);
+    String processLine(ReceivingLineForm form, int executorEmployeeId);
 }

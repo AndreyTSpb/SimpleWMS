@@ -57,7 +57,7 @@ public class ReceivingController {
     private final ZoneService zoneService;
     private final LocationService locationService;
     private final ReceivingProcessService receivingProcessService;
-    private final PlacementService placementService;
+    private final StorageLocations storageLocations;
     private final WmsProperties wmsProperties;
 
 
@@ -137,8 +137,8 @@ public class ReceivingController {
 
         //Для селекторов
         model.addAttribute("employeeList", employeeService.getAllEmployee());
-        model.addAttribute("zoneList", zoneService.getAll());
-        model.addAttribute("locationList", locationService.getAllLocation());
+        model.addAttribute("zoneList", storageLocations.zones());
+        model.addAttribute("locationList", storageLocations.cells());
 
         UpdateMessageAlert updateMessageAlert = new UpdateMessageAlert(request,response);
         if(updateMessageAlert.updateMessage != null)
@@ -209,8 +209,8 @@ public class ReceivingController {
     @PostMapping("/update_string_product")
     public String updateStringProduct(@ModelAttribute ReceivingLineForm form, HttpServletResponse response) {
         try {
-            receivingProcessService.processLine(form, CurrentUser.employeeId());
-            alert(response, "Строка " + form.getNumLine() + " принята");
+            String line = receivingProcessService.processLine(form, CurrentUser.employeeId());
+            alert(response, "Принята " + line);
         } catch (WmsException e) {
             log.warn("Операция по накладной отклонена: {}", e.getMessage());
             alert(response, e.getMessage());
@@ -226,8 +226,8 @@ public class ReceivingController {
                              @RequestParam("orderId") int orderId,
                              HttpServletResponse response) {
         try {
-            receivingProcessService.revertLine(lineId, CurrentUser.employeeId());
-            alert(response, "Приёмка строки " + lineId + " отменена, строку можно принять заново");
+            String line = receivingProcessService.revertLine(lineId, CurrentUser.employeeId());
+            alert(response, "Отменена приёмка: " + line + ". Строку можно принять заново");
         } catch (WmsException e) {
             log.warn("Операция по накладной отклонена: {}", e.getMessage());
             alert(response, e.getMessage());
@@ -245,13 +245,6 @@ public class ReceivingController {
             alert(response, e.getMessage());
         }
         return "redirect:/" + baseUrl + "/edit/" + form.getOrderId();
-    }
-
-    @GetMapping("/update_placement_route")
-    public String updatePlacementRoute(HttpServletResponse response) {
-        PlacementService.GenerationResult result = placementService.generateRoutes();
-        alert(response, "Создано маршрутов: " + result.routesCreated() + ", строк: " + result.linesCreated());
-        return "redirect:/product_placement";
     }
 
     private HashMap<String, String> requireOrderHead(int id) {

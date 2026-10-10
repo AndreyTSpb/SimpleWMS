@@ -93,7 +93,7 @@
                                     <th rowspan="2">ШтрихКод</th>
                                     <th colspan="2">Количество</th>
                                     <th colspan="2">Вес (кг)</th>
-                                    <th colspan="2">Объём (м³)</th>
+                                    <th colspan="2">Объём (л)</th>
                                     <th colspan="2"></th>
 
                                 </tr>
@@ -117,8 +117,8 @@
                                     <td th:text="${orderItems.qntFact}" th:classappend="${orderItems.complete == 'true' and orderItems.difference != '0'} ? 'text-danger font-weight-bold' : ''" th:title="${orderItems.complete == 'true' and orderItems.difference != '0'} ? 'Расхождение: ' + ${orderItems.difference} : ''">Количество Принятое</td>
                                     <td th:text="${orderItems.weightOrder}">Вес (кг) По накладной</td>
                                     <td th:text="${orderItems.weightFact}">Вес (кг) Принятое</td>
-                                    <td th:text="${orderItems.volumeOrder}">Объём (м³) По накладной</td>
-                                    <td th:text="${orderItems.volumeFact}">Объём (м³) Принятое</td>
+                                    <td th:text="${orderItems.volumeOrder}">Объём (л) По накладной</td>
+                                    <td th:text="${orderItems.volumeFact}">Объём (л) Принятое</td>
                                     <td >
                                         <div class="dropdown">
                                             <button class="btn dropdown-toggle btn-sm btn-link" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -148,7 +148,7 @@
                                         расхождение: <b th:text="${orderItog.difference}"
                                                         th:classappend="${orderItog.difference != '0'} ? 'text-danger' : ''">0</b> шт.</p>
                                     <p class="mb-1">Принято: вес <b th:text="${orderItog.sumWeight}">0</b> кг,
-                                        объём <b th:text="${orderItog.sumVolume}">0</b> м³</p>
+                                        объём <b th:text="${orderItog.sumVolume}">0</b> л</p>
                                 </div>
                                 <div class="col-12 col-md-6 text-md-right">
                                     <p class="mb-1" th:if="${orderItog.notProcessed != '0'}">Не обработано строк:
@@ -241,7 +241,8 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label>Зона хранения: </label>
-                                    <select class="form-control" name = "zoneId" >
+                                    <select class="form-control js-zone-filter" name = "zoneId" >
+                                        <option value="0">— любая зона —</option>
                                         <option th:each="zone : ${zoneList}" th:value="${zone.zoneID}" th:text="${zone.code}" th:selected="${zone.zoneID.toString() == orderItems.zoneId}"></option>
                                     </select>
                                 </div>
@@ -250,8 +251,8 @@
                                 <div class="form-group">
                                     <label>Место хранения: </label>
                                     <select class="form-control" name = "locationId" >
-                                        <option value="0">— выберите место хранения —</option>
-                                        <option th:each="location : ${locationList}" th:value="${location.locationID}" th:text="${location.locationCode}" th:selected="${location.locationID.toString() == orderItems.locationId}"></option>
+                                        <option value="0">— подобрать автоматически —</option>
+                                        <option th:each="location : ${locationList}" th:value="${location.locationID}" th:attr="data-zone=${location.zoneID}" th:text="${location.locationCode}" th:selected="${location.locationID.toString() == orderItems.locationId}"></option>
                                     </select>
                                 </div>
                             </div>
@@ -446,6 +447,24 @@
 
 </script>
 <!-- Customized page level js ends -->
+<script>
+    // Окно приёмки строки: список мест хранения фильтруется по выбранной зоне
+    document.querySelectorAll('.js-zone-filter').forEach(function (zoneSelect) {
+        const form = zoneSelect.closest('form');
+        const cellSelect = form ? form.querySelector('select[name="locationId"]') : null;
+        if (!cellSelect) return;
+        const apply = function () {
+            const zone = zoneSelect.value;
+            cellSelect.querySelectorAll('option[data-zone]').forEach(function (option) {
+                const visible = zone === '0' || option.getAttribute('data-zone') === zone;
+                option.hidden = !visible;
+                if (!visible && option.selected) cellSelect.value = '0';
+            });
+        };
+        zoneSelect.addEventListener('change', apply);
+        apply();
+    });
+</script>
 </body>
 
 <!-- Body ends -->

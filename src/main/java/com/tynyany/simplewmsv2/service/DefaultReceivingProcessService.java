@@ -155,8 +155,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         List<ReceivingLineEntity> lines = activeLines(receivingId);
         for (ReceivingLineEntity line : lines) {
             if (Boolean.TRUE.equals(line.getPlacementRoute())) {
-                throw new WmsException("Нельзя отменить накладную: строка " + line.getReceivingLineID()
-                        + " уже включена в маршрут размещения");
+                throw new WmsException("Нельзя отменить накладную: " + lineLabel(line) + " уже включена в маршрут размещения");
             }
         }
         int employeeId = executorEmployeeId > 0 ? executorEmployeeId : receiving.getEmployeeID();
@@ -172,19 +171,20 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
 
     @Override
     @Transactional
-    public void revertLine(int receivingLineId, int executorEmployeeId) {
+    public String revertLine(int receivingLineId, int executorEmployeeId) {
         ReceivingLineEntity line = receivingLineRepository.findById(receivingLineId)
                 .orElseThrow(() -> new NotFoundException("Строка прихода " + receivingLineId + " не найдена"));
         ReceivingEntity receiving = getReceiving(line.getReceivingID());
         requireStatus(receiving, ReceivingStatus.IN_PROGRESS, "Отменить приёмку строки");
         if (!Boolean.TRUE.equals(line.getComplete())) {
-            throw new WmsException("Строка " + receivingLineId + " ещё не принята");
+            throw new WmsException(capitalize(lineLabel(line)) + " ещё не принята");
         }
         if (Boolean.TRUE.equals(line.getPlacementRoute())) {
-            throw new WmsException("Строка " + receivingLineId + " уже включена в маршрут размещения, отмена невозможна");
+            throw new WmsException(capitalize(lineLabel(line)) + " уже включена в маршрут размещения, отмена невозможна");
         }
         undoLine(line, executorEmployeeId > 0 ? executorEmployeeId : receiving.getEmployeeID());
         log.info("Отменена приёмка строки {} накладной {}", receivingLineId, receiving.getReceivingID());
+        return lineLabel(line);
     }
 
     /** Откат принятой строки: списание остатка из ячейки приёмки, удаление партии, сброс факта. */
@@ -193,7 +193,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         for (BatchEntity batch : batchRepository.findActiveByReceivingLine(line.getReceivingLineID())) {
             int inReceiving = inventoryService.getQuantity(batch.getBatch_id(), receivingLocationId);
             if (inReceiving < batch.getQuantity_received()) {
-                throw new WmsException("Строка " + line.getReceivingLineID() + ": часть товара партии "
+                throw new WmsException(capitalize(lineLabel(line)) + ": часть товара партии "
                         + batch.getBatch_id() + " уже перемещена из зоны приёмки, отмена невозможна");
             }
             if (inReceiving > 0) {
@@ -209,23 +209,46 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
         receivingLineRepository.save(line);
     }
 
+    /**
+     * Обозначение строки для сообщений: порядковый номер в накладной (как в таблице на странице) и товар.
+     * Внутренний id строки пользователю не показывается.
+     */
+    private String lineLabel(ReceivingLineEntity line) {
+        List<ReceivingLineEntity> lines = activeLines(line.getReceivingID());
+        int position = 0;
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).getReceivingLineID() == line.getReceivingLineID()) {
+                position = i + 1;
+                break;
+            }
+        }
+        String product = productRepository.findById(line.getProductID())
+                .map(ProductEntity::getProductName)
+                .orElse("товар " + line.getProductID());
+        return (position > 0 ? "строка " + position : "строка") + " «" + product + "»";
+    }
+
+    private static String capitalize(String text) {
+        return text.isEmpty() ? text : Character.toUpperCase(text.charAt(0)) + text.substring(1);
+    }
+
     private List<ReceivingLineEntity> activeLines(int receivingId) {
-        return receivingLineRepository.findAllByReceivingIDAndDel(receivingId, false);
+        return receivingLineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(receivingId, false);
     }
 
     @Override
     @Transactional
-    public void processLine(ReceivingLineForm form, int executorEmployeeId) {
+    public String processLine(ReceivingLineForm form, int executorEmployeeId) {
         ReceivingLineEntity line = receivingLineRepository.findById(form.getNumLine())
                 .orElseThrow(() -> new NotFoundException("Строка прихода " + form.getNumLine() + " не найдена"));
         ReceivingEntity receiving = getReceiving(line.getReceivingID());
 
         if (form.getOrderId() > 0 && form.getOrderId() != receiving.getReceivingID()) {
-            throw new WmsException("Строка " + line.getReceivingLineID() + " не относится к накладной " + form.getOrderId());
+            throw new WmsException("Строка прихода не относится к накладной " + form.getOrderId());
         }
         requireStatus(receiving, ReceivingStatus.IN_PROGRESS, "Принять строку");
         if (Boolean.TRUE.equals(line.getComplete())) {
-            throw new WmsException("Строка " + line.getReceivingLineID() + " уже принята, повторная приёмка не допускается");
+            throw new WmsException(capitalize(lineLabel(line)) + " уже принята, повторная приёмка не допускается");
         }
 
         int qntFact = form.getQntFact();
@@ -240,20 +263,21 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
             throw new WmsException("Для товара «" + product.getProductName() + "» обязателен срок годности");
         }
 
-        if (qntFact > 0) {
+        // Место хранения необязательно: без него ячейка подбирается при формировании маршрута
+        if (qntFact > 0 && form.getLocationId() > 0) {
             checkStorageLocation(form.getLocationId());
         }
 
         line.setQuantityReceived(qntFact);
         line.setExpirationDate(expirationDate);
-        line.setLocationID(form.getLocationId());
+        line.setLocationID(Math.max(form.getLocationId(), 0));
         line.setNote(form.getNote());
         line.setComplete(true);
         receivingLineRepository.save(line);
 
         if (qntFact == 0) {
             log.info("Строка {} накладной {}: товар не поступил", line.getReceivingLineID(), receiving.getReceivingID());
-            return;
+            return lineLabel(line);
         }
 
         // Партия ссылается на строку прихода (batches.receiving_id = receiving_line.receiving_lineid)
@@ -267,6 +291,7 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
 
         log.info("Принята строка {} накладной {}: товар {}, кол-во {}, партия {}",
                 line.getReceivingLineID(), receiving.getReceivingID(), product.getProductID(), qntFact, batch.getBatch_id());
+        return lineLabel(line);
     }
 
     /**
@@ -275,8 +300,8 @@ public class DefaultReceivingProcessService implements ReceivingProcessService {
      */
     private void checkStorageLocation(int locationId) {
         WmsProperties.Locations system = wmsProperties.getLocations();
-        if (locationId <= 0 || locationId == system.getReceivingId() || locationId == system.getShippingId()) {
-            throw new WmsException("Выберите место хранения, куда будет размещён товар");
+        if (locationId == system.getReceivingId() || locationId == system.getShippingId()) {
+            throw new WmsException("Ячейки приёмки и отгрузки не являются местом хранения");
         }
         LocationEntity location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NotFoundException("Место хранения " + locationId + " не найдено"));

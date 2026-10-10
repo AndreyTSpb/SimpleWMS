@@ -31,9 +31,9 @@
                             <p class="fs15" th:text="${title}">Справочник товаров</p>
                         </div>
                         <div class="col-auto align-self-center">
-                            <form id="form_update" method="get" action="/receiving/update_placement_route"></form>
+                            <form id="form_update" method="post" th:action="@{/product_placement/generate}"></form>
                             <button form="form_update" class="btn btn-sm btn-outline-template ml-2"  type="submit">
-                                <i class="material-icons md-18">update</i> Обновить данные
+                                <i class="material-icons md-18">update</i> Сформировать маршруты
                             </button>
                             <button class="btn btn-sm btn-outline-template ml-2">
                                 <i class="material-icons md-18">cloud_download</i> Выгрузить
@@ -43,55 +43,77 @@
                 </div>
                 <div class="card-body">
                     <p th:if="${#lists.isEmpty(routes)}" class="text-template-primary-light mb-0">
-                        Маршрутов размещения нет. Примите товар по накладной (с выбором места хранения)
-                        и нажмите «Обновить данные».
+                        Маршрутов размещения нет. Примите товар по накладной и нажмите «Сформировать маршруты».
                     </p>
-                    <table th:unless="${#lists.isEmpty(routes)}" class="table w-100 mb-0">
-                        <thead>
-                        <tr class="text-center">
-                            <th>Маршрут</th>
-                            <th>Создан</th>
-                            <th>Зона хранения</th>
-                            <th>Строк</th>
-                            <th>Кол-во</th>
-                            <th>Статус</th>
-                        </tr>
-                        </thead>
-                        <tbody th:each="route : ${routes}">
-                        <tr class="text-center">
-                            <td th:text="${route.id()}">1</td>
-                            <td th:text="${route.created()}">01.01.2026 10:00</td>
-                            <td th:text="${route.zone()}">SC1</td>
-                            <td th:text="${#lists.size(route.lines())}">3</td>
-                            <td th:text="${route.totalQuantity()}">100</td>
-                            <td th:text="${route.status()}">Создан</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" class="pt-0">
-                                <table class="table table-sm mb-2">
-                                    <thead>
-                                    <tr class="bg-light-secondary">
-                                        <th>Код</th>
-                                        <th>Товар</th>
-                                        <th>Партия</th>
-                                        <th>Место хранения</th>
-                                        <th class="text-right">Кол-во</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="line : ${route.lines()}">
-                                        <td th:text="${line.productCode()}">029952</td>
-                                        <td th:text="${line.productName()}">Товар</td>
-                                        <td th:text="${line.batchId()}">1</td>
-                                        <td th:text="${line.locationCode()}">SC1-01-01-1-1</td>
-                                        <td class="text-right" th:text="${line.quantity()}">10</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div th:each="route : ${routes}" class="card border-0 shadow-sm mb-3">
+                        <div class="card-header border-0"
+                             th:classappend="${route.statusCode() == 2} ? 'bg-success' : (${route.statusCode() == 3} ? 'bg-light-danger' : (${route.statusCode() == 1} ? 'bg-light-info' : 'bg-light-warning'))">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <b th:text="'Маршрут № ' + ${route.id()}">Маршрут № 1</b>
+                                    <span class="ml-2" th:text="${route.zone()}">SC1</span>
+                                    <br><small>
+                                        <span th:text="${route.status()}">Создан</span> ·
+                                        создан <span th:text="${route.created()}">01.01.2026</span>
+                                        <span th:if="${route.employee() != ''}" th:text="' · исполнитель: ' + ${route.employee()}"></span> ·
+                                        размещено <span th:text="${route.completedLines()} + ' из ' + ${#lists.size(route.lines())}">0 из 3</span>,
+                                        всего <span th:text="${route.totalQuantity()}">0</span> шт.
+                                    </small>
+                                </div>
+                                <div class="col-auto">
+                                    <a class="btn btn-sm btn-outline-template" target="_blank"
+                                       th:href="@{/product_placement/print/{id}(id=${route.id()})}">
+                                        <i class="material-icons md-18">print</i> Лист размещения</a>
+                                    <form th:if="${route.statusCode() == 0}" th:action="@{/product_placement/start/{id}(id=${route.id()})}"
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-primary ml-1">Взять в работу</button>
+                                    </form>
+                                    <form th:if="${(route.statusCode() == 0 or route.statusCode() == 1) and route.completedLines() == 0}"
+                                          th:action="@{/product_placement/cancel/{id}(id=${route.id()})}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Отменить маршрут? Товар снова будет ожидать размещения.')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ml-1">Отменить</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                <tr class="bg-light-secondary">
+                                    <th>Место хранения</th>
+                                    <th>Код</th>
+                                    <th>Товар</th>
+                                    <th>Партия</th>
+                                    <th class="text-right">Кол-во</th>
+                                    <th style="width: 320px">Размещение</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="line : ${route.lines()}">
+                                    <td><b th:text="${line.locationCode()}">SC1-01-01-1-1</b></td>
+                                    <td th:text="${line.productCode()}">029952</td>
+                                    <td th:text="${line.productName()}">Товар</td>
+                                    <td th:text="${line.batchId()}">1</td>
+                                    <td class="text-right" th:text="${line.quantity()}">10</td>
+                                    <td>
+                                        <span th:if="${line.complete()}" class="text-success">✔ размещено</span>
+                                        <form th:if="${!line.complete() and route.statusCode() == 1}"
+                                              th:action="@{/product_placement/confirm}" method="post" class="form-inline m-0">
+                                            <input type="hidden" name="lineId" th:value="${line.lineId()}">
+                                            <select name="locationId" class="form-control form-control-sm mr-1" style="max-width: 180px">
+                                                <option value="0" th:text="${line.locationCode()} + ' (план)'">план</option>
+                                                <option th:each="cell : ${cells}" th:if="${cell.locationID != line.locationId()}"
+                                                        th:value="${cell.locationID}" th:text="${cell.locationCode}">SC1-01-01-1-2</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-success">Подтвердить</button>
+                                        </form>
+                                        <span th:if="${!line.complete() and route.statusCode() == 0}" class="text-mute">ожидает начала</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -543,7 +565,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объём товара(м³)</label>
+                                    <label>Объём товара(л)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
                                 </div>
                             </div>

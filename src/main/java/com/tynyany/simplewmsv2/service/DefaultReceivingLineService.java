@@ -84,7 +84,7 @@ public class DefaultReceivingLineService implements ReceivingLineService{
 
     @Override
     public List<ReceivingLine> getAllLinesForReceiving(int receivingID) {
-        ArrayList<ReceivingLineEntity> receivingLineOption = receivingLineRepository.findAllByReceivingIDAndDel(receivingID, false);
+        ArrayList<ReceivingLineEntity> receivingLineOption = receivingLineRepository.findAllByReceivingIDAndDelOrderByReceivingLineIDAsc(receivingID, false);
         if(receivingLineOption.isEmpty()) {
             return null;
         }

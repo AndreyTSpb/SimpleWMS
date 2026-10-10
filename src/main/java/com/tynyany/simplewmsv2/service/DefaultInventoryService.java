@@ -1,9 +1,11 @@
 package com.tynyany.simplewmsv2.service;
 
+import com.tynyany.simplewmsv2.config.WmsProperties;
 import com.tynyany.simplewmsv2.dao.StockEntity;
 import com.tynyany.simplewmsv2.dao.StockMovementEntity;
 import com.tynyany.simplewmsv2.domain.MovementType;
 import com.tynyany.simplewmsv2.exception.WmsException;
+import com.tynyany.simplewmsv2.repository.LocationRepository;
 import com.tynyany.simplewmsv2.repository.StockMovementRepository;
 import com.tynyany.simplewmsv2.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ public class DefaultInventoryService implements InventoryService {
 
     private final StockRepository stockRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final LocationRepository locationRepository;
+    private final WmsProperties wmsProperties;
 
     @Override
     @Transactional
@@ -30,6 +34,7 @@ public class DefaultInventoryService implements InventoryService {
         checkQuantity(quantity);
         increase(batchId, productId, toLocationId, quantity);
         writeMovement(batchId, NO_LOCATION, toLocationId, quantity, employeeId, MovementType.RECEIVING);
+        refreshAvailability(toLocationId);
         log.debug("Приёмка: партия {}, товар {}, ячейка {}, кол-во {}", batchId, productId, toLocationId, quantity);
     }
 
@@ -44,6 +49,8 @@ public class DefaultInventoryService implements InventoryService {
         decrease(batchId, fromLocationId, quantity);
         increase(batchId, productId, toLocationId, quantity);
         writeMovement(batchId, fromLocationId, toLocationId, quantity, employeeId, type);
+        refreshAvailability(fromLocationId);
+        refreshAvailability(toLocationId);
         log.debug("{}: партия {}, {} -> {}, кол-во {}", type.getTitle(), batchId, fromLocationId, toLocationId, quantity);
     }
 
@@ -53,6 +60,7 @@ public class DefaultInventoryService implements InventoryService {
         checkQuantity(quantity);
         decrease(batchId, fromLocationId, quantity);
         writeMovement(batchId, fromLocationId, NO_LOCATION, quantity, employeeId, type);
+        refreshAvailability(fromLocationId);
         log.debug("{}: списание партии {} из ячейки {}, кол-во {}", type.getTitle(), batchId, fromLocationId, quantity);
     }
 
@@ -61,6 +69,24 @@ public class DefaultInventoryService implements InventoryService {
     public int getQuantity(int batchId, int locationId) {
         StockEntity stock = stockRepository.findByBatchIdAndLocationIdAndDel(batchId, locationId, false);
         return stock == null ? 0 : stock.getQuantity();
+    }
+
+    /**
+     * Признак занятости ячейки хранения (location.available): 0 — в ячейке есть товар, 1 — свободна.
+     * Для системных ячеек приёмки и отгрузки не ведётся.
+     */
+    private void refreshAvailability(int locationId) {
+        WmsProperties.Locations system = wmsProperties.getLocations();
+        if (locationId <= 0 || locationId == system.getReceivingId() || locationId == system.getShippingId()) {
+            return;
+        }
+        locationRepository.findById(locationId).ifPresent(location -> {
+            int available = stockRepository.sumQuantityInLocation(locationId) > 0 ? 0 : 1;
+            if (location.getAvailable() != available) {
+                location.setAvailable(available);
+                locationRepository.save(location);
+            }
+        });
     }
 
     private void checkQuantity(int quantity) {

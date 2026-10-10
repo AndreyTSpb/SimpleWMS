@@ -15,6 +15,7 @@ public class WmsProperties {
     private Locations locations = new Locations();
     private Api api = new Api();
     private Company company = new Company();
+    private Placement placement = new Placement();
 
     /**
      * Системные ячейки. Создаются скриптом SQL/migrations/V001__seed_reference_data.sql.
@@ -43,5 +44,17 @@ public class WmsProperties {
     public static class Company {
         /** Наименование грузополучателя в ТОРГ-12. */
         private String name = "Склад SimpleWMS";
+    }
+
+    /**
+     * Правила подбора ячеек при размещении.
+     */
+    @Data
+    public static class Placement {
+        /**
+         * Предпочтительная зона хранения (код зоны) для ABC-класса товара (код A/B/C/D),
+         * например wms.placement.abc-zones.A=SC1. Без настройки подходят все зоны хранения.
+         */
+        private java.util.Map<String, String> abcZones = new java.util.HashMap<>();
     }
 }

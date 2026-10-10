@@ -51,7 +51,7 @@
                             <th class="min-tablet">Сотрудник</th>
                             <th class="min-tablet">Кол-во<br>cтрок</th>
                             <th class="min-tablet">Вес<br>(кг)</th>
-                            <th class="min-tablet">Объём<br>(м³)</th>
+                            <th class="min-tablet">Объём<br>(л)</th>
                             <th class="">Статус</th>
                             <th></th>
                         </tr>
@@ -80,7 +80,7 @@
                                 <p class="mb-0 template-inverse" th:text="${receiving.sumWeight}">Вес(кг)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Объём(м³)</p>
+                                <p class="mb-0 template-inverse" th:text="${receiving.sumVolume}">Объём(л)</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${receiving.status}">Статус</p>
@@ -447,7 +447,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label>Объём товара(м³)</label>
+                                    <label>Объём товара(л)</label>
                                     <input type="text" class="form-control form-control-lg" name="volume" th:value="${product.volume}">
                                 </div>
                             </div>

@@ -48,7 +48,7 @@
                             <th class="min-tablet">Наименование</th>
                             <th class="min-tablet">Код</th>
                             <th class="min-tablet">Вес(кг)</th>
-                            <th class="min-tablet">Объём(м³)</th>
+                            <th class="min-tablet">Объём(л)</th>
                             <th class="min-tablet">Категория товара</th>
                             <th class="min-tablet">ABC</th>
                             <th class="">Статус</th>
@@ -70,7 +70,7 @@
                                 <p class="mb-0 template-inverse" th:text="${product.weight}">Вес(кг)</p>
                             </td>
                             <td>
-                                <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Объём(м³)</p>
+                                <p class="mb-0 template-inverse" th:text='${#numbers.formatDecimal(product.volume, 1, 6)}'>Объём(л)</p>
                             </td>
                             <td>
                                 <p class="mb-0 template-inverse" th:text="${product.categoryName}">Категория товара</p>
